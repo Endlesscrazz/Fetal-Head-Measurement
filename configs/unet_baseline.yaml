@@ -1,0 +1,39 @@
+run:
+  id: unet_baseline
+  output_dir: outputs/runs
+
+dataset:
+  root: data/raw/HC18
+  subset: training
+  image_size: [352, 512]
+  target_type: filled
+  band_width: 3
+
+splits:
+  dir: data/splits
+  split_id: seed42_train698_val152_test149
+
+model:
+  name: unet
+  in_channels: 1
+  out_channels: 1
+  base_channels: 32
+  dropout: 0.0
+
+loss:
+  name: bce_dice
+  bce_weight: 0.5
+  dice_weight: 0.5
+
+optimizer:
+  name: adamw
+  lr: 0.001
+  weight_decay: 0.0001
+
+training:
+  seed: 42
+  device: auto
+  epochs: 50
+  batch_size: 4
+  num_workers: 2
+  pin_memory: false

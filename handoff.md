@@ -7,17 +7,218 @@ specific. The newest entry should be at the top.
 
 ## Current Status
 
-- Phase 1 implementation is complete.
+- Phase 1, Phase 2, and Phase 3 implementation are complete through local smoke
+  verification.
+- First full-pipeline local U-Net baseline run is complete using MPS:
+  `unet_local_baseline`.
 - V1 plan is script-first PyTorch with local smoke runs and CHPC Slurm for long
   training.
 - Current approved task queue lives in `project-tasks.md`.
 - Durable decisions live in `DECISIONS.md`.
 - V1 is divided into phase/session units in `project-tasks.md`.
 - `P1.S1`, `P1.S2`, `P1.S3`, and `P1.S4` are done.
+- `P2.S1`, `P2.S2`, `P2.S3`, and `P2.S4` are done for the U-Net baseline.
+- `P3.S1`, `P3.S2`, `P3.S3`, and `P3.S4` are done using the smoke checkpoint
+  as a wiring check.
 - Local uv environment exists at `.venv/`.
 - HC18 is extracted under `data/raw/HC18/`.
 
 ## Latest Session
+
+Date: 2026-04-25
+
+Task id: Local MPS U-Net baseline run
+
+Phase/session:
+Baseline full-pipeline run before Phase 4
+
+Goal:
+Use MacBook MPS to train and evaluate the U-Net baseline locally before moving
+to Attention U-Net.
+
+Files changed:
+
+- `configs/unet_local_baseline.yaml`
+- `src/training/trainer.py`
+- `src/inference/predict.py`
+- `AGENTS.md`
+- `project-tasks.md`
+- `DECISIONS.md`
+- `handoff.md`
+
+Commands run:
+
+- `.venv/bin/python -c "import torch; ..."` for MPS diagnostics
+- `ps -axo pid,command | grep 'src.training.train' | grep -v grep`
+- `kill 77215`
+- `.venv/bin/python -m pytest tests`
+- `.venv/bin/python -c "from src.training.trainer import select_device; ..."`
+- `.venv/bin/python -m src.training.train --config configs/unet_local_baseline.yaml`
+- `.venv/bin/python -m src.evaluation.evaluate --config outputs/runs/unet_local_baseline/config.json --checkpoint outputs/runs/unet_local_baseline/best_model.pt --split val`
+- `.venv/bin/python -m src.evaluation.evaluate --config outputs/runs/unet_local_baseline/config.json --checkpoint outputs/runs/unet_local_baseline/best_model.pt --split test`
+- `.venv/bin/python scripts/make_report_figures.py --run-id unet_local_baseline --split val`
+- `.venv/bin/python scripts/make_report_figures.py --run-id unet_local_baseline --split test`
+
+Verification:
+
+- Sandbox reported `mps_available=False`, but escalated execution reported
+  `mps_available=True` and selected `mps`.
+- Full local U-Net baseline completed 10 epochs on MPS.
+- Best training-loop validation Dice was 0.9545 at epoch 8.
+- Full evaluation val results: Dice 0.9598, IoU 0.9296, HD95 2.36 mm, HC MAE
+  3.13 mm, HC RMSE 4.51 mm.
+- Full evaluation internal-test results: Dice 0.9600, IoU 0.9261, HD95 3.02 mm,
+  HC MAE 3.78 mm, HC RMSE 5.56 mm.
+- Report figures generated under `outputs/figures/unet_local_baseline/`.
+
+Decisions made:
+
+- Local baseline training should request MPS with `mps: true`.
+- Use `unet_local_baseline` as development baseline numbers before Phase 4.
+
+Open issues:
+
+- Larger CHPC/report-grade baseline config has not been run yet.
+- Attention U-Net is not implemented yet.
+
+Next exact task:
+
+- Continue with `P4.S1` / Task `M2` - Implement Attention U-Net.
+
+## Previous Session
+
+Date: 2026-04-25
+
+Task id: Phase 3 implementation - `I1`, `E1`
+
+Phase/session:
+`P3.S1`, `P3.S2`, `P3.S3`, `P3.S4`
+
+Goal:
+Implement deterministic inference geometry, prediction artifacts, evaluation
+metrics, and report figure generation.
+
+Files changed:
+
+- `src/utils/geometry.py`
+- `tests/test_geometry.py`
+- `src/inference/predict.py`
+- `src/inference/__init__.py`
+- `src/evaluation/metrics.py`
+- `src/evaluation/evaluate.py`
+- `src/evaluation/__init__.py`
+- `tests/test_metrics.py`
+- `scripts/make_report_figures.py`
+- `README.md`
+- `project-tasks.md`
+- `DECISIONS.md`
+- `handoff.md`
+
+Commands run:
+
+- `.venv/bin/python -m pytest tests/test_geometry.py`
+- `.venv/bin/python -m src.inference.predict --config outputs/runs/unet_baseline_smoke/config.json --checkpoint outputs/runs/unet_baseline_smoke/best_model.pt --split val --limit 2`
+- `.venv/bin/python -m pytest tests/test_geometry.py tests/test_metrics.py`
+- `.venv/bin/python -m src.evaluation.evaluate --config outputs/runs/unet_baseline_smoke/config.json --checkpoint outputs/runs/unet_baseline_smoke/best_model.pt --split val --limit 2`
+- `.venv/bin/python scripts/make_report_figures.py --run-id unet_baseline_smoke --split val`
+- `.venv/bin/python -m compileall src scripts`
+- `.venv/bin/python -m pytest tests`
+- `bash -n slurm/train_unet.sbatch`
+
+Verification:
+
+- Geometry tests passed.
+- Metrics tests passed.
+- Prediction artifacts were generated for two smoke validation samples.
+- Evaluation wrote per-sample and aggregate metrics for the smoke checkpoint.
+- Report figure script generated Dice histogram, HC error histogram, and a
+  qualitative panel for the smoke checkpoint.
+- Full local test suite passes: 15 tests.
+- Python compile check passed.
+
+Decisions made:
+
+- HC measurement uses threshold -> largest connected component -> contour ->
+  ellipse fit -> sampled ellipse circumference in physical mm.
+- Smoke evaluation artifacts prove wiring only and must not be used as final
+  report numbers.
+
+Open issues:
+
+- Full baseline U-Net training has not been run yet.
+- Phase 4 Attention U-Net is not implemented yet.
+- Final reported metrics need a real baseline checkpoint, not the smoke
+  checkpoint.
+
+Next exact task:
+
+- Continue with `P4.S1` / Task `M2` - Implement Attention U-Net, or run the
+  full U-Net baseline on CHPC before comparing models.
+
+## Previous Session
+
+Date: 2026-04-25
+
+Task id: Phase 2 implementation - `M1`, `T1`, baseline `C1`
+
+Phase/session:
+`P2.S1`, `P2.S2`, `P2.S3`, `P2.S4`
+
+Goal:
+Implement the U-Net baseline, config-driven trainer, local smoke training, and
+baseline CHPC Slurm script.
+
+Files changed:
+
+- `src/models/unet.py`
+- `src/models/__init__.py`
+- `tests/test_models.py`
+- `src/training/losses.py`
+- `src/training/optim.py`
+- `src/training/trainer.py`
+- `src/training/train.py`
+- `src/training/__init__.py`
+- `configs/unet_baseline.yaml`
+- `configs/unet_smoke.yaml`
+- `scripts/run_smoke_train.py`
+- `slurm/train_unet.sbatch`
+- `README.md`
+- `project-tasks.md`
+- `DECISIONS.md`
+- `handoff.md`
+
+Commands run:
+
+- `.venv/bin/python -m pytest tests/test_models.py`
+- `.venv/bin/python -m pytest tests/test_models.py tests/test_data.py`
+- `.venv/bin/python scripts/run_smoke_train.py --config configs/unet_smoke.yaml`
+- `bash -n slurm/train_unet.sbatch`
+
+Verification:
+
+- Model tests passed.
+- Data + model tests passed: 7 tests.
+- Smoke training completed on CPU and wrote `outputs/runs/unet_baseline_smoke`.
+- Baseline Slurm script passed shell syntax check.
+
+Decisions made:
+
+- U-Net returns logits and does not apply sigmoid internally.
+- Training uses BCE+Dice by default.
+- `configs/unet_smoke.yaml` is for local smoke checks; `configs/unet_baseline.yaml`
+  is for real baseline/CHPC runs.
+
+Open issues:
+
+- Full baseline training has not been run yet.
+- Attention U-Net and evaluation Slurm scripts are still future tasks.
+
+Next exact task:
+
+- Continue with `P3.S1` / Task `I1` - Implement deterministic geometry
+  utilities.
+
+## Previous Session
 
 Date: 2026-04-25
 

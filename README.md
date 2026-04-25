@@ -101,8 +101,10 @@ Planned commands:
 ```bash
 .venv/bin/python -m src.data.make_splits --config configs/data.yaml
 .venv/bin/python scripts/visualize_samples.py --config configs/data.yaml --n 10
-.venv/bin/python scripts/run_smoke_train.py --config configs/unet_baseline.yaml
-.venv/bin/python -m src.evaluation.evaluate --config configs/unet_baseline.yaml --run-id <run_id>
+.venv/bin/python scripts/run_smoke_train.py --config configs/unet_smoke.yaml
+.venv/bin/python -m src.inference.predict --config outputs/runs/unet_baseline_smoke/config.json --checkpoint outputs/runs/unet_baseline_smoke/best_model.pt --split val --limit 2
+.venv/bin/python -m src.evaluation.evaluate --config outputs/runs/unet_baseline_smoke/config.json --checkpoint outputs/runs/unet_baseline_smoke/best_model.pt --split val --limit 2
+.venv/bin/python scripts/make_report_figures.py --run-id unet_baseline_smoke --split val
 ```
 
 The data commands are implemented. They require HC18 files under
@@ -131,7 +133,7 @@ rsync -av <uNID>@<chpc-login>:/scratch/general/vast/<uNID>/fetal-hc/outputs/runs
 ```
 
 Replace `<uNID>` and `<chpc-login>` with the correct university account and
-cluster login host. Final Slurm scripts will be added in a later task.
+cluster login host. The U-Net Slurm script is `slurm/train_unet.sbatch`.
 
 ## Planned Models
 

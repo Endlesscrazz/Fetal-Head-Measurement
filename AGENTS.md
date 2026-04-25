@@ -55,7 +55,7 @@ V1 is intentionally narrow.
 ## 4. Compute policy
 
 - Local MacBook M1 Air: development, unit tests, data inspection, and tiny
-  subset smoke runs.
+  subset smoke runs. For local training, use MPS when available.
 - University CHPC Slurm GPU nodes: full training, final ablations, and reported
   results.
 - Google Colab is not part of the v1 execution plan.
@@ -71,6 +71,8 @@ run locally and on CHPC.
 - Run project commands through `.venv/bin/python` unless a future task adds uv
   project metadata for `uv run`.
 - Do not install packages into system Python for this project.
+- In this Codex sandbox, PyTorch may report `mps_available=False`; MPS training
+  must be launched outside the sandbox/escalated so Metal is visible.
 
 ## 5. Agent discipline
 

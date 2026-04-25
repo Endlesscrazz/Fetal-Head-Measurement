@@ -72,6 +72,10 @@ Phase 2 completion criteria:
 - baseline U-Net trains end-to-end;
 - run artifacts include config, seed, split id, checkpoint, and metrics.
 
+Status note:
+Local MPS baseline `unet_local_baseline` completed for 10 epochs on the full
+train split and was evaluated on val/internal-test splits.
+
 ### Phase 3 - Inference, Geometry, and Evaluation
 
 Goal:
@@ -383,7 +387,7 @@ Verification:
 
 ## Task M1 - Implement U-Net Baseline
 
-Status: todo
+Status: done
 
 Phase/session: `P2.S1`
 
@@ -416,7 +420,7 @@ Verification:
 
 ## Task T1 - Implement Training Loop
 
-Status: todo
+Status: done
 
 Phase/session: `P2.S2`, `P2.S3`, `P4.S2`
 
@@ -432,6 +436,7 @@ Allowed files:
 - `src/training/losses.py`
 - `src/training/optim.py`
 - `configs/unet_baseline.yaml`
+- `configs/unet_smoke.yaml`
 - `scripts/run_smoke_train.py`
 
 Out of scope:
@@ -449,11 +454,11 @@ Done criteria:
 
 Verification:
 
-- `python scripts/run_smoke_train.py --config configs/unet_baseline.yaml`
+- `python scripts/run_smoke_train.py --config configs/unet_smoke.yaml`
 
 ## Task I1 - Implement Inference and Geometry
 
-Status: todo
+Status: done
 
 Phase/session: `P3.S1`, `P3.S2`, `P4.S4`
 
@@ -486,7 +491,7 @@ Verification:
 
 ## Task E1 - Implement Evaluation and Report Artifacts
 
-Status: todo
+Status: done
 
 Phase/session: `P3.S3`, `P3.S4`, `P4.S3`, `P4.S4`, `P5.S2`
 
@@ -518,6 +523,10 @@ Done criteria:
 Verification:
 
 - `python -m src.evaluation.evaluate --config <config> --run-id <run_id>`
+
+Progress:
+Core Phase 3 evaluation and report-artifact generation are implemented. Future
+sessions reuse this task surface for ablations and final report regeneration.
 
 ## Task M2 - Implement Attention U-Net
 
@@ -564,6 +573,10 @@ Role: Reproducibility + Packaging Agent
 Goal:
 Create Slurm scripts and README instructions for running final experiments on
 university CHPC.
+
+Progress:
+`P2.S4` baseline U-Net Slurm script exists. Full task remains open for
+Attention U-Net and evaluation Slurm scripts in Phase 5.
 
 Allowed files:
 

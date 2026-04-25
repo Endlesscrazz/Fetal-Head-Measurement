@@ -199,3 +199,107 @@ Leaving the dataset in Downloads and pointing configs there.
 Impact on future work:
 Configs can use the stable relative path `data/raw/HC18`. Raw data remains
 ignored by git.
+
+## 2026-04-25 - Baseline and smoke training configs
+
+Decision:
+Keep `configs/unet_baseline.yaml` for real baseline runs and
+`configs/unet_smoke.yaml` for tiny local smoke training.
+
+Rationale:
+The baseline Slurm workflow should not accidentally run a tiny smoke
+experiment, while local validation needs a fast CPU-friendly config.
+
+Alternatives considered:
+Using one config for both smoke and real training; overriding many values from
+the smoke script.
+
+Impact on future work:
+Use `configs/unet_smoke.yaml` for quick local checks and
+`configs/unet_baseline.yaml` for reported/CHPC baseline training.
+
+## 2026-04-25 - Local CPU U-Net baseline config
+
+Decision:
+Add `configs/unet_local_baseline.yaml` for a full-split local U-Net baseline on
+the MacBook with MPS requested: 256x384 images, base channels 16, 10 epochs, no
+smoke sample limit.
+
+Rationale:
+Sandboxed commands report no MPS/CUDA backend, but escalated local execution can
+access MPS. The full 352x512/base32/50-epoch baseline is still more appropriate
+for CHPC, while this local baseline trains on the full train split and runs the
+full inference/evaluation pipeline.
+
+Alternatives considered:
+Running the CHPC-sized baseline config locally; waiting until CHPC before
+getting any baseline numbers.
+
+Impact on future work:
+Use local baseline metrics as development baseline numbers, and use
+`configs/unet_baseline.yaml` later for stronger CHPC/report-grade baseline
+training.
+
+## 2026-04-25 - MPS execution requires non-sandboxed launch
+
+Decision:
+Use `mps: true` in local training configs and launch local training/evaluation
+outside the sandbox when MPS is needed.
+
+Rationale:
+Inside the sandbox, PyTorch reported `mps_available=False`; outside the sandbox,
+the same environment reported `mps_available=True` and successfully allocated a
+tensor on `mps:0`.
+
+Alternatives considered:
+Training only on CPU; waiting for CHPC before baseline training.
+
+Impact on future work:
+Local Mac training commands that need MPS should be run with escalation/outside
+the sandbox. CPU-only smoke tests can still run normally.
+
+## 2026-04-25 - First local U-Net baseline numbers
+
+Decision:
+Use `unet_local_baseline` as the first full-pipeline development baseline:
+full train split, 10 epochs, 256x384 images, base channels 16, MPS backend.
+
+Rationale:
+This produces real end-to-end U-Net numbers before implementing Attention U-Net,
+while staying feasible on the MacBook Air.
+
+Alternatives considered:
+Running the larger CHPC baseline config locally; proceeding to Attention U-Net
+without real baseline numbers.
+
+Impact on future work:
+These numbers are suitable as development baseline numbers. CHPC/report-grade
+runs can later use the larger `configs/unet_baseline.yaml` if time allows.
+
+Results:
+Validation: Dice 0.9598, IoU 0.9296, HD95 2.36 mm, HC MAE 3.13 mm, HC RMSE
+4.51 mm. Internal test: Dice 0.9600, IoU 0.9261, HD95 3.02 mm, HC MAE 3.78 mm,
+HC RMSE 5.56 mm.
+
+## 2026-04-25 - Geometry-based HC measurement
+
+Decision:
+Convert predicted masks into HC measurements with deterministic post-processing:
+threshold probabilities, keep the largest connected component, extract the
+outer contour, fit an ellipse, and compute HC from sampled ellipse points scaled
+by pixel spacing.
+
+Rationale:
+This matches the assignment's segmentation-first requirement while keeping the
+neural prediction and geometric measurement stages debuggable and ablatable.
+Sampling ellipse points in physical units handles anisotropic spacing more
+safely than multiplying a pixel circumference by a single scalar.
+
+Alternatives considered:
+Measuring raw mask contour length directly; using only Ramanujan pixel
+circumference with average spacing; predicting HC directly with regression.
+
+Impact on future work:
+Evaluation can compare raw/cleaned/ellipse post-processing variants, and final
+reported HC values should come from the geometry pipeline rather than raw model
+logits.
