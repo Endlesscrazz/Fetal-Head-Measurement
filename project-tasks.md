@@ -1,0 +1,623 @@
+# Project Tasks
+
+This file is the approved task queue for Codex agents. Agents must implement
+one task at a time unless the user explicitly expands scope.
+
+Task status values:
+
+- `todo`
+- `in_progress`
+- `blocked`
+- `done`
+
+## V1 Phase and Session Roadmap
+
+Agents should work session-by-session. A session is sized so a coding agent can
+finish implementation, verification, and handoff in one focused pass.
+
+### Phase 1 - Foundation and Data Readiness
+
+Goal:
+Create the runnable project skeleton and make HC18 data trustworthy before any
+modeling work begins.
+
+Sessions:
+
+- `P1.S1` - Create project skeleton and local/CHPC-ready scaffolding.
+  - Primary task: `S1`
+  - Outcome: directories, package files, `.gitignore`, `requirements.txt`, and
+    placeholder `Myproject.sh` exist.
+- `P1.S2` - Inspect the actual HC18 dataset layout.
+  - Primary task: `D1`
+  - Outcome: `docs/dataset-format.md` documents observed files, columns, image
+    dimensions, pixel spacing, and annotation format.
+- `P1.S3` - Implement dataset parsing and ellipse mask generation.
+  - Primary task: `D2`
+  - Outcome: dataset returns image, mask, spacing, sample id, and annotation
+    metadata with geometry-safe resizing.
+- `P1.S4` - Create deterministic splits and visual sanity overlays.
+  - Primary task: `D3`
+  - Outcome: split CSVs and at least 10 overlay checks can be generated.
+
+Phase 1 completion criteria:
+
+- raw data layout is documented;
+- dataloader works;
+- generated masks have visual overlays;
+- split files are reusable and not hidden inside training code.
+
+### Phase 2 - U-Net Baseline Training
+
+Goal:
+Train the first reproducible segmentation baseline with logged metrics and a
+checkpoint.
+
+Sessions:
+
+- `P2.S1` - Implement U-Net baseline.
+  - Primary task: `M1`
+  - Outcome: U-Net forward pass test works for `[B, 1, H, W] -> [B, 1, H, W]`.
+- `P2.S2` - Implement losses, optimizer setup, trainer, and baseline config.
+  - Primary task: `T1`
+  - Outcome: config-driven training writes metrics and checkpoints.
+- `P2.S3` - Run local tiny smoke training and fix only blocking issues.
+  - Primary task: `T1`
+  - Outcome: one tiny run completes on local machine.
+- `P2.S4` - Prepare baseline CHPC run command/config.
+  - Primary task: `C1`
+  - Outcome: U-Net Slurm job calls existing training entrypoint.
+
+Phase 2 completion criteria:
+
+- baseline U-Net trains end-to-end;
+- run artifacts include config, seed, split id, checkpoint, and metrics.
+
+### Phase 3 - Inference, Geometry, and Evaluation
+
+Goal:
+Convert segmentation outputs into HC measurements and report-ready metrics.
+
+Sessions:
+
+- `P3.S1` - Implement deterministic geometry utilities.
+  - Primary task: `I1`
+  - Outcome: cleanup, contour extraction, ellipse fitting, and circumference
+    tests exist.
+- `P3.S2` - Implement prediction script and artifact schema.
+  - Primary task: `I1`
+  - Outcome: predictions save mask, ellipse, HC pixels/mm, and overlays.
+- `P3.S3` - Implement evaluation metrics.
+  - Primary task: `E1`
+  - Outcome: segmentation and HC metrics are saved per-sample and aggregated.
+- `P3.S4` - Generate baseline report artifacts.
+  - Primary task: `E1`
+  - Outcome: baseline table rows, curves, and qualitative panels exist.
+
+Phase 3 completion criteria:
+
+- image -> mask -> ellipse -> HC mm works;
+- Dice/IoU/HD and HC error metrics are generated;
+- baseline results are ready for the report.
+
+### Phase 4 - Attention U-Net and Focused Ablations
+
+Goal:
+Add the improved model and run a small, defensible experiment matrix.
+
+Sessions:
+
+- `P4.S1` - Implement Attention U-Net.
+  - Primary task: `M2`
+  - Outcome: model registry supports Attention U-Net with the same tensor
+    contract as U-Net.
+- `P4.S2` - Train Attention U-Net on the same split.
+  - Primary task: `T1`
+  - Outcome: Attention U-Net run artifacts are comparable to baseline.
+- `P4.S3` - Run loss/augmentation ablations.
+  - Primary task: `E1`
+  - Outcome: focused ablation table compares 2-3 meaningful changes.
+- `P4.S4` - Run post-processing ablation.
+  - Primary task: `I1` / `E1`
+  - Outcome: raw mask measurement vs cleanup + ellipse fit is quantified.
+
+Phase 4 completion criteria:
+
+- U-Net and Attention U-Net are compared on the same split;
+- at least 2-3 ablations are recorded with attributable run artifacts.
+
+### Phase 5 - CHPC Final Runs, Report, and Packaging
+
+Goal:
+Produce the final course submission and GitHub-ready project state.
+
+Sessions:
+
+- `P5.S1` - Finalize CHPC Slurm workflow.
+  - Primary task: `C1`
+  - Outcome: train/evaluate Slurm scripts and README workflow are complete.
+- `P5.S2` - Sync final outputs and regenerate tables/figures.
+  - Primary task: `E1`
+  - Outcome: final report artifacts are generated from saved runs.
+- `P5.S3` - Finalize `Myproject.sh` and README reproducibility commands.
+  - Primary task: `R1`
+  - Outcome: course runner is copy-paste executable.
+- `P5.S4` - Package final report assets and submission checklist.
+  - Primary task: `R1`
+  - Outcome: code, report inputs, and run artifacts are ready for submission.
+
+Phase 5 completion criteria:
+
+- final reported numbers come from saved run artifacts;
+- `Myproject.sh` reproduces the main pipeline;
+- README explains local and CHPC use clearly.
+
+## Task G0 - Documentation and Governance Cleanup
+
+Status: done
+
+Role: Planner Agent
+
+Goal:
+Create the repository governance files that future Codex sessions must follow.
+
+Allowed files:
+
+- `AGENTS.md`
+- `README.md`
+- `project-tasks.md`
+- `handoff.md`
+- `DECISIONS.md`
+- `docs/architecture.md`
+- `docs/project-spec.md`
+
+Out of scope:
+
+- source code implementation
+- dependency installation
+- dataset download
+- training or evaluation runs
+
+Done criteria:
+
+- root contains `AGENTS.md`, `README.md`, `project-tasks.md`, `handoff.md`,
+  and `DECISIONS.md`;
+- long planning docs live under `docs/`;
+- stale references to the deleted legacy handoff file are removed;
+- `AGENTS.md` references `handoff.md` and `DECISIONS.md`.
+
+Verification:
+
+- `rg --files -g '*.md'`
+- search the repository for the deleted legacy handoff filename and confirm no
+  matches
+- `test -f AGENTS.md`
+- `test -f README.md`
+- `test -f project-tasks.md`
+- `test -f handoff.md`
+- `test -f DECISIONS.md`
+
+## Task G1 - V1 Phase and Session Roadmap
+
+Status: done
+
+Role: Planner Agent
+
+Goal:
+Divide v1 into phases and implementation sessions that future coding agents can
+complete one at a time.
+
+Allowed files:
+
+- `AGENTS.md`
+- `project-tasks.md`
+- `handoff.md`
+- `DECISIONS.md`
+
+Out of scope:
+
+- source code implementation
+- project skeleton creation
+- dataset inspection
+
+Done criteria:
+
+- `project-tasks.md` has a phase/session roadmap;
+- `AGENTS.md` tells agents to follow the phase/session roadmap;
+- `DECISIONS.md` records the roadmap decision;
+- `handoff.md` points the next agent to `P1.S1`.
+
+Verification:
+
+- `rg "P1.S1|Phase 1|Phase 5" project-tasks.md`
+- `rg "phase/session" AGENTS.md project-tasks.md handoff.md DECISIONS.md`
+
+## Task S1 - Create Project Skeleton
+
+Status: done
+
+Phase/session: `P1.S1`
+
+Role: Planner Agent
+
+Goal:
+Create the script-first repository structure for data, configs, source code,
+outputs, report assets, scripts, Slurm jobs, and tests.
+
+Allowed files:
+
+- package/source directories under `src/`
+- `configs/`
+- `scripts/`
+- `slurm/`
+- `tests/`
+- `report/`
+- `.gitignore`
+- `requirements.txt`
+- `Myproject.sh`
+
+Out of scope:
+
+- implementing dataset parsing
+- implementing model code
+- running training
+
+Done criteria:
+
+- expected directories exist;
+- Python packages have `__init__.py` where needed;
+- raw data and outputs are ignored by git;
+- `Myproject.sh` exists as a placeholder runner with clear TODOs.
+
+Verification:
+
+- `find . -maxdepth 3 -type d | sort`
+- `rg --files`
+
+## Task D1 - Inspect HC18 Dataset Layout
+
+Status: done
+
+Phase/session: `P1.S2`
+
+Role: Data Agent
+
+Goal:
+Inspect the actual HC18 files available locally and document the observed image,
+annotation, and pixel-spacing layout.
+
+Allowed files:
+
+- `docs/dataset-format.md`
+- `handoff.md`
+- `DECISIONS.md` if needed
+
+Out of scope:
+
+- writing the final dataset class
+- generating splits
+- training
+
+Done criteria:
+
+- observed file names and annotation columns are documented;
+- image dimensions and pixel-spacing sources are confirmed;
+- any ambiguity is recorded explicitly.
+
+Verification:
+
+- file listing commands over `data/raw/HC18/`
+- small metadata inspection command once data exists
+
+## Task D2 - Implement Dataset Parser and Mask Generation
+
+Status: done
+
+Phase/session: `P1.S3`
+
+Role: Data Agent
+
+Goal:
+Implement HC18 loading, annotation parsing, and deterministic ellipse-derived
+mask generation.
+
+Allowed files:
+
+- `src/data/dataset.py`
+- `src/data/masks.py`
+- `src/data/transforms.py`
+- `tests/test_data.py`
+- `docs/dataset-format.md`
+
+Out of scope:
+
+- model implementation
+- training loop
+- inference geometry
+
+Done criteria:
+
+- dataset returns image, mask, spacing, sample id, and annotation metadata;
+- mask/image shapes match;
+- resize behavior is explicit and geometry-safe;
+- unit tests cover at least one synthetic annotation case.
+
+Verification:
+
+- `pytest tests/test_data.py`
+
+## Task D3 - Create Splits and Overlay Sanity Checks
+
+Status: done
+
+Phase/session: `P1.S4`
+
+Role: Data Agent
+
+Goal:
+Create deterministic train/val/internal-test splits and visual overlay checks
+for generated masks.
+
+Allowed files:
+
+- `src/data/make_splits.py`
+- `scripts/visualize_samples.py`
+- `configs/data.yaml`
+- `data/splits/`
+- `outputs/figures/`
+
+Out of scope:
+
+- model training
+- architecture changes
+
+Done criteria:
+
+- reusable split files are saved;
+- at least 10 random overlay images can be generated;
+- split seed is configurable and recorded.
+
+Verification:
+
+- `python -m src.data.make_splits --config configs/data.yaml`
+- `python scripts/visualize_samples.py --config configs/data.yaml --n 10`
+
+## Task M1 - Implement U-Net Baseline
+
+Status: todo
+
+Phase/session: `P2.S1`
+
+Role: Modeling Agent
+
+Goal:
+Implement the baseline U-Net with the stable segmentation interface.
+
+Allowed files:
+
+- `src/models/unet.py`
+- `src/models/__init__.py`
+- `tests/test_models.py`
+
+Out of scope:
+
+- Attention U-Net
+- training loop
+- data parsing changes
+
+Done criteria:
+
+- model accepts `[B, 1, H, W]`;
+- model returns `[B, 1, H, W]` logits;
+- parameter count can be computed.
+
+Verification:
+
+- `pytest tests/test_models.py`
+
+## Task T1 - Implement Training Loop
+
+Status: todo
+
+Phase/session: `P2.S2`, `P2.S3`, `P4.S2`
+
+Role: Training Agent
+
+Goal:
+Implement config-driven training with metrics logging and checkpointing.
+
+Allowed files:
+
+- `src/training/train.py`
+- `src/training/trainer.py`
+- `src/training/losses.py`
+- `src/training/optim.py`
+- `configs/unet_baseline.yaml`
+- `scripts/run_smoke_train.py`
+
+Out of scope:
+
+- Attention U-Net
+- final long runs
+- web demo
+
+Done criteria:
+
+- one tiny local smoke run completes;
+- metrics CSV/JSON is written;
+- best checkpoint is saved;
+- seed, split id, and config are recorded.
+
+Verification:
+
+- `python scripts/run_smoke_train.py --config configs/unet_baseline.yaml`
+
+## Task I1 - Implement Inference and Geometry
+
+Status: todo
+
+Phase/session: `P3.S1`, `P3.S2`, `P4.S4`
+
+Role: Inference + Geometry Agent
+
+Goal:
+Convert model probabilities into cleaned masks, fitted ellipses, and HC in mm.
+
+Allowed files:
+
+- `src/inference/predict.py`
+- `src/utils/geometry.py`
+- `tests/test_geometry.py`
+
+Out of scope:
+
+- training loop changes
+- new model architecture
+
+Done criteria:
+
+- thresholding and largest connected component cleanup exist;
+- contour extraction and ellipse fitting exist;
+- Ramanujan circumference calculation exists;
+- ellipse failure cases are explicit.
+
+Verification:
+
+- `pytest tests/test_geometry.py`
+
+## Task E1 - Implement Evaluation and Report Artifacts
+
+Status: todo
+
+Phase/session: `P3.S3`, `P3.S4`, `P4.S3`, `P4.S4`, `P5.S2`
+
+Role: Evaluation Agent
+
+Goal:
+Compute segmentation and HC metrics and generate report-ready tables/figures.
+
+Allowed files:
+
+- `src/evaluation/metrics.py`
+- `src/evaluation/evaluate.py`
+- `scripts/make_report_figures.py`
+- `outputs/tables/`
+- `outputs/figures/`
+
+Out of scope:
+
+- model architecture changes
+- new training strategy
+
+Done criteria:
+
+- Dice, IoU, HD95 or Hausdorff, signed HC error, absolute HC error, MAE, and
+  RMSE are computed consistently;
+- per-sample and aggregate metrics are saved separately;
+- qualitative best/worst panels can be generated.
+
+Verification:
+
+- `python -m src.evaluation.evaluate --config <config> --run-id <run_id>`
+
+## Task M2 - Implement Attention U-Net
+
+Status: todo
+
+Phase/session: `P4.S1`
+
+Role: Modeling Agent
+
+Goal:
+Implement Attention U-Net as the main improved model.
+
+Allowed files:
+
+- `src/models/attention_unet.py`
+- `src/models/__init__.py`
+- `tests/test_models.py`
+- `configs/attention_unet.yaml`
+
+Out of scope:
+
+- ResUNet unless explicitly requested
+- dataset changes
+- evaluation metric changes
+
+Done criteria:
+
+- same tensor contract as U-Net;
+- model is selectable by config name;
+- forward-pass test passes.
+
+Verification:
+
+- `pytest tests/test_models.py`
+
+## Task C1 - Add CHPC Slurm Workflow
+
+Status: todo
+
+Phase/session: `P2.S4`, `P5.S1`
+
+Role: Reproducibility + Packaging Agent
+
+Goal:
+Create Slurm scripts and README instructions for running final experiments on
+university CHPC.
+
+Allowed files:
+
+- `slurm/train_unet.sbatch`
+- `slurm/train_attention_unet.sbatch`
+- `slurm/evaluate.sbatch`
+- `README.md`
+
+Out of scope:
+
+- changing training logic solely for CHPC
+- adding Colab workflow
+
+Done criteria:
+
+- Slurm scripts call existing Python entrypoints;
+- output paths go under `outputs/runs/`;
+- README explains copy-to-scratch, submit, and sync-back workflow.
+
+Verification:
+
+- shell syntax check where practical
+
+## Task R1 - Package Final Course Submission
+
+Status: todo
+
+Phase/session: `P5.S3`, `P5.S4`
+
+Role: Reproducibility + Packaging Agent
+
+Goal:
+Prepare the reproducible course deliverable and report assets.
+
+Allowed files:
+
+- `README.md`
+- `Myproject.sh`
+- `report/`
+- `outputs/tables/`
+- `outputs/figures/`
+
+Out of scope:
+
+- adding new models
+- broad new experiments
+
+Done criteria:
+
+- `Myproject.sh` runs the main reproducible pipeline;
+- README has final commands;
+- report tables and figures are generated;
+- final results match saved run artifacts.
+
+Verification:
+
+- `bash Myproject.sh`

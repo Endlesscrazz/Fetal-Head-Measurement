@@ -1,0 +1,18 @@
+dataset:
+  root: data/raw/HC18
+  subset: training
+  image_size: [352, 512]
+  target_type: filled
+  band_width: 3
+
+splits:
+  output_dir: data/splits
+  seed: 42
+  train_fraction: 0.70
+  val_fraction: 0.15
+  test_fraction: 0.15
+  group_by_exam_prefix: true
+
+visualization:
+  output_dir: outputs/figures/data_overlays
+  split_file: data/splits/train.csv

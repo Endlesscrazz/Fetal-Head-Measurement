@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.matplotlib_cache/
+.cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.uv-cache/
+
+# Local/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Data and generated artifacts
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/HC18/
+data/raw/HC18/*
+!data/raw/HC18/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/splits/*
+!data/splits/.gitkeep
+!data/splits/*.csv
+outputs/*
+!outputs/runs/
+!outputs/runs/.gitkeep
+outputs/runs/*
+!outputs/runs/.gitkeep
+!outputs/figures/
+!outputs/figures/.gitkeep
+outputs/figures/*
+!outputs/figures/.gitkeep
+!outputs/tables/
+!outputs/tables/.gitkeep
+outputs/tables/*
+!outputs/tables/.gitkeep
+
+# Course/report build artifacts
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.fdb_latexmk
+report/*.fls
+report/*.log
+report/*.out
+report/*.synctex.gz
+
+# Large model artifacts
+*.pt
+*.pth
+*.ckpt
