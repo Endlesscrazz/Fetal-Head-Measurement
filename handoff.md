@@ -60,6 +60,8 @@ Commands run:
 - `git init`
 - `git branch -M main`
 - `git remote add origin https://github.com/Endlesscrazz/Fetal-Head-Measurement.git`
+- `git commit -m "Initial project scaffold"`
+- `git push -u origin main`
 
 Verification:
 
@@ -69,6 +71,7 @@ Verification:
 - Overlay generation produced 10 visual checks under
   `outputs/figures/data_overlays/`.
 - `pytest` passes: 4 tests.
+- Initial commit `e0ef61b` was pushed to GitHub on branch `main`.
 
 Decisions made:
 
@@ -79,7 +82,6 @@ Decisions made:
 
 Open issues:
 
-- Initial GitHub push may still need remote authentication/network access.
 - The compatibility symlink from the old misspelled workspace path to the
   current project folder exists one level above the repo for tooling continuity.
 
