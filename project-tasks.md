@@ -10,6 +10,13 @@ Task status values:
 - `blocked`
 - `done`
 
+## V1 Completion Status
+
+V1 is complete and frozen except for bug fixes, reproducibility fixes, or
+explicit user-requested packaging/report updates. New portfolio/demo work should
+use the V2 roadmap below and the operating contract in
+`docs/v2_demo/AGENTS.md`.
+
 ## V1 Phase and Session Roadmap
 
 Agents should work session-by-session. A session is sized so a coding agent can
@@ -193,6 +200,108 @@ Initial final report draft has been created at `report/final-report-draft.md`.
 Generated reviewable final report files:
 `report/final-report.md` and `report/final-report.pdf` (4 pages after review
 edits).
+
+## V2 Demo Roadmap
+
+V2 turns the completed v1 pipeline into an educational Streamlit demo. Agents
+must read `docs/v2_demo/AGENTS.md`, `docs/v2_demo/architecture.md`,
+`docs/v2_demo/project-spec.md`, and `docs/v2_demo/roadmap.md` before v2 work.
+
+### V2.P0 - V1 checkpoint and branch setup
+
+Status: done
+
+Goal:
+Commit the completed v1 pipeline on `main`, push it, and create the
+`v2-demo` branch.
+
+Done criteria:
+
+- v1 checkpoint commit exists on `main`;
+- `main` is pushed;
+- v2 work is on `v2-demo`;
+- final Canvas ZIP remains local and uncommitted.
+
+### V2.P1 - Planning docs and governance pointers
+
+Status: done
+
+Goal:
+Create `docs/v2_demo/` planning docs and add root governance pointers.
+
+Done criteria:
+
+- `docs/v2_demo/AGENTS.md` exists;
+- `docs/v2_demo/architecture.md` exists;
+- `docs/v2_demo/project-spec.md` exists;
+- `docs/v2_demo/roadmap.md` exists;
+- root `AGENTS.md`, `project-tasks.md`, `DECISIONS.md`, and `handoff.md`
+  reference the v2 plan.
+
+### V2.P2 - Saved artifact curation and sample manifest
+
+Status: todo
+
+Goal:
+Choose curated examples and define the saved artifacts needed by the demo.
+
+Done criteria:
+
+- a small sample manifest exists;
+- selected examples include strong and high-error/failure cases;
+- no raw data or checkpoints are committed without explicit approval.
+
+### V2.P3 - Streamlit saved-output explorer
+
+Status: todo
+
+Goal:
+Build the first app using saved v1 artifacts, not live model inference.
+
+Done criteria:
+
+- the app launches locally;
+- user can select a sample;
+- app shows pipeline stages and v1 results;
+- safety language says the demo is educational and not for clinical use.
+
+### V2.P4 - Live inference integration
+
+Status: todo
+
+Goal:
+Add optional checkpoint-backed inference through a swappable adapter.
+
+Done criteria:
+
+- live mode works on at least one local sample;
+- saved-output mode still works without checkpoints.
+
+### V2.P5 - Portfolio README polish and screenshots
+
+Status: todo
+
+Goal:
+Make the project easy to review from GitHub and interview demos.
+
+Done criteria:
+
+- README includes demo run instructions;
+- screenshots or GIF references are added when available;
+- portfolio framing is concise and accurate.
+
+### V2.P6 - Optional HC18 challenge exporter
+
+Status: todo
+
+Goal:
+Add official-test CSV export tooling for a learning-oriented HC18 challenge
+submission.
+
+Done criteria:
+
+- exported CSV matches challenge columns, row count, filenames, and units;
+- no official labels are assumed.
 
 ## Task G0 - Documentation and Governance Cleanup
 

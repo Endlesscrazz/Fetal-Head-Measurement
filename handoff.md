@@ -7,6 +7,11 @@ specific. The newest entry should be at the top.
 
 ## Current Status
 
+- V1 is checkpointed on `main` with commit `2290315` and pushed to GitHub.
+- V2 demo work is happening on branch `v2-demo`.
+- V2 planning docs live under `docs/v2_demo/`.
+- V2 direction is a saved-output Streamlit ML pipeline explorer first, with
+  live inference as a later extension.
 - Phase 1, Phase 2, and Phase 3 implementation are complete through local smoke
   verification.
 - First full-pipeline local U-Net baseline run is complete using MPS:
@@ -46,6 +51,76 @@ specific. The newest entry should be at the top.
 - HC18 is extracted under `data/raw/HC18/`.
 
 ## Latest Session
+
+Date: 2026-04-28
+
+Task id: `V2.P0` / `V2.P1`
+
+Phase/session:
+V1 checkpoint and V2 demo planning docs
+
+Goal:
+Commit the completed v1 course pipeline on `main`, push it, create `v2-demo`,
+and add v2 planning docs/governance pointers for the portfolio demo.
+
+Files changed:
+
+- `.gitignore`
+- `AGENTS.md`
+- `project-tasks.md`
+- `DECISIONS.md`
+- `handoff.md`
+- `docs/v2_demo/AGENTS.md`
+- `docs/v2_demo/architecture.md`
+- `docs/v2_demo/project-spec.md`
+- `docs/v2_demo/roadmap.md`
+
+Commands run:
+
+- `bash Myproject.sh`
+- `git status --short`
+- `git status --ignored --short Fetal-Head-Measurement-final-submission.zip data/raw .venv .uv-cache outputs/runs outputs/tables`
+- `git add ...`
+- `git commit -m "Complete v1 course submission pipeline"`
+- `git push`
+- `git checkout -b v2-demo`
+- `rg --files docs/v2_demo`
+- `sed -n '1,220p' docs/v2_demo/AGENTS.md`
+- `sed -n '1,220p' docs/v2_demo/architecture.md`
+- `sed -n '1,220p' docs/v2_demo/project-spec.md`
+- `sed -n '1,220p' docs/v2_demo/roadmap.md`
+- `rg -n "v2_demo|V2|Streamlit|saved-output|not for clinical use" AGENTS.md project-tasks.md DECISIONS.md handoff.md docs/v2_demo`
+- `git commit -m "Add v2 demo planning docs"`
+
+Verification:
+
+- V1 runner completed in report-only mode.
+- Full test suite passed: 21 passed.
+- Final Canvas ZIP, raw data, venv/cache files, checkpoints, and generated run
+  artifacts were not staged for the v1 checkpoint.
+- `main` pushed successfully to GitHub at commit `2290315`.
+- `v2-demo` branch was created from the v1 checkpoint.
+- V2 docs and root governance pointers were created and verified.
+
+Decisions made:
+
+- Keep final Canvas ZIP local and ignored.
+- Use `v2-demo` for demo work.
+- Use Streamlit as the preferred v2 demo framework.
+- Build saved-output explorer first, then live inference through a later
+  adapter.
+
+Open issues:
+
+- `context-bridge-log.md` remains untracked and was not committed.
+- V2 implementation has not started; next task is sample/artifact curation.
+
+Next exact task:
+
+- Review `docs/v2_demo/` and then implement `V2.P2`: curated sample manifest
+  and saved demo artifact plan.
+
+## Previous Session
 
 Date: 2026-04-26
 

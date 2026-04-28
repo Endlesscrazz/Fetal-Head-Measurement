@@ -22,6 +22,21 @@ The v1 project thesis:
 > and measure fetal head circumference accurately enough to analyze what modeling
 > choices matter most.
 
+## 1.1 V2 demo mission
+
+V1 is now complete and should remain frozen except for bug fixes. V2 work is a
+portfolio/demo layer that helps users visualize how the CNN pipeline works.
+
+Any task about the web demo, Streamlit app, saved-output explorer, portfolio
+polish, or challenge-export extension must also follow
+`docs/v2_demo/AGENTS.md`.
+
+The v2 project thesis:
+
+> Turn the v1 segmentation and geometry pipeline into an interactive educational
+> demo that shows image, mask, CNN prediction, cleanup, ellipse fit, and HC
+> measurement stages.
+
 ## 2. Required files to read at session start
 
 Every Codex session must read these files before making changes:
@@ -31,6 +46,8 @@ Every Codex session must read these files before making changes:
 3. `handoff.md`
 4. `DECISIONS.md`
 5. Relevant files under `docs/`
+
+For v2 demo work, also read every file under `docs/v2_demo/`.
 
 If a task conflicts with these instructions, the newest explicit user request
 wins, but the conflict must be recorded in `handoff.md` and, if non-trivial, in
