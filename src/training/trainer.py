@@ -70,6 +70,9 @@ def dice_score_from_logits(logits: torch.Tensor, targets: torch.Tensor, threshol
 def _make_loader(config: dict, split_name: str, *, shuffle: bool) -> DataLoader:
     dataset_config = config["dataset"]
     split_file = Path(config["splits"]["dir"]) / f"{split_name}.csv"
+    augmentation = config.get("augmentation") if split_name == "train" else None
+    if augmentation is not None and not bool(augmentation.get("enabled", False)):
+        augmentation = None
     dataset = HC18Dataset(
         dataset_config["root"],
         split_file=split_file,
@@ -77,6 +80,7 @@ def _make_loader(config: dict, split_name: str, *, shuffle: bool) -> DataLoader:
         image_size=tuple(dataset_config["image_size"]),
         target_type=dataset_config.get("target_type", "filled"),
         band_width=int(dataset_config.get("band_width", 3)),
+        augmentation=augmentation,
     )
 
     smoke_limit = int(config.get("smoke", {}).get(f"{split_name}_samples", 0))

@@ -56,8 +56,13 @@ V1 is intentionally narrow.
 
 - Local MacBook M1 Air: development, unit tests, data inspection, and tiny
   subset smoke runs. For local training, use MPS when available.
-- University CHPC Slurm GPU nodes: full training, final ablations, and reported
-  results.
+- V1 course-submission results may use reduced but reasonable local settings
+  when they are clearly documented in configs and the report, consistent with
+  the course allowance for reducing instance count and/or image resolution when
+  compute is limited.
+- University CHPC Slurm GPU nodes: later full-scale reruns, stronger final
+  ablations, and optional report-grade refreshes after the full local pipeline
+  is complete.
 - Google Colab is not part of the v1 execution plan.
 
 All training code must work from scripts and configs so the same commands can
@@ -115,9 +120,10 @@ Follow this order unless the user explicitly changes it:
 11. evaluate segmentation and HC error,
 12. implement Attention U-Net,
 13. rerun on the same split,
-14. run focused ablations,
+14. run focused local ablations,
 15. generate report tables and figures,
-16. package `README.md`, `Myproject.sh`, and final outputs.
+16. package `README.md`, `Myproject.sh`, and final outputs,
+17. optionally rerun full-scale configs on CHPC after v1 is complete.
 
 ## 7. Required handoff
 

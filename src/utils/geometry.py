@@ -14,7 +14,7 @@ class FittedEllipse:
     """Ellipse fitted in pixel coordinates.
 
     OpenCV reports full axis lengths. This project stores semi-axis lengths so
-    circumference formulas and report text stay unambiguous.
+    circumference formulas stay unambiguous.
     """
 
     center_x: float
@@ -121,6 +121,43 @@ def polyline_length(points: np.ndarray) -> float:
     closed = np.vstack([points, points[0]])
     deltas = np.diff(closed, axis=0)
     return float(np.linalg.norm(deltas, axis=1).sum())
+
+
+def contour_length_mm(contour_points: np.ndarray, spacing_mm: tuple[float, float]) -> float:
+    """Compute closed-contour length after scaling points to physical units."""
+
+    sx, sy = spacing_mm
+    points_mm = contour_points.astype(np.float32).copy()
+    points_mm[:, 0] *= float(sx)
+    points_mm[:, 1] *= float(sy)
+    return polyline_length(points_mm)
+
+
+def mask_contour_length_mm(
+    mask: np.ndarray,
+    spacing_mm: tuple[float, float],
+    *,
+    keep_largest_component: bool = False,
+) -> float:
+    """Measure binary-mask external contour length in mm.
+
+    When `keep_largest_component` is false, all external foreground contours are
+    measured and summed. This is useful as a raw-mask post-processing baseline.
+    """
+
+    binary = largest_connected_component(mask) if keep_largest_component else (mask > 0).astype(np.uint8)
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if not contours:
+        raise ValueError("Cannot measure contour length from an empty mask")
+
+    total = 0.0
+    for contour in contours:
+        points = contour.reshape(-1, 2).astype(np.float32)
+        if len(points) >= 2:
+            total += contour_length_mm(points, spacing_mm)
+    if total <= 0:
+        raise ValueError("At least 2 contour points are required to measure length")
+    return total
 
 
 def ellipse_circumference_mm(

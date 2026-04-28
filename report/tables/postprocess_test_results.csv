@@ -1,0 +1,5 @@
+postprocess_variant,variant,n_samples,success_rate,mean_signed_hc_error_mm,mae_hc_mm,rmse_hc_mm
+Cleaned ellipse,cleaned_ellipse,149,1.0,0.8438133065652512,3.3690199740621063,4.676737310905865
+Raw ellipse,raw_largest_contour_ellipse,149,1.0,0.8438133065652521,3.3690199740621067,4.676737310905865
+Cleaned contour,cleaned_contour,149,1.0,14.03564224550388,14.036674358188709,16.184570073468613
+Raw contour,raw_contour_all_components,149,1.0,16.7299116974229,16.7299116974229,21.26963938439102

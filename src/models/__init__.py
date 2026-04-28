@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from torch import nn
 
+from src.models.attention_unet import AttentionUNet
 from src.models.unet import UNet, count_parameters
 
 
 MODEL_REGISTRY = {
+    "attention_unet": AttentionUNet,
     "unet": UNet,
 }
 
@@ -22,4 +24,4 @@ def build_model(name: str, **kwargs) -> nn.Module:
     return MODEL_REGISTRY[key](**kwargs)
 
 
-__all__ = ["MODEL_REGISTRY", "UNet", "build_model", "count_parameters"]
+__all__ = ["AttentionUNet", "MODEL_REGISTRY", "UNet", "build_model", "count_parameters"]

@@ -303,3 +303,193 @@ Impact on future work:
 Evaluation can compare raw/cleaned/ellipse post-processing variants, and final
 reported HC values should come from the geometry pipeline rather than raw model
 logits.
+
+## 2026-04-25 - Attention U-Net implementation shape
+
+Decision:
+Implement Attention U-Net with additive attention gates on each decoder skip
+connection, reusing the existing U-Net double-convolution and downsampling
+blocks.
+
+Rationale:
+This keeps the improved model comparable to the U-Net baseline while adding the
+intended attention mechanism only at skip fusion points. Reusing shared blocks
+also reduces implementation drift and makes the report comparison cleaner.
+
+Alternatives considered:
+Writing a completely separate U-Net implementation; adding residual blocks;
+using transformer-style attention.
+
+Impact on future work:
+Attention U-Net can be selected with `model.name: attention_unet` and trained
+with the same dataset, loss, optimizer, inference, and evaluation pipeline as
+the U-Net baseline.
+
+## 2026-04-25 - First local Attention U-Net run
+
+Decision:
+Use `attention_unet_local_baseline` as the first full-pipeline development run
+for the improved model: same split id as `unet_local_baseline`, 10 epochs,
+256x384 images, base channels 16, MPS backend.
+
+Rationale:
+The course report needs a baseline-versus-improved-model comparison on the same
+data split. Running Attention U-Net locally provides a comparable development
+result before any CHPC/report-grade reruns.
+
+Alternatives considered:
+Waiting for CHPC before training Attention U-Net; running only a smoke test;
+changing image size or split while changing architecture.
+
+Impact on future work:
+Use these as local development comparison numbers. Any final CHPC comparison
+should preserve the same split id and clearly label changes in image size,
+epochs, or model capacity.
+
+Results:
+Validation: Dice 0.9631, IoU 0.9356, HD95 2.05 mm, HC MAE 2.74 mm, HC RMSE
+4.30 mm. Internal test: Dice 0.9669, IoU 0.9373, HD95 2.38 mm, HC MAE 3.37 mm,
+HC RMSE 4.68 mm.
+
+## 2026-04-25 - V1 local reduced-resource report path
+
+Decision:
+Complete the v1 course-submission pipeline and report using local MacBook MPS
+runs with clearly documented reduced-resource settings when needed. Treat CHPC
+full-scale runs as a later strengthening step after the complete local pipeline,
+configs, report artifacts, and runner are ready.
+
+Rationale:
+The course instructions allow reducing the number of instances and/or image
+resolution within reasonable limits when the suggested dataset is too large for
+available compute. The current local runs use the full labeled split but reduced
+image resolution and model width, which is a reasonable development/report path
+as long as it is disclosed.
+
+Alternatives considered:
+Blocking report work until CHPC full-scale U-Net and Attention U-Net runs are
+complete; running only smoke/subsample experiments locally; depending on Colab.
+
+Impact on future work:
+The next sessions should prioritize local report completeness: comparison
+tables, focused ablations, report figures, and `Myproject.sh`. CHPC scripts and
+larger configs should remain available for post-v1/full-scale reruns, and any
+CHPC numbers must be clearly labeled separately from local results.
+
+## 2026-04-25 - Local loss and augmentation ablations
+
+Decision:
+Use `attention_unet_dice_loss` and `attention_unet_aug` as the focused local
+P4.S3 ablations against `attention_unet_local_baseline`.
+
+Rationale:
+The report needs analysis beyond a single model comparison. A Dice-only loss
+tests the value of BCE+Dice, while training-only horizontal flip plus mild
+intensity/noise augmentation tests whether simple ultrasound-safe augmentation
+improves generalization.
+
+Alternatives considered:
+Running many hyperparameter sweeps; adding a third architecture; delaying
+ablations until CHPC.
+
+Impact on future work:
+For local v1 results, Attention U-Net with BCE+Dice and no augmentation remains
+the best model so far. The ablation table is generated at
+`outputs/tables/local_ablation_summary.csv` and can be reused in the report.
+
+Results:
+Dice-only internal test: Dice 0.9615, IoU 0.9293, HD95 2.48 mm, HC MAE
+3.45 mm, HC RMSE 5.13 mm. Augmented internal test: Dice 0.9606, IoU 0.9275,
+HD95 2.83 mm, HC MAE 3.72 mm, HC RMSE 5.85 mm. Both underperformed the
+non-augmented Attention U-Net baseline on internal-test HC error.
+
+## 2026-04-25 - Post-processing ablation interpretation
+
+Decision:
+Use cleaned ellipse fitting as the final HC measurement method, and report
+direct contour-length measurements as post-processing ablations.
+
+Rationale:
+Direct contour length from predicted binary masks overestimates HC because mask
+boundaries are jagged and can include small noisy components. Ellipse fitting
+regularizes the boundary into the clinically relevant head-shape assumption and
+substantially reduces HC error.
+
+Alternatives considered:
+Measuring all raw mask contours directly; measuring the cleaned largest
+component contour directly; fitting an ellipse without connected-component
+cleanup.
+
+Impact on future work:
+Final report HC values should use the cleaned ellipse variant. The
+post-processing ablation table is saved at
+`outputs/tables/local_postprocess_ablation_summary.csv`.
+
+Results:
+On the Attention U-Net internal-test split, raw all-contour measurement had HC
+MAE 16.73 mm, cleaned contour measurement had HC MAE 14.04 mm, and cleaned
+ellipse measurement had HC MAE 3.37 mm.
+
+## 2026-04-25 - Local report artifact bundle
+
+Decision:
+Generate the v1 local report artifact bundle under `report/` from saved run
+artifacts using `scripts/build_report_artifacts.py`.
+
+Rationale:
+The report should cite reproducible CSVs and figures instead of manually copied
+numbers. Building the report bundle from saved evaluation outputs keeps local
+and future CHPC results on the same reporting path.
+
+Alternatives considered:
+Writing report tables manually; using only the raw `outputs/tables/` files;
+waiting for CHPC before assembling report artifacts.
+
+Impact on future work:
+Use `report/report-results-summary.md`, `report/tables/`, and
+`report/figures/` as the starting point for the final 6-page PDF report.
+Regenerate them with `scripts/build_report_artifacts.py` after any future
+reruns.
+
+## 2026-04-25 - Course runner modes
+
+Decision:
+Make `Myproject.sh` default to a fast `report-only` mode that rebuilds report
+artifacts from saved local run outputs, while also supporting `--full-local` for
+retraining and reevaluating the complete local v1 experiment set.
+
+Rationale:
+The course runner must be easy for review, but retraining four local experiments
+can take substantial time. A default report-only path verifies the submitted
+results quickly when saved artifacts are included, and the full-local path
+preserves end-to-end reproducibility.
+
+Alternatives considered:
+Always retraining by default; keeping the placeholder runner; only documenting
+manual commands in README.
+
+Impact on future work:
+Use `bash Myproject.sh` for quick final verification. Use
+`bash Myproject.sh --full-local` when the saved run artifacts need to be
+regenerated from scratch.
+
+## 2026-04-25 - Final report packaging files
+
+Decision:
+Keep final submission planning files under `report/`: `final-report-outline.md`,
+`assets-index.md`, and `submission-checklist.md`.
+
+Rationale:
+The final course deliverable needs a short PDF report plus a code ZIP. Keeping
+the outline, asset map, and checklist next to the generated report artifacts
+reduces the chance of omitting required metrics, reduced-resource disclosures,
+or saved outputs needed by `Myproject.sh`.
+
+Alternatives considered:
+Only relying on README; putting packaging notes in `handoff.md`; waiting until
+after PDF writing to list assets.
+
+Impact on future work:
+Use these files to write the final PDF and assemble the course ZIP. The GitHub
+repo can stay lean, while the course ZIP can include saved run artifacts needed
+for fast report-only verification.

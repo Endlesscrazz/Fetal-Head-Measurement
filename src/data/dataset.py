@@ -12,6 +12,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
+from src.data.augmentations import apply_training_augmentation
 from src.data.masks import EllipseAnnotation, annotation_image_to_mask, ellipse_to_mask
 from src.data.transforms import normalize_image, resize_image, resize_mask, update_spacing_for_resize
 
@@ -212,12 +213,14 @@ class HC18Dataset(Dataset[dict[str, Any]]):
         image_size: tuple[int, int] | None = None,
         target_type: str = "filled",
         band_width: int = 3,
+        augmentation: dict[str, Any] | None = None,
     ) -> None:
         self.root = Path(root)
         self.subset = subset
         self.image_size = image_size
         self.target_type = target_type
         self.band_width = band_width
+        self.augmentation = augmentation
         records = discover_hc18_records(self.root, subset=self.subset)
 
         if split_file is not None:
@@ -244,6 +247,9 @@ class HC18Dataset(Dataset[dict[str, Any]]):
             image = resize_image(image, self.image_size)
             mask = resize_mask(mask, self.image_size)
             spacing_mm = update_spacing_for_resize(spacing_mm, original_size, self.image_size)
+
+        if self.augmentation:
+            image, mask = apply_training_augmentation(image, mask, self.augmentation)
 
         image = normalize_image(image)
         image_tensor = torch.from_numpy(image).float().unsqueeze(0)

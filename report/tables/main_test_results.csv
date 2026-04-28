@@ -1,0 +1,5 @@
+experiment,run_id,model,loss,augmentation,image_size,base_channels,epochs,split_id,mean_dice,mean_iou,mean_hd95_mm,mae_hc_mm,rmse_hc_mm
+Attention U-Net + BCE/Dice,attention_unet_local_baseline,attention_unet,bce_dice,False,256x384,16,10,seed42_train698_val152_test149,0.9669096504804796,0.9373004088319428,2.377857831681982,3.3690199740621067,4.676737310905865
+Attention U-Net + Dice,attention_unet_dice_loss,attention_unet,dice,False,256x384,16,10,seed42_train698_val152_test149,0.9614551247310964,0.9293343631739684,2.483984151607048,3.4548179339722496,5.130971798245132
+Attention U-Net + BCE/Dice + Aug,attention_unet_aug,attention_unet,bce_dice,True,256x384,16,10,seed42_train698_val152_test149,0.9606493234015508,0.9275399068905832,2.8275554051082685,3.7176904327597384,5.849106431712689
+U-Net + BCE/Dice,unet_local_baseline,unet,bce_dice,False,256x384,16,10,seed42_train698_val152_test149,0.960029464691031,0.9261325010083028,3.0243472892924705,3.779403171411297,5.560335660834409

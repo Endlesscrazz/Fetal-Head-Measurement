@@ -5,10 +5,12 @@ import pytest
 
 from src.data.masks import EllipseAnnotation, ellipse_to_mask
 from src.utils.geometry import (
+    contour_length_mm,
     ellipse_circumference_mm,
     ellipse_circumference_pixels,
     fit_ellipse_from_mask,
     largest_connected_component,
+    mask_contour_length_mm,
     mask_to_measurement,
     threshold_probability,
 )
@@ -63,3 +65,22 @@ def test_circumference_mm_matches_pixel_formula_for_isotropic_spacing():
 def test_mask_to_measurement_fails_on_empty_mask():
     with pytest.raises(ValueError):
         mask_to_measurement(np.zeros((32, 32), dtype=np.uint8), (1.0, 1.0))
+
+
+def test_mask_contour_length_can_include_or_ignore_small_components():
+    mask = np.zeros((32, 32), dtype=np.uint8)
+    mask[2:5, 2:5] = 1
+    mask[10:22, 10:22] = 1
+
+    raw_length = mask_contour_length_mm(mask, (1.0, 1.0), keep_largest_component=False)
+    cleaned_length = mask_contour_length_mm(mask, (1.0, 1.0), keep_largest_component=True)
+
+    assert raw_length > cleaned_length
+
+
+def test_contour_length_scales_with_spacing():
+    square = np.array([[0, 0], [2, 0], [2, 2], [0, 2]], dtype=np.float32)
+
+    length = contour_length_mm(square, (0.5, 1.0))
+
+    assert length == pytest.approx(6.0)

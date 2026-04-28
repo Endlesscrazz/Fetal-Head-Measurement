@@ -117,43 +117,82 @@ Sessions:
 - `P4.S2` - Train Attention U-Net on the same split.
   - Primary task: `T1`
   - Outcome: Attention U-Net run artifacts are comparable to baseline.
+  - Status: done locally with `attention_unet_local_baseline`.
 - `P4.S3` - Run loss/augmentation ablations.
   - Primary task: `E1`
   - Outcome: focused ablation table compares 2-3 meaningful changes.
+  - Status: done locally with Dice-loss and augmentation ablations.
 - `P4.S4` - Run post-processing ablation.
   - Primary task: `I1` / `E1`
   - Outcome: raw mask measurement vs cleanup + ellipse fit is quantified.
+  - Status: done locally for `attention_unet_local_baseline`.
 
 Phase 4 completion criteria:
 
 - U-Net and Attention U-Net are compared on the same split;
 - at least 2-3 ablations are recorded with attributable run artifacts.
 
+Status note:
+Local MPS Attention U-Net `attention_unet_local_baseline` completed for 10
+epochs on the same split as `unet_local_baseline` and was evaluated on
+val/internal-test splits.
+Local ablations `attention_unet_dice_loss` and `attention_unet_aug` completed
+on the same split. The consolidated table is
+`outputs/tables/local_ablation_summary.csv`.
+Post-processing ablation completed for `attention_unet_local_baseline`; the
+consolidated table is `outputs/tables/local_postprocess_ablation_summary.csv`.
+
 ### Phase 5 - CHPC Final Runs, Report, and Packaging
 
 Goal:
-Produce the final course submission and GitHub-ready project state.
+Produce the final course submission and GitHub-ready project state using the
+complete local/reduced-resource pipeline first. CHPC full-scale reruns are
+valuable but should not block v1 report completion.
 
 Sessions:
 
-- `P5.S1` - Finalize CHPC Slurm workflow.
-  - Primary task: `C1`
-  - Outcome: train/evaluate Slurm scripts and README workflow are complete.
-- `P5.S2` - Sync final outputs and regenerate tables/figures.
+- `P5.S1` - Build local report comparison artifacts.
   - Primary task: `E1`
-  - Outcome: final report artifacts are generated from saved runs.
-- `P5.S3` - Finalize `Myproject.sh` and README reproducibility commands.
+  - Outcome: comparison tables/figures clearly label local reduced-resource
+    settings, split id, run ids, and metrics.
+  - Status: done locally; artifacts are under `report/`.
+- `P5.S2` - Finalize `Myproject.sh` and README reproducibility commands.
   - Primary task: `R1`
-  - Outcome: course runner is copy-paste executable.
-- `P5.S4` - Package final report assets and submission checklist.
+  - Outcome: course runner can reproduce the local v1 pipeline or regenerate
+    report artifacts from saved outputs.
+  - Status: done; default runner rebuilds report artifacts from saved outputs,
+    and `--full-local` retrains/evaluates the local v1 experiment set.
+- `P5.S3` - Package final report assets and submission checklist.
   - Primary task: `R1`
   - Outcome: code, report inputs, and run artifacts are ready for submission.
+  - Status: done; report outline, asset index, and submission checklist are
+    under `report/`.
+- `P5.S4` - Finalize CHPC Slurm workflow for post-v1/full-scale reruns.
+  - Primary task: `C1`
+  - Outcome: train/evaluate Slurm scripts and README workflow are complete.
 
 Phase 5 completion criteria:
 
 - final reported numbers come from saved run artifacts;
 - `Myproject.sh` reproduces the main pipeline;
-- README explains local and CHPC use clearly.
+- README explains local and CHPC use clearly;
+- any reduced-resource settings are explicit in the report/configs.
+
+Status note:
+For v1, local MPS runs at 256x384 resolution and base channels 16 are acceptable
+course-submission candidates if clearly disclosed. CHPC 352x512/base32/longer
+runs become a post-v1 strengthening step rather than a blocker.
+Local report comparison artifacts have been generated under `report/`, including
+`report/report-results-summary.md`, report tables, and three summary figures.
+`Myproject.sh` and README reproducibility commands have been finalized for the
+local v1 report path.
+Final report packaging aids have been created:
+`report/final-report-outline.md`, `report/assets-index.md`, and
+`report/submission-checklist.md`.
+Initial final report draft has been created at `report/final-report-draft.md`.
+Generated reviewable final report files:
+`report/final-report.md` and `report/final-report.pdf` (4 pages after review
+edits).
 
 ## Task G0 - Documentation and Governance Cleanup
 
@@ -456,6 +495,11 @@ Verification:
 
 - `python scripts/run_smoke_train.py --config configs/unet_smoke.yaml`
 
+Progress:
+Training loop supports both U-Net and Attention U-Net through the model
+registry. Local Attention U-Net run `attention_unet_local_baseline` completed
+using the same split id as the U-Net local baseline.
+
 ## Task I1 - Implement Inference and Geometry
 
 Status: done
@@ -530,7 +574,7 @@ sessions reuse this task surface for ablations and final report regeneration.
 
 ## Task M2 - Implement Attention U-Net
 
-Status: todo
+Status: done
 
 Phase/session: `P4.S1`
 
@@ -561,6 +605,11 @@ Done criteria:
 Verification:
 
 - `pytest tests/test_models.py`
+
+Progress:
+Attention U-Net is implemented in `src/models/attention_unet.py`, registered as
+`attention_unet`, covered by forward-shape tests, and has a local training
+config at `configs/attention_unet.yaml`.
 
 ## Task C1 - Add CHPC Slurm Workflow
 
@@ -604,7 +653,7 @@ Verification:
 
 Status: todo
 
-Phase/session: `P5.S3`, `P5.S4`
+Phase/session: `P5.S2`, `P5.S3`, `P5.S4`
 
 Role: Reproducibility + Packaging Agent
 
@@ -634,3 +683,9 @@ Done criteria:
 Verification:
 
 - `bash Myproject.sh`
+
+Progress:
+`P5.S2` is complete: `Myproject.sh` supports default `report-only` mode and
+`--full-local` mode. README documents local v1 results and reproducibility
+commands. `P5.S3` is complete: final report outline, asset index, and
+submission checklist are available under `report/`. PDF report writing remains.

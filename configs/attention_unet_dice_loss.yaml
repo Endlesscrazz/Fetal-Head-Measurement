@@ -1,0 +1,38 @@
+run:
+  id: attention_unet_dice_loss
+  output_dir: outputs/runs
+
+dataset:
+  root: data/raw/HC18
+  subset: training
+  image_size: [256, 384]
+  target_type: filled
+  band_width: 3
+
+splits:
+  dir: data/splits
+  split_id: seed42_train698_val152_test149
+
+model:
+  name: attention_unet
+  in_channels: 1
+  out_channels: 1
+  base_channels: 16
+  dropout: 0.0
+
+loss:
+  name: dice
+
+optimizer:
+  name: adamw
+  lr: 0.001
+  weight_decay: 0.0001
+
+training:
+  seed: 42
+  device: auto
+  mps: true
+  epochs: 10
+  batch_size: 4
+  num_workers: 0
+  pin_memory: false

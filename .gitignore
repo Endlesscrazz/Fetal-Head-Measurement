@@ -53,6 +53,7 @@ report/*.fls
 report/*.log
 report/*.out
 report/*.synctex.gz
+*final-submission.zip
 
 # Large model artifacts
 *.pt
