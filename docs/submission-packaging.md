@@ -90,7 +90,6 @@ Always include:
 
 ```text
 AGENTS.md
-DECISIONS.md
 Myproject.sh
 README.md
 requirements.txt
@@ -158,7 +157,7 @@ Create a lean code ZIP without raw data, virtualenv, or checkpoints:
 
 ```bash
 zip -r Fetal-Head-Measurement-code.zip \
-  AGENTS.md DECISIONS.md Myproject.sh README.md requirements.txt \
+  AGENTS.md Myproject.sh README.md requirements.txt \
   configs data/splits docs handoff.md project-tasks.md report scripts src tests \
   outputs/runs outputs/tables \
   -x "data/raw/*" ".venv/*" ".uv-cache/*" ".cache/*" ".matplotlib_cache/*" \
@@ -169,7 +168,7 @@ Create a ZIP that includes checkpoints too:
 
 ```bash
 zip -r Fetal-Head-Measurement-code-with-checkpoints.zip \
-  AGENTS.md DECISIONS.md Myproject.sh README.md requirements.txt \
+  AGENTS.md Myproject.sh README.md requirements.txt \
   configs data/splits docs handoff.md project-tasks.md report scripts src tests \
   outputs/runs outputs/tables \
   -x "data/raw/*" ".venv/*" ".uv-cache/*" ".cache/*" ".matplotlib_cache/*" \

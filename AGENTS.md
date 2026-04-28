@@ -1,154 +1,90 @@
-# AGENTS.md - Codex Operating Contract for Fetal HC18
+# AGENTS.md - V2 Demo Operating Contract
 
-This file is the source of truth for Codex agents working on this project.
-The project goal is to complete a reproducible course submission for automatic
-fetal head circumference estimation from 2D ultrasound images using HC18.
+This file is the source of truth for agents working on the v2 demo and current
+repository direction. The completed v1 course pipeline contract is archived at
+`docs/v1/AGENTS.md`.
 
-## 1. V1 mission
+## 1. V2 mission
 
-Build a script-first PyTorch pipeline that:
+Build a small educational web demo that explains the fetal HC18 CNN pipeline:
 
-1. loads HC18 ultrasound images and annotations,
-2. generates deterministic ellipse-derived segmentation targets,
-3. trains a U-Net baseline,
-4. trains Attention U-Net as the main improved model,
-5. converts predicted masks into ellipse fits,
-6. reports fetal head circumference in millimeters,
-7. generates quantitative metrics, tables, figures, and course-ready outputs.
+1. select a curated ultrasound example,
+2. show the annotation-derived target mask,
+3. show the CNN probability or saved prediction output,
+4. show thresholded and cleaned masks,
+5. fit an ellipse,
+6. compute head circumference in millimeters,
+7. summarize the v1 experiment results.
 
-The v1 project thesis:
+The v2 thesis:
 
-> Use deep segmentation on HC18, convert predictions to ellipse-based geometry,
-> and measure fetal head circumference accurately enough to analyze what modeling
-> choices matter most.
+> Turn the v1 research pipeline into an interactive ML pipeline explorer that
+> helps a user understand how segmentation outputs become geometric
+> measurements.
 
-## 1.1 V2 demo mission
+## 2. Required files to read before v2 changes
 
-V1 is now complete and should remain frozen except for bug fixes. V2 work is a
-portfolio/demo layer that helps users visualize how the CNN pipeline works.
+Every v2 session must read:
 
-Any task about the web demo, Streamlit app, saved-output explorer, portfolio
-polish, or challenge-export extension must also follow
-`docs/v2_demo/AGENTS.md`.
+1. root `AGENTS.md`
+2. root `project-tasks.md`
+3. root `handoff.md`
+4. `docs/v2_demo/DECISIONS.md`
+5. all files under `docs/v2_demo/`
+6. `docs/v1/AGENTS.md`
+7. `docs/v1/DECISIONS.md`
+8. relevant v1 docs under `docs/`
 
-The v2 project thesis:
-
-> Turn the v1 segmentation and geometry pipeline into an interactive educational
-> demo that shows image, mask, CNN prediction, cleanup, ellipse fit, and HC
-> measurement stages.
-
-## 2. Required files to read at session start
-
-Every Codex session must read these files before making changes:
-
-1. `AGENTS.md`
-2. `project-tasks.md`
-3. `handoff.md`
-4. `DECISIONS.md`
-5. Relevant files under `docs/`
-
-For v2 demo work, also read every file under `docs/v2_demo/`.
-
-If a task conflicts with these instructions, the newest explicit user request
-wins, but the conflict must be recorded in `handoff.md` and, if non-trivial, in
-`DECISIONS.md`.
+If a v2 task conflicts with v1 rules, the newest explicit user request wins,
+but the conflict must be recorded in `handoff.md` and, if durable, in
+`docs/v2_demo/DECISIONS.md`.
 
 ## 3. Scope locks
 
-V1 is intentionally narrow.
+- V1 course pipeline is frozen except for bug fixes needed by the demo.
+- The first v2 implementation milestone is a saved-output Streamlit explorer.
+- Live checkpoint inference is a later milestone and must use a swappable
+  adapter interface so the saved-output demo remains stable.
+- Do not retrain models from the web UI.
+- Do not build a clinical diagnosis tool.
+- Do not expose arbitrary public medical-image upload in the first milestone.
+- Do not commit raw HC18 data, virtual environments, caches, or checkpoints
+  unless the user explicitly approves a different artifact policy.
+- Include visible safety language in user-facing demo screens:
+  "Educational demo only. Not for clinical use."
 
-- Use PyTorch.
-- Use scripts and config files as the primary workflow.
-- Use `Myproject.sh` as the final course runner unless the user explicitly
-  changes the deliverable.
-- Do not create notebooks as the primary implementation path.
-- Do not build a web demo in v1.
-- Implement U-Net before any improved model.
-- Use Attention U-Net as the main improved model.
-- Treat ResUNet as fallback or stretch only.
-- Avoid transformer-heavy models, semi-supervised pipelines, deployment work,
-  web APIs, and broad hyperparameter sweeps until v1 is complete.
+## 4. Development policy
 
-## 4. Compute policy
+- Use Streamlit as the v2 web framework unless the user explicitly changes it.
+- Keep v1 training, inference, and evaluation modules importable.
+- Add demo-specific code under a clearly named demo/app area in a future
+  implementation task.
+- Prefer small curated sample manifests over scanning raw data at app startup.
+- Keep expensive model inference optional until the live-inference milestone.
+- Keep app copy concise and visual. The app should teach by showing pipeline
+  stages, not by filling the screen with explanations.
 
-- Local MacBook M1 Air: development, unit tests, data inspection, and tiny
-  subset smoke runs. For local training, use MPS when available.
-- V1 course-submission results may use reduced but reasonable local settings
-  when they are clearly documented in configs and the report, consistent with
-  the course allowance for reducing instance count and/or image resolution when
-  compute is limited.
-- University CHPC Slurm GPU nodes: later full-scale reruns, stronger final
-  ablations, and optional report-grade refreshes after the full local pipeline
-  is complete.
-- Google Colab is not part of the v1 execution plan.
-
-All training code must work from scripts and configs so the same commands can
-run locally and on CHPC.
-
-## 4.1 Environment policy
-
-- Use `uv` for the project environment.
-- The local environment path is `.venv/`.
-- Use a project-local cache when needed: `UV_CACHE_DIR=.uv-cache uv ...`.
-- Run project commands through `.venv/bin/python` unless a future task adds uv
-  project metadata for `uv run`.
-- Do not install packages into system Python for this project.
-- In this Codex sandbox, PyTorch may report `mps_available=False`; MPS training
-  must be launched outside the sandbox/escalated so Metal is visible.
-
-## 5. Agent discipline
-
-Agents must implement exactly one approved session/task from `project-tasks.md`
-at a time unless the user explicitly expands scope. The phase/session roadmap in
-`project-tasks.md` controls implementation order.
-
-Before editing, agents must state:
-
-- the task id,
-- the phase/session id when available,
-- the expected files to change,
-- the intended verification command or check.
-
-Agents must not:
-
-- make unrelated refactors,
-- change task scope silently,
-- add new dependencies without recording the decision,
-- hard-code local-only paths,
-- mix split generation into training code,
-- change tensor contracts between models,
-- couple model code to dataset parsing,
-- compare experiments trained on different splits unless clearly labeled.
-
-## 6. Build order
+## 5. Build order
 
 Follow this order unless the user explicitly changes it:
 
-1. create repo structure and environment files,
-2. inspect HC18 dataset format,
-3. parse annotations and pixel spacing,
-4. generate deterministic masks,
-5. create visual overlay checks,
-6. create train/val/internal-test splits,
-7. implement U-Net,
-8. implement training loop,
-9. train first baseline run,
-10. implement inference geometry,
-11. evaluate segmentation and HC error,
-12. implement Attention U-Net,
-13. rerun on the same split,
-14. run focused local ablations,
-15. generate report tables and figures,
-16. package `README.md`, `Myproject.sh`, and final outputs,
-17. optionally rerun full-scale configs on CHPC after v1 is complete.
+1. checkpoint v1 on `main`,
+2. create the `v2-demo` branch,
+3. create v2 planning docs and root governance pointers,
+4. curate saved demo artifacts and a sample manifest,
+5. build the Streamlit saved-output explorer,
+6. add live inference through a replaceable adapter,
+7. polish README, screenshots, and portfolio materials,
+8. optionally add HC18 challenge submission export.
 
-## 7. Required handoff
+## 6. Required handoff
 
-After meaningful work, update `handoff.md` with:
+After meaningful v2 work, update root `handoff.md` with:
 
 - date,
-- session goal,
-- task id,
+- v2 task id,
+- branch,
+- goal,
 - files changed,
 - commands run,
 - verification result,
@@ -156,75 +92,15 @@ After meaningful work, update `handoff.md` with:
 - open issues,
 - next exact task.
 
-Keep `handoff.md` concise but specific enough that the next Codex session can
-continue without guessing.
+## 7. Completion definition for v2 MVP
 
-## 8. Decision log requirements
+V2 MVP is complete when:
 
-Update `DECISIONS.md` whenever a non-trivial decision is made about:
-
-- architecture,
-- data parsing or target generation,
-- training policy,
-- evaluation metrics,
-- compute environment,
-- dependencies,
-- reproducibility,
-- report scope.
-
-Each decision entry must include:
-
-- date,
-- decision,
-- rationale,
-- alternatives considered,
-- impact on future work.
-
-Use append-only entries unless correcting an explicit error.
-
-## 9. Experiment rules
-
-Every real experiment must have:
-
-- config,
-- seed,
-- split id,
-- run id,
-- checkpoint,
-- metrics file,
-- short description.
-
-Recommended v1 experiment story:
-
-1. U-Net + filled ellipse mask + BCE/Dice,
-2. U-Net + alternate loss,
-3. U-Net + stronger augmentation,
-4. Attention U-Net + same split/config family,
-5. post-processing ablation: raw mask vs cleanup + ellipse fit.
-
-Do not run many architectures at the expense of completing the report.
-
-## 10. Data and geometry guardrails
-
-- Never resize images without updating annotation geometry or regenerating masks
-  in the resized coordinate system.
-- Keep raw data under `data/raw/` untouched.
-- Keep split files under `data/splits/` and do not regenerate silently.
-- Dataloader outputs must include image, mask, spacing, sample id, and annotation
-  metadata when available.
-- Geometry code must be deterministic and separate from neural inference.
-- Ellipse fitting failure cases must be handled explicitly.
-
-## 11. Completion definition
-
-V1 is complete when:
-
-- dataset loading works,
-- generated masks are visually verified,
-- one U-Net baseline trains successfully,
-- Attention U-Net trains on the same split,
-- inference returns HC in mm,
-- evaluation includes segmentation and HC metrics,
-- report-ready tables and figures exist,
-- `Myproject.sh` reproduces the main pipeline,
-- `README.md` explains exactly how to run locally and on CHPC.
+- a user can launch the demo locally,
+- a user can select a curated saved sample,
+- the app shows original image, target mask, prediction/mask stage, cleaned
+  mask, fitted ellipse, and HC measurement,
+- the app includes a small experiment dashboard from v1 results,
+- the app includes the safety disclaimer,
+- README explains how to run the demo,
+- the demo does not require raw HC18 data or checkpoints in the first mode.

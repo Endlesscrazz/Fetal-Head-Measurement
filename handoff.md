@@ -9,6 +9,8 @@ specific. The newest entry should be at the top.
 
 - V1 is checkpointed on `main` with commit `2290315` and pushed to GitHub.
 - V2 demo work is happening on branch `v2-demo`.
+- Root `AGENTS.md` is now the active v2 demo operating contract.
+- Archived v1 governance lives under `docs/v1/`.
 - V2 planning docs live under `docs/v2_demo/`.
 - V2 direction is a saved-output Streamlit ML pipeline explorer first, with
   live inference as a later extension.
@@ -41,7 +43,8 @@ specific. The newest entry should be at the top.
 - V1 plan is script-first PyTorch with local smoke runs and CHPC Slurm for long
   training.
 - Current approved task queue lives in `project-tasks.md`.
-- Durable decisions live in `DECISIONS.md`.
+- V1 durable decisions live in `docs/v1/DECISIONS.md`; v2 decisions live in
+  `docs/v2_demo/DECISIONS.md`.
 - V1 is divided into phase/session units in `project-tasks.md`.
 - `P1.S1`, `P1.S2`, `P1.S3`, and `P1.S4` are done.
 - `P2.S1`, `P2.S2`, `P2.S3`, and `P2.S4` are done for the U-Net baseline.
@@ -51,6 +54,62 @@ specific. The newest entry should be at the top.
 - HC18 is extracted under `data/raw/HC18/`.
 
 ## Latest Session
+
+Date: 2026-04-28
+
+Task id: V2 governance reorganization
+
+Phase/session:
+V2 planning docs cleanup
+
+Goal:
+Move the archived v1 `AGENTS.md` and `DECISIONS.md` into `docs/v1/`, move the
+v2 demo operating contract to root `AGENTS.md`, and refresh references.
+
+Files changed:
+
+- `AGENTS.md`
+- `README.md`
+- `project-tasks.md`
+- `handoff.md`
+- `docs/submission-packaging.md`
+- `docs/v1/AGENTS.md`
+- `docs/v1/DECISIONS.md`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/roadmap.md`
+
+Commands run:
+
+- `git mv AGENTS.md docs/v1/AGENTS.md`
+- `git mv DECISIONS.md docs/v1/DECISIONS.md`
+- `git mv docs/v2_demo/AGENTS.md AGENTS.md`
+- `rg -n "AGENTS\\.md|DECISIONS\\.md|docs/v2_demo/AGENTS" ...`
+- `sed -n '1,180p' AGENTS.md`
+- `sed -n '1,80p' docs/v1/AGENTS.md`
+- `sed -n '1,120p' docs/v1/DECISIONS.md`
+
+Verification:
+
+- Root `AGENTS.md` now contains the v2 demo operating contract.
+- V1 governance files now exist under `docs/v1/`.
+- V2 decisions now live in `docs/v2_demo/DECISIONS.md`.
+- Stale current-governance references were updated.
+
+Decisions made:
+
+- Keep root `AGENTS.md` focused on active v2 work.
+- Keep v1 decisions separate from v2 demo decisions.
+
+Open issues:
+
+- `context-bridge-log.md` remains untracked and was not committed.
+
+Next exact task:
+
+- Review the governance move, then continue with `V2.P2`: curated sample
+  manifest and saved demo artifact plan.
+
+## Previous Session
 
 Date: 2026-04-28
 

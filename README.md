@@ -33,7 +33,6 @@ use `Myproject.sh` as the executable runner, not `Myproject.ipynb`.
 ```text
 .
 ├── AGENTS.md
-├── DECISIONS.md
 ├── README.md
 ├── Myproject.sh
 ├── configs/
@@ -44,7 +43,11 @@ use `Myproject.sh` as the executable runner, not `Myproject.ipynb`.
 │   └── splits/
 ├── docs/
 │   ├── architecture.md
-│   └── project-spec.md
+│   ├── project-spec.md
+│   ├── v1/
+│   │   ├── AGENTS.md
+│   │   └── DECISIONS.md
+│   └── v2_demo/
 ├── handoff.md
 ├── outputs/
 │   └── runs/
@@ -288,10 +291,11 @@ Measurement:
 
 Future Codex sessions must follow:
 
-- `AGENTS.md` for operating rules,
+- `AGENTS.md` for current v2 operating rules,
 - `project-tasks.md` for the approved task queue,
 - `handoff.md` for current context,
-- `DECISIONS.md` for durable project decisions.
+- `docs/v1/DECISIONS.md` for archived v1 decisions,
+- `docs/v2_demo/DECISIONS.md` for v2 demo decisions.
 
 Agents should work one task at a time and update the handoff after meaningful
 work.

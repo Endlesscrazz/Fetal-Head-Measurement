@@ -14,8 +14,7 @@ Task status values:
 
 V1 is complete and frozen except for bug fixes, reproducibility fixes, or
 explicit user-requested packaging/report updates. New portfolio/demo work should
-use the V2 roadmap below and the operating contract in
-`docs/v2_demo/AGENTS.md`.
+use the V2 roadmap below and the root `AGENTS.md` operating contract.
 
 ## V1 Phase and Session Roadmap
 
@@ -204,8 +203,9 @@ edits).
 ## V2 Demo Roadmap
 
 V2 turns the completed v1 pipeline into an educational Streamlit demo. Agents
-must read `docs/v2_demo/AGENTS.md`, `docs/v2_demo/architecture.md`,
-`docs/v2_demo/project-spec.md`, and `docs/v2_demo/roadmap.md` before v2 work.
+must read root `AGENTS.md`, `docs/v2_demo/architecture.md`,
+`docs/v2_demo/project-spec.md`, `docs/v2_demo/roadmap.md`, and
+`docs/v2_demo/DECISIONS.md` before v2 work.
 
 ### V2.P0 - V1 checkpoint and branch setup
 
@@ -231,12 +231,13 @@ Create `docs/v2_demo/` planning docs and add root governance pointers.
 
 Done criteria:
 
-- `docs/v2_demo/AGENTS.md` exists;
+- root `AGENTS.md` contains the v2 operating contract;
 - `docs/v2_demo/architecture.md` exists;
 - `docs/v2_demo/project-spec.md` exists;
 - `docs/v2_demo/roadmap.md` exists;
-- root `AGENTS.md`, `project-tasks.md`, `DECISIONS.md`, and `handoff.md`
-  reference the v2 plan.
+- `docs/v2_demo/DECISIONS.md` exists;
+- `docs/v1/AGENTS.md` and `docs/v1/DECISIONS.md` preserve v1 governance;
+- `project-tasks.md` and `handoff.md` reference the v2 plan.
 
 ### V2.P2 - Saved artifact curation and sample manifest
 
@@ -318,7 +319,7 @@ Allowed files:
 - `README.md`
 - `project-tasks.md`
 - `handoff.md`
-- `DECISIONS.md`
+- `docs/v1/DECISIONS.md`
 - `docs/architecture.md`
 - `docs/project-spec.md`
 
@@ -332,10 +333,10 @@ Out of scope:
 Done criteria:
 
 - root contains `AGENTS.md`, `README.md`, `project-tasks.md`, `handoff.md`,
-  and `DECISIONS.md`;
+  with v1 decisions archived under `docs/v1/DECISIONS.md`;
 - long planning docs live under `docs/`;
 - stale references to the deleted legacy handoff file are removed;
-- `AGENTS.md` references `handoff.md` and `DECISIONS.md`.
+- governance docs reference `handoff.md` and the relevant decision log.
 
 Verification:
 
@@ -346,7 +347,7 @@ Verification:
 - `test -f README.md`
 - `test -f project-tasks.md`
 - `test -f handoff.md`
-- `test -f DECISIONS.md`
+- `test -f docs/v1/DECISIONS.md`
 
 ## Task G1 - V1 Phase and Session Roadmap
 
@@ -363,7 +364,7 @@ Allowed files:
 - `AGENTS.md`
 - `project-tasks.md`
 - `handoff.md`
-- `DECISIONS.md`
+- `docs/v1/DECISIONS.md`
 
 Out of scope:
 
@@ -375,13 +376,13 @@ Done criteria:
 
 - `project-tasks.md` has a phase/session roadmap;
 - `AGENTS.md` tells agents to follow the phase/session roadmap;
-- `DECISIONS.md` records the roadmap decision;
+- `docs/v1/DECISIONS.md` records the roadmap decision;
 - `handoff.md` points the next agent to `P1.S1`.
 
 Verification:
 
 - `rg "P1.S1|Phase 1|Phase 5" project-tasks.md`
-- `rg "phase/session" AGENTS.md project-tasks.md handoff.md DECISIONS.md`
+- `rg "phase/session" AGENTS.md project-tasks.md handoff.md docs/v1/DECISIONS.md`
 
 ## Task S1 - Create Project Skeleton
 
@@ -441,7 +442,7 @@ Allowed files:
 
 - `docs/dataset-format.md`
 - `handoff.md`
-- `DECISIONS.md` if needed
+- `docs/v1/DECISIONS.md` if needed
 
 Out of scope:
 

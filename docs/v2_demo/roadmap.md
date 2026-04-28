@@ -43,28 +43,30 @@ Create the v2 planning docs and point root governance files at them.
 
 Expected files:
 
-- `docs/v2_demo/AGENTS.md`
+- root `AGENTS.md`
 - `docs/v2_demo/architecture.md`
 - `docs/v2_demo/project-spec.md`
 - `docs/v2_demo/roadmap.md`
-- root `AGENTS.md`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v1/AGENTS.md`
+- `docs/v1/DECISIONS.md`
 - root `project-tasks.md`
-- root `DECISIONS.md`
 - root `handoff.md`
 
 Verification:
 
 - `rg --files docs/v2_demo`
-- `sed -n '1,220p' docs/v2_demo/AGENTS.md`
+- `sed -n '1,220p' AGENTS.md`
 - `sed -n '1,220p' docs/v2_demo/architecture.md`
 - `sed -n '1,220p' docs/v2_demo/project-spec.md`
 - `sed -n '1,220p' docs/v2_demo/roadmap.md`
-- `rg -n "v2_demo|V2|Streamlit|saved-output|not for clinical use" AGENTS.md project-tasks.md DECISIONS.md handoff.md docs/v2_demo`
+- `sed -n '1,220p' docs/v2_demo/DECISIONS.md`
+- `rg -n "v2_demo|V2|Streamlit|saved-output|not for clinical use" AGENTS.md project-tasks.md handoff.md docs/v2_demo docs/v1`
 
 Done criteria:
 
 - all v2 planning docs exist,
-- root governance files point future agents to v2 docs,
+- root governance points future agents to v2 docs,
 - durable v2 decisions are logged.
 
 ## V2.P2 - Saved artifact curation and sample manifest
