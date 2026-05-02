@@ -2,8 +2,8 @@
 
 ## 1. Project summary
 
-Build an interactive Streamlit demo that turns the completed v1 fetal head
-circumference pipeline into a visual ML learning tool.
+Build an interactive Vite + React + TypeScript demo that turns the completed v1
+fetal head circumference pipeline into a visual ML learning tool.
 
 The app should help a user understand this sequence:
 
@@ -11,8 +11,11 @@ The app should help a user understand this sequence:
 ultrasound image -> target mask -> CNN prediction -> mask cleanup -> ellipse fit -> HC measurement
 ```
 
-The first milestone uses saved v1 outputs. The app should be designed so live
-checkpoint inference can be added later without rewriting the UI.
+The first milestone is a static saved-output single-page app ported from the
+Claude Design handoff at
+`/Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/`. The app should be
+designed so live checkpoint inference can be added later through a separate
+backend without rewriting the visual frontend.
 
 ## 2. Audience
 
@@ -44,13 +47,17 @@ The v2 MVP is successful when:
 - a user can select a saved sample,
 - the app shows the original ultrasound image,
 - the app shows the target mask derived from annotation,
-- the app shows the saved prediction or thresholded mask,
+- the app shows the saved prediction, probability map, and thresholded mask,
 - the app shows cleaned mask and ellipse overlay,
+- the app includes a live threshold slider driven by exported `prob.png` files,
 - the app reports predicted HC in millimeters when available,
-- the app includes a contour-vs-ellipse measurement comparison where feasible,
+- the app includes a contour-vs-ellipse measurement comparison whenever both
+  measurements are available,
 - the app includes v1 experiment summary results,
 - the app clearly says: "Educational demo only. Not for clinical use.",
-- the app can run locally without retraining.
+- the app can run locally without retraining,
+- the default saved-output mode can run without raw HC18 data or checkpoints
+  after a curated demo artifact bundle has been exported.
 
 ## 5. Out of scope for the first milestone
 
@@ -65,11 +72,28 @@ The v2 MVP is successful when:
 
 ## 6. Implementation preferences
 
-- Use Streamlit for the first web demo.
-- Prefer saved-output mode first for speed and reliability.
+- Use Vite + React + TypeScript for the portfolio web demo.
+- Prefer saved-output static mode first for speed, reliability, and public
+  deployability.
+- Build the app under `frontend/`, with reusable components under
+  `frontend/src/components/`.
+- Port the design tokens and interactions from
+  `docs/v2_demo/frontend-design-handoff.md`.
+- Export curated samples to `outputs/demo_samples/`, then copy them to
+  `frontend/public/samples/` for local frontend development. The stable runtime
+  input is `frontend/public/samples/manifest.json`.
+- Export artifact filenames expected by the design:
+  `ultrasound.png`, `target.png`, `pred.png`, and `prob.png`.
+- Compute contour HC during artifact export and store it in the React manifest
+  as `contourHC` so the app can show the contour-vs-ellipse comparison without
+  recomputing geometry in the UI.
+- Generate `prob.png` during artifact export by running local checkpoint
+  inference once. The frontend must not load a checkpoint at runtime.
 - Keep the UI focused on stage-by-stage visual comparison.
 - Keep long text out of the main app. Use concise captions and visual panels.
 - Keep v1 pipeline code stable unless a demo task reveals a real bug.
+- Document frontend dependencies in `frontend/package.json`. Python demo
+  dependencies are only needed for artifact export and validation.
 
 ## 7. Future extensions
 
@@ -77,7 +101,7 @@ After saved-output MVP:
 
 - add live checkpoint inference,
 - add an upload/select-image workflow,
-- add probability heatmaps,
+- add a FastAPI backend for optional live inference,
 - add failure-case gallery,
 - add a model comparison view,
 - add README screenshots or an animated GIF,

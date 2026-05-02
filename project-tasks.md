@@ -35,8 +35,8 @@ Sessions:
     placeholder `Myproject.sh` exist.
 - `P1.S2` - Inspect the actual HC18 dataset layout.
   - Primary task: `D1`
-  - Outcome: `docs/dataset-format.md` documents observed files, columns, image
-    dimensions, pixel spacing, and annotation format.
+  - Outcome: `docs/v1/dataset-format.md` documents observed files, columns,
+    image dimensions, pixel spacing, and annotation format.
 - `P1.S3` - Implement dataset parsing and ellipse mask generation.
   - Primary task: `D2`
   - Outcome: dataset returns image, mask, spacing, sample id, and annotation
@@ -202,10 +202,12 @@ edits).
 
 ## V2 Demo Roadmap
 
-V2 turns the completed v1 pipeline into an educational Streamlit demo. Agents
+V2 turns the completed v1 pipeline into an educational React/Vite demo. Agents
 must read root `AGENTS.md`, `docs/v2_demo/architecture.md`,
-`docs/v2_demo/project-spec.md`, `docs/v2_demo/roadmap.md`, and
-`docs/v2_demo/DECISIONS.md` before v2 work.
+`docs/v2_demo/project-spec.md`, `docs/v2_demo/roadmap.md`,
+`docs/v2_demo/project-tasks.md`, and `docs/v2_demo/DECISIONS.md` before v2
+work. Use `docs/v2_demo/project-tasks.md` for session-level implementation
+order.
 
 ### V2.P0 - V1 checkpoint and branch setup
 
@@ -241,30 +243,61 @@ Done criteria:
 
 ### V2.P2 - Saved artifact curation and sample manifest
 
-Status: todo
+Status: done
 
 Goal:
-Choose curated examples and define the saved artifacts needed by the demo.
+Choose curated examples and define the manifest-backed saved artifacts needed by
+the demo.
 
 Done criteria:
 
-- a small sample manifest exists;
-- selected examples include strong and high-error/failure cases;
+- the manifest schema in `docs/v2_demo/architecture.md` is treated as the app
+  contract;
+- `docs/v2_demo/curated-samples.md` and
+  `docs/v2_demo/curated-samples.json` define the selected sample set;
+- selected examples include strong and high-error/failure cases from the
+  internal-test split;
 - no raw data or checkpoints are committed without explicit approval.
 
-### V2.P3 - Streamlit saved-output explorer
+### V2.P2.5 - Demo artifact export and manifest validation
+
+Status: done
+
+Goal:
+Revise the small raw-data-free saved-output bundle for the React design contract
+and validate its manifest. A previous Streamlit-oriented export exists, but it
+does not satisfy the current `prob.png` and TypeScript manifest requirements.
+
+Done criteria:
+
+- `scripts/export_demo_artifacts.py` creates `outputs/demo_samples/`;
+- `scripts/validate_demo_manifest.py` validates required fields and paths;
+- exported samples include `ultrasound.png`, `target.png`, `pred.png`, and
+  `prob.png`;
+- manifest schema version 2 includes real metrics, `predEllipse`, `contourHC`,
+  `confidence`, pixel spacing, and resolution;
+- raw HC18 is required only for export, not for app runtime;
+- the saved-output app can read the exported bundle without raw HC18 data or
+  checkpoints.
+
+### V2.P3 - React saved-output explorer
 
 Status: todo
 
 Goal:
-Build the first app using saved v1 artifacts, not live model inference.
+Build the portfolio app using saved v1 artifacts, not live model inference.
 
 Done criteria:
 
-- the app launches locally;
-- user can select a sample;
-- app shows pipeline stages and v1 results;
-- safety language says the demo is educational and not for clinical use.
+- `npm run dev` launches the app from `frontend/`;
+- user can select a sample from the visual gallery;
+- app shows the design's six sections: cases, pipeline, threshold, geometry,
+  metrics, and research;
+- app reads `frontend/public/samples/manifest.json`;
+- threshold slider re-thresholds real `prob.png` files in canvas;
+- app shows contour-vs-ellipse comparison when both values are available;
+- app includes training/validation loss curves from saved v1 metrics;
+- fixed safety chip says the demo is educational and not for clinical use.
 
 ### V2.P4 - Live inference integration
 
@@ -276,6 +309,7 @@ Add optional checkpoint-backed inference through a swappable adapter.
 Done criteria:
 
 - live mode works on at least one local sample;
+- live mode returns JSON compatible with the React `Sample` interface;
 - saved-output mode still works without checkpoints.
 
 ### V2.P5 - Portfolio README polish and screenshots
@@ -289,6 +323,7 @@ Done criteria:
 
 - README includes demo run instructions;
 - screenshots or GIF references are added when available;
+- README or helper script includes a one-command local start path for reviewers;
 - portfolio framing is concise and accurate.
 
 ### V2.P6 - Optional HC18 challenge exporter
@@ -320,8 +355,8 @@ Allowed files:
 - `project-tasks.md`
 - `handoff.md`
 - `docs/v1/DECISIONS.md`
-- `docs/architecture.md`
-- `docs/project-spec.md`
+- `docs/v1/architecture.md`
+- `docs/v1/project-spec.md`
 
 Out of scope:
 
@@ -440,7 +475,7 @@ annotation, and pixel-spacing layout.
 
 Allowed files:
 
-- `docs/dataset-format.md`
+- `docs/v1/dataset-format.md`
 - `handoff.md`
 - `docs/v1/DECISIONS.md` if needed
 
@@ -479,7 +514,7 @@ Allowed files:
 - `src/data/masks.py`
 - `src/data/transforms.py`
 - `tests/test_data.py`
-- `docs/dataset-format.md`
+- `docs/v1/dataset-format.md`
 
 Out of scope:
 

@@ -42,11 +42,14 @@ use `Myproject.sh` as the executable runner, not `Myproject.ipynb`.
 │   ├── processed/
 │   └── splits/
 ├── docs/
-│   ├── architecture.md
-│   ├── project-spec.md
 │   ├── v1/
 │   │   ├── AGENTS.md
-│   │   └── DECISIONS.md
+│   │   ├── DECISIONS.md
+│   │   ├── architecture.md
+│   │   ├── dataset-format.md
+│   │   ├── project-spec.md
+│   │   ├── splits-runs-and-outputs.md
+│   │   └── submission-packaging.md
 │   └── v2_demo/
 ├── handoff.md
 ├── outputs/
@@ -312,5 +315,5 @@ The final submission should include:
 The v1 submission uses `Myproject.sh`, not `Myproject.ipynb`.
 
 Use `report/submission-checklist.md` before packaging the final ZIP.
-See `docs/submission-packaging.md` for detailed ZIP contents and example
+See `docs/v1/submission-packaging.md` for detailed ZIP contents and example
 packaging commands.

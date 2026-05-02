@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "created_on": "2026-05-01",
+  "source_run_id": "attention_unet_local_baseline",
+  "source_split": "test",
+  "source_metrics_path": "outputs/runs/attention_unet_local_baseline/evaluation/test/per_sample_metrics.csv",
+  "source_predictions_path": "outputs/runs/attention_unet_local_baseline/predictions/test/predictions.csv",
+  "source_postprocess_path": "outputs/runs/attention_unet_local_baseline/evaluation/test/postprocess_ablation_per_sample.csv",
+  "notes": "Human-readable rationale lives in docs/v2_demo/curated-samples.md. Exporter code should read this JSON file, not parse Markdown.",
+  "samples": [
+    {
+      "id": "296_HC",
+      "label": "Strong prediction: near-perfect HC",
+      "category": "strong",
+      "tags": ["strong", "low_error", "headline"],
+      "reason": "Excellent overlap and near-perfect HC measurement; best success-path example.",
+      "dice": 0.9907,
+      "abs_hc_error_mm": 0.03,
+      "target_hc_mm": 191.47,
+      "pred_hc_mm": 191.44
+    },
+    {
+      "id": "217_HC",
+      "label": "Strong prediction: consistent geometry",
+      "category": "strong",
+      "tags": ["strong", "low_error"],
+      "reason": "Second strong example with high Dice and very low HC error on a different HC size.",
+      "dice": 0.9869,
+      "abs_hc_error_mm": 0.13,
+      "target_hc_mm": 171.8,
+      "pred_hc_mm": 171.93
+    },
+    {
+      "id": "663_HC",
+      "label": "Typical case: median-like error",
+      "category": "typical",
+      "tags": ["typical", "median_error"],
+      "reason": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough.",
+      "dice": 0.9815,
+      "abs_hc_error_mm": 2.33,
+      "target_hc_mm": 223.8,
+      "pred_hc_mm": 226.13
+    },
+    {
+      "id": "025_HC",
+      "label": "Cleanup and ellipse teaching case",
+      "category": "typical",
+      "tags": ["cleanup", "ellipse", "contour_comparison"],
+      "reason": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs.",
+      "dice": 0.9438,
+      "abs_hc_error_mm": 3.59,
+      "target_hc_mm": 70.51,
+      "pred_hc_mm": 66.92
+    },
+    {
+      "id": "793_HC",
+      "label": "High-error large-head case",
+      "category": "failure",
+      "tags": ["high_error", "large_hc", "error_analysis"],
+      "reason": "Largest absolute HC error in the selected run and high HD95; useful for honest model limitation discussion.",
+      "dice": 0.9297,
+      "abs_hc_error_mm": 19.92,
+      "target_hc_mm": 328.59,
+      "pred_hc_mm": 308.67
+    },
+    {
+      "id": "032_HC",
+      "label": "Failure case: low Dice small HC",
+      "category": "failure",
+      "tags": ["failure", "low_dice", "small_hc"],
+      "reason": "Low segmentation quality and large HC overestimate; useful for showing where the pipeline can break down.",
+      "dice": 0.8316,
+      "abs_hc_error_mm": 11.84,
+      "target_hc_mm": 65.37,
+      "pred_hc_mm": 77.21
+    }
+  ]
+}

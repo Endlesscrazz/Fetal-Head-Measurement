@@ -30,10 +30,9 @@ Every v2 session must read:
 2. root `project-tasks.md`
 3. root `handoff.md`
 4. `docs/v2_demo/DECISIONS.md`
-5. all files under `docs/v2_demo/`
-6. `docs/v1/AGENTS.md`
-7. `docs/v1/DECISIONS.md`
-8. relevant v1 docs under `docs/`
+5. `docs/v2_demo/project-tasks.md`
+6. all files under `docs/v2_demo/`
+7. relevant v1 docs under `docs/`
 
 If a v2 task conflicts with v1 rules, the newest explicit user request wins,
 but the conflict must be recorded in `handoff.md` and, if durable, in
@@ -42,7 +41,11 @@ but the conflict must be recorded in `handoff.md` and, if durable, in
 ## 3. Scope locks
 
 - V1 course pipeline is frozen except for bug fixes needed by the demo.
-- The first v2 implementation milestone is a saved-output Streamlit explorer.
+- The first v2 implementation milestone is a saved-output Vite + React +
+  TypeScript explorer ported from the Claude Design handoff.
+- The earlier Streamlit prototype under `demo/` is superseded for the portfolio
+  MVP. Keep it only as local reference unless the user explicitly asks to revive
+  it.
 - Live checkpoint inference is a later milestone and must use a swappable
   adapter interface so the saved-output demo remains stable.
 - Do not retrain models from the web UI.
@@ -55,10 +58,10 @@ but the conflict must be recorded in `handoff.md` and, if durable, in
 
 ## 4. Development policy
 
-- Use Streamlit as the v2 web framework unless the user explicitly changes it.
+- Use Vite + React + TypeScript as the v2 web framework unless the user
+  explicitly changes it again.
 - Keep v1 training, inference, and evaluation modules importable.
-- Add demo-specific code under a clearly named demo/app area in a future
-  implementation task.
+- Add demo-specific frontend code under `frontend/`.
 - Prefer small curated sample manifests over scanning raw data at app startup.
 - Keep expensive model inference optional until the live-inference milestone.
 - Keep app copy concise and visual. The app should teach by showing pipeline
@@ -72,10 +75,11 @@ Follow this order unless the user explicitly changes it:
 2. create the `v2-demo` branch,
 3. create v2 planning docs and root governance pointers,
 4. curate saved demo artifacts and a sample manifest,
-5. build the Streamlit saved-output explorer,
-6. add live inference through a replaceable adapter,
-7. polish README, screenshots, and portfolio materials,
-8. optionally add HC18 challenge submission export.
+5. revise exported demo artifacts for the React contract, including `prob.png`,
+6. build the React saved-output explorer,
+7. add live inference through a replaceable backend/adapter,
+8. polish README, screenshots, and portfolio materials,
+9. optionally add HC18 challenge submission export.
 
 ## 6. Required handoff
 
@@ -103,4 +107,5 @@ V2 MVP is complete when:
 - the app includes a small experiment dashboard from v1 results,
 - the app includes the safety disclaimer,
 - README explains how to run the demo,
-- the demo does not require raw HC18 data or checkpoints in the first mode.
+- the default React app does not require raw HC18 data or checkpoints after the
+  curated artifact bundle has been exported.

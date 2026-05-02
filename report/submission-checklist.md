@@ -23,7 +23,7 @@
 
 ## Code ZIP
 
-See `docs/submission-packaging.md` for the detailed packaging guide.
+See `docs/v1/submission-packaging.md` for the detailed packaging guide.
 
 - [ ] Include `Myproject.sh`.
 - [ ] Include `README.md`.
