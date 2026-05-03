@@ -6,8 +6,12 @@ Purpose:
 This is the shared runbook for getting the v2 React demo to a public URL
 without publishing the real HC18 sample bundle.
 
-Current public preview URL:
-`https://fetal-head-measurement-mgv1fgahc-shreyas-projects-843f684c.vercel.app/`
+Current public production URL:
+`https://fetal-head-measurement.vercel.app/`
+
+Current status note:
+The project now has a public production domain. Preview/deployment URLs may
+still be protected, but they are no longer the main portfolio link.
 
 Recommended path:
 Use Vercel for the static frontend. The current app already includes a safe
@@ -110,7 +114,7 @@ Owner:
 Shared
 
 Status:
-Initial Vercel preview URL exists
+Production domain is live
 
 What to check:
 
@@ -125,7 +129,42 @@ What I can do after you send the URL:
 - update `README.md`, `handoff.md`, and any v2 docs with the real public URL
 - note any follow-up fixes if the deployed build differs from local
 
-### Step 5 - Optional custom domain
+### Step 5 - Make the site publicly accessible
+
+Owner:
+You
+
+Status:
+Done
+
+Why this step matters:
+
+- the current `*-git-v2-demo-*.vercel.app` and random deployment URLs are still
+  returning protected responses
+- on Vercel Hobby, preview/deployment URLs can remain protected while the
+  production domain is the public one
+
+What to do in Vercel:
+
+1. Open the project in Vercel
+2. Go to `Settings` -> `Git`
+3. Set `Production Branch` to `v2-demo` if you want this branch to power the
+   public resume link
+4. Trigger a new production deployment from `v2-demo`
+5. Open the production domain shown in `Domains`
+
+What I need back from you:
+
+- the production-domain URL Vercel shows after that deploy
+- confirmation that the page opens in a logged-out browser window
+
+If you prefer not to make `v2-demo` the production branch:
+
+- keep `main` as production
+- later merge `v2-demo` into `main`
+- then use the resulting production domain as the public link
+
+### Step 6 - Optional custom domain
 
 Owner:
 You
@@ -139,7 +178,15 @@ If yes, I need:
 
 If no, we can keep the default `*.vercel.app` URL for now.
 
-## 5. If You Prefer GitHub Pages Instead
+## 5. Deployment Protection Note
+
+According to Vercel's Deployment Protection docs, preview/deployment URLs can
+be protected while the production domain remains public on Hobby plans. If the
+site still asks for Vercel access after a production deployment, check
+`Settings` -> `Deployment Protection` and confirm you did not enable a stricter
+scope such as `All Deployments`.
+
+## 6. If You Prefer GitHub Pages Instead
 
 This is possible, but it is not the recommended first path because the repo is
 already set up for Vercel.
@@ -151,7 +198,7 @@ If you want GitHub Pages, I would still need from you:
 
 Then I can add the workflow and base-path adjustments before we deploy.
 
-## 6. What Happens After You Send Me The URL
+## 7. What Happens After You Send Me The URL
 
 I will:
 
@@ -159,8 +206,8 @@ I will:
 2. verify the deployed preview matches the intended public-safe behavior
 3. note any remaining deployment polish work
 
-## 7. Current Blocking Item
+## 8. Current Blocking Item
 
 Current blocker:
-The repository code is ready, but the first public URL still depends on your
-Vercel or GitHub Pages account connection in the browser.
+No blocking issue remains for the static public deployment. Remaining work is
+deployment polish and any optional custom domain decision.

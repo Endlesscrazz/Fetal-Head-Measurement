@@ -245,12 +245,12 @@ Done criteria:
 
 ## V2.P5 - Portfolio README polish and screenshots
 
-Status: blocked
+Status: in_progress
 
 Status note:
-Local run docs, `start_demo.sh`, Vercel config, and public-safe preview assets
-are ready. Public URL publication still requires connecting the GitHub branch to
-Vercel or GitHub Pages.
+The public production domain is now live at
+`https://fetal-head-measurement.vercel.app/`. Remaining work is polish:
+screenshots/GIFs, optional custom domain, and final portfolio copy cleanup.
 
 Estimated effort:
 3-4 hours

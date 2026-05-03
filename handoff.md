@@ -27,10 +27,9 @@ Newest entry stays at the top.
 - V2.S5 is implemented: the React app now has the full saved-output explorer
   with geometry comparison, selected-case metrics, real run cards/sparklines,
   model ablation, and post-processing ablation sections.
-- V2.S6 portfolio polish is prepared but blocked on external deployment account
-  work: README, `start_demo.sh`, `vercel.json`, and public-safe preview assets
-  exist; the first Vercel preview URL is live and now needs verification/polish
-  rather than initial setup.
+- V2.S6 is no longer blocked on initial hosting: the public production URL is
+  live at `https://fetal-head-measurement.vercel.app/`. Remaining S6 work is
+  portfolio polish rather than deployment setup.
 - Production preview cleanup is partially complete: the frontend now prefers the
   public preview manifest on non-local hosts and requests Canvas 2D contexts
   with `willReadFrequently` to avoid noisy deployment-console warnings after the
@@ -46,6 +45,61 @@ Newest entry stays at the top.
   `Sample`-compatible output. FastAPI and React live mode remain next.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+Static production deployment confirmation
+
+Branch:
+`v2-demo`
+
+Goal:
+Confirm that the Vercel production domain is publicly accessible and update the
+v2 docs so static deployment status matches reality.
+
+Files changed:
+
+- `README.md`
+- `docs/v2_demo/public-deployment-checklist.md`
+- `docs/v2_demo/roadmap.md`
+- `docs/v2_demo/project-tasks.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `curl -I https://fetal-head-measurement.vercel.app/`
+- `curl -I https://fetal-head-measurement.vercel.app/favicon.svg`
+- `git status --short --branch`
+- `sed -n '1,260p' docs/v2_demo/public-deployment-checklist.md`
+
+Verification result:
+
+- The production domain `https://fetal-head-measurement.vercel.app/` returned
+  `HTTP/2 200`.
+- The deployed favicon returned `HTTP/2 200`.
+- This confirms the static public deployment is now live and publicly reachable.
+
+Decisions made:
+
+- Treat the production domain as the real portfolio/public link, not the
+  protected preview URLs.
+- Move `V2.P5` / `V2.S6` from blocked to in-progress because deployment is no
+  longer blocked; only polish remains.
+
+Open issues:
+
+- README/media polish for the public site is still optional follow-up work.
+- The committed deployment checklist update should be pushed so the repo reflects
+  the live production state.
+
+Next exact task:
+
+- Push the production-domain doc updates, then either finish any optional S6
+  polish or move to `V2.S7.2 - FastAPI Demo Server`.
+
+## Previous Session
 
 Date: 2026-05-03
 

@@ -478,13 +478,13 @@ Done criteria:
 
 ## V2.S6 - Build, Deploy, And Portfolio Polish
 
-Status: blocked
+Status: in_progress
 
 Status note:
 README, `start_demo.sh`, Vercel configuration, and public-safe placeholder
-preview assets are implemented. Actual public URL creation is blocked on
-connecting/pushing the repository to Vercel or GitHub Pages with the user's
-deployment account.
+preview assets are implemented. The public production URL is now live at
+`https://fetal-head-measurement.vercel.app/`. Remaining work is portfolio
+polish such as screenshots/GIFs and any final copy cleanup.
 
 Roadmap phase:
 `V2.P5`
