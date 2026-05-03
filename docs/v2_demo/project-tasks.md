@@ -28,7 +28,7 @@ Critical path for the resume/LinkedIn MVP:
 
 Post-MVP:
 
-1. `V2.S7` - Optional live inference FastAPI backend.
+1. `V2.S7` - Optional curated live inference mode.
 2. `V2.S8` - Optional HC18 challenge exporter.
 
 Frontend: Vite + React + TypeScript. No Streamlit. No backend for MVP.
@@ -407,7 +407,7 @@ Done criteria:
 
 ## V2.S5 - Geometry Panel, Metrics, And Experiment Dashboard
 
-Status: todo
+Status: done
 
 Roadmap phase:
 `V2.P3`
@@ -478,7 +478,13 @@ Done criteria:
 
 ## V2.S6 - Build, Deploy, And Portfolio Polish
 
-Status: todo
+Status: blocked
+
+Status note:
+README, `start_demo.sh`, Vercel configuration, and public-safe placeholder
+preview assets are implemented. Actual public URL creation is blocked on
+connecting/pushing the repository to Vercel or GitHub Pages with the user's
+deployment account.
 
 Roadmap phase:
 `V2.P5`
@@ -549,9 +555,15 @@ Done criteria:
 - `start_demo.sh` works for local reviewers who have HC18 data,
 - no medical images are committed or deployed.
 
-## V2.S7 - Optional Live Inference FastAPI Backend
+## V2.S7 - Optional Curated Live Inference Mode
 
-Status: todo
+Status: in_progress
+
+Status note:
+`V2.S7.1` is complete. The shared Python live inference core now exists under
+`src/inference/live.py`, exporter helper logic has been refactored to reuse it,
+and contract tests cover both synthetic output shape/field validation and one
+local curated-sample smoke run when HC18 artifacts are available.
 
 Roadmap phase:
 `V2.P4`
@@ -560,42 +572,179 @@ Target window:
 Post-MVP, after `V2.S6`
 
 Estimated effort:
-6-10 hours
+8-14 hours across sub-sessions
 
 Goal:
-Add an optional FastAPI backend that serves live checkpoint inference to the
-React frontend without disturbing the static saved-output mode.
+Add optional checkpoint-backed inference for curated samples without disturbing
+the static saved-output mode.
 
 Outcome:
-A "Live mode" toggle in the app sends an image to the backend and receives
-real-time predictions matching the `Sample` interface.
+A "Run live" mode lets a viewer select one of the curated samples, run the
+checkpoint through a FastAPI demo server, and render returned outputs through
+the same React `Sample` interface and image components used by static replay.
+
+Planning source:
+`docs/v2_demo/live-inference-plan.md`
+
+Scope locks:
+
+- Static saved-output mode remains the default and must work with no backend.
+- First live mode is curated-sample-only. Arbitrary public upload is out of
+  scope unless explicitly approved later.
+- Do not publish checkpoints, raw HC18 data, or curated medical-image bundles
+  without explicit user approval.
+- Use `demo_live/` for the FastAPI companion server, not a generic `backend/`
+  directory.
 
 Expected files:
 
-- `backend/main.py` (FastAPI app)
-- `backend/inference.py` (wraps v1 model + geometry utilities)
-- `backend/requirements.txt`
-- `frontend/src/data/live-adapter.ts`
-- `frontend/src/components/shared/ModeSelector.tsx`
-- README/docs updates for backend mode
+- `src/inference/live.py`
+- `demo_live/app.py`
+- `demo_live/live_service.py`
+- `demo_live/schemas.py`
+- `requirements-live.txt`
+- `tests/test_live_inference_contract.py`
+- `tests/test_live_api.py`
+- `frontend/src/data/live-api.ts`
+- `frontend/src/types/live.ts`
+- `frontend/src/components/live/ModeToggle.tsx`
+- `frontend/src/components/live/LiveRunPanel.tsx`
+- `frontend/src/components/live/RunStatus.tsx`
+- `frontend/src/utils/assets.ts` (shared `getSampleAssets` helper)
+- README/docs updates for static vs live mode
 - root `handoff.md`
+
+### V2.S7.1 - Live Inference Core
+
+Status: done
+
+Goal:
+Extract the single-sample inference transform into an importable utility shared
+by the exporter and live server.
 
 Subtasks:
 
-- FastAPI endpoint: `POST /predict` — accepts an image upload or sample ID,
-  returns JSON matching the `Sample` interface (excluding image paths, including
-  computed `predEllipse`, `contourHC`, `confidence`, `metrics`).
-- Reuse `src/models/`, `src/inference/predict.py`, `src/utils/geometry.py` from v1.
-- Frontend: detect backend availability (health check); fall back to static mode
-  if backend is not running.
-- Keep uploaded arbitrary public medical images out of scope unless explicitly
-  approved.
+- Factor the relevant logic from `scripts/export_demo_artifacts.py` into
+  `src/inference/live.py`.
+- Reuse `src.inference.predict.load_model_from_checkpoint`,
+  `src.data.dataset.HC18Dataset`, and `src.utils.geometry`.
+- Return a result object that can be converted to the frontend `Sample`
+  contract plus `SampleAssets`.
+- Support the local HC18 input source first and leave a clear interface for a
+  hosted curated-bundle source.
+- Keep `scripts/export_demo_artifacts.py` behavior stable after refactor.
+
+Verification:
+
+- `.venv/bin/python -m pytest tests/test_live_inference_contract.py`
+- Run one curated sample locally and confirm `prob`, `pred`, ellipse, HC, and
+  confidence values are shape/unit consistent.
+
+Done criteria:
+
+- one curated sample can run live inference locally,
+- output has the same required fields as frontend `Sample`,
+- exporter still produces schema-version-2 saved artifacts.
+
+### V2.S7.2 - FastAPI Demo Server
+
+Status: todo
+
+Goal:
+Expose curated live inference over HTTP.
+
+Subtasks:
+
+- Implement `GET /health`, `GET /live/samples`, and `POST /live/infer`.
+- Load the checkpoint once at startup and return `checkpoint_not_loaded` if
+  startup fails.
+- Validate `sample_id` and threshold with consistent error codes.
+- Add CORS support for Vite dev/preview and future deployed frontend origins.
+- Cache deterministic curated-sample results by `(sample_id, threshold)`.
+
+Verification:
+
+- `uvicorn demo_live.app:app --reload --port 8000`
+- `curl http://127.0.0.1:8000/health`
+- `curl -X POST http://127.0.0.1:8000/live/infer ...`
+- `.venv/bin/python -m pytest tests/test_live_api.py`
+
+Done criteria:
+
+- backend loads checkpoint once,
+- `POST /live/infer` works for at least one curated sample,
+- saved-output frontend still works when the backend is not running.
+
+### V2.S7.3 - React Live Mode
+
+Status: todo
+
+Goal:
+Add the frontend mode toggle, backend readiness handling, and live asset
+rendering.
+
+Subtasks:
+
+- Add `frontend/src/types/live.ts` — include `liveStatus` as
+  `"idle" | "waking" | "running" | "done" | "error"`.
+- Add `frontend/src/data/live-api.ts`.
+- Implement `getSampleAssets` helper in `frontend/src/utils/assets.ts` — the
+  single place that derives image paths for static mode or forwards live asset
+  URLs/data URLs. All image-consuming components must use this helper.
+- Add `frontend/src/components/live/ModeToggle.tsx`.
+- Add `frontend/src/components/live/RunStatus.tsx` — renders waking/running/done/
+  error states; used inside `LiveRunPanel`.
+- Add `frontend/src/components/live/LiveRunPanel.tsx` — wraps RunStatus and the
+  Run live button.
+- Add `assetOverrides` support to `StageDetail` and `ThresholdViewer`.
+- Poll `GET /health` and show backend-offline or backend-waking states without
+  breaking static replay.
+- Keep SafetyChip visible in both modes.
+
+Verification:
+
+- `cd frontend && npm run build`
+- Static mode works with no backend.
+- Live mode shows an unavailable state if the server is down.
+- Live mode runs one curated sample when the server is up.
+- Threshold viewer works on the live `prob` asset.
+
+Done criteria:
+
+- live and static modes share the same visual components,
+- backend failure does not block the main demo,
+- no arbitrary upload UI is added.
+
+### V2.S7.4 - Live Deployment Packaging
+
+Status: todo
+
+Goal:
+Choose and document the public/private live deployment path.
+
+Subtasks:
+
+- Keep Vercel or GitHub Pages as the static frontend path.
+- Prefer local FastAPI live mode plus a recorded video until artifact
+  publication is explicitly approved.
+- If publishing live inference, prefer Hugging Face Spaces over Vercel
+  serverless for PyTorch.
+- Add README instructions for static-only, local-live, and any approved hosted
+  live path.
+
+Verification:
+
+- deployed static frontend still loads,
+- local or hosted live backend health check works,
+- README explains any artifact/checkpoint prerequisites clearly.
 
 Done criteria:
 
 - live inference works on at least one local sample,
 - static saved-output mode still works when backend is not running,
-- no retraining occurs from the web UI.
+- no retraining occurs from the web UI,
+- no checkpoint or curated medical-image artifact is published without explicit
+  approval.
 
 ## V2.S8 - Optional HC18 Challenge Exporter
 

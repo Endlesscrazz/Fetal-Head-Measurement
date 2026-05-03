@@ -41,13 +41,12 @@ function CustomSlider({
 }
 
 function ThresholdHistogram({
+  bins,
   thresh,
-  sample,
 }: {
+  bins: number[];
   thresh: number;
-  sample: Sample;
 }) {
-  const bins = useMemo(() => computeBins(sample.id), [sample.id]);
   const max = Math.max(...bins, 1);
 
   return (
@@ -60,7 +59,7 @@ function ThresholdHistogram({
           return (
             <div
               className={above ? "active" : ""}
-              key={`${sample.id}-${index}`}
+              key={index}
               style={{ height: `${(bin / max) * 100}%` }}
             />
           );
@@ -71,31 +70,13 @@ function ThresholdHistogram({
   );
 }
 
-const binCache: Record<string, number[]> = {};
-
-function computeBins(sampleId: string) {
-  if (binCache[sampleId]) return binCache[sampleId];
-
+function computeBinsFromImageData(data: Uint8ClampedArray | undefined) {
   const bins = new Array<number>(40).fill(0);
-  let seed = 0;
-  for (let index = 0; index < sampleId.length; index += 1) {
-    seed = (seed * 31 + sampleId.charCodeAt(index)) | 0;
+  if (!data) return bins;
+  for (let index = 0; index < data.length; index += 4) {
+    const bin = Math.min(bins.length - 1, Math.floor((data[index] / 255) * bins.length));
+    bins[bin] += 1;
   }
-  let state = Math.abs(seed) || 7;
-  const rand = () => {
-    state = (state * 9301 + 49297) % 233280;
-    return state / 233280;
-  };
-
-  for (let index = 0; index < bins.length; index += 1) {
-    const x = index / bins.length;
-    const bg = Math.exp(-((x - 0.05) * (x - 0.05)) / 0.005) * 800;
-    const fg = Math.exp(-((x - 0.85) * (x - 0.85)) / 0.01) * 220;
-    const mid = Math.exp(-((x - 0.4) * (x - 0.4)) / 0.05) * 30;
-    bins[index] = bg + fg + mid + rand() * 30;
-  }
-
-  binCache[sampleId] = bins;
   return bins;
 }
 
@@ -126,7 +107,7 @@ export function ThresholdViewer({ sample }: { sample: Sample }) {
       probDataRef.current = ctx.getImageData(0, 0, width, height);
       setDecodeTick((tick) => tick + 1);
     };
-    probImg.src = sampleAssetPath(sample.id, "prob");
+    probImg.src = sampleAssetPath(sample, "prob");
 
     const ultrasound = new Image();
     ultrasound.onload = () => {
@@ -134,7 +115,7 @@ export function ThresholdViewer({ sample }: { sample: Sample }) {
       ultrasoundRef.current = ultrasound;
       setDecodeTick((tick) => tick + 1);
     };
-    ultrasound.src = sampleAssetPath(sample.id, "ultrasound");
+    ultrasound.src = sampleAssetPath(sample, "ultrasound");
 
     return () => {
       cancelled = true;
@@ -183,12 +164,12 @@ export function ThresholdViewer({ sample }: { sample: Sample }) {
 
   const stats = useMemo(() => {
     const data = probDataRef.current?.data;
-    if (!data) return { coverage: 0, pixels: 0 };
+    if (!data) return { bins: computeBinsFromImageData(undefined), coverage: 0, pixels: 0 };
     let count = 0;
     for (let index = 0; index < data.length; index += 4) {
       if (data[index] / 255 > thresh) count += 1;
     }
-    return { coverage: count / (width * height), pixels: count };
+    return { bins: computeBinsFromImageData(data), coverage: count / (width * height), pixels: count };
   }, [decodeTick, height, sample.id, thresh, width]);
 
   const insight =
@@ -209,7 +190,7 @@ export function ThresholdViewer({ sample }: { sample: Sample }) {
             {showProb ? "Probability map" : `Threshold = ${thresh.toFixed(2)}`}
           </div>
         </div>
-        <ThresholdHistogram sample={sample} thresh={thresh} />
+        <ThresholdHistogram bins={stats.bins} thresh={thresh} />
       </div>
 
       <div className="threshold-viewer__controls">

@@ -23,6 +23,9 @@ export interface Sample {
   cat: SampleCategory;
   split: string;
   summary: string;
+  assetBasePath?: string;
+  assetExtension?: "png" | "svg";
+  previewOnly?: boolean;
   metrics: SampleMetrics;
   predEllipse: Ellipse;
   contourHC: number;

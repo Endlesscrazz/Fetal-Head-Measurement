@@ -11,6 +11,90 @@ Each entry should include:
 - alternatives considered,
 - impact on future work.
 
+## 2026-05-03 - Live inference core returns Sample-compatible data plus in-memory assets
+
+Decision:
+For `V2.S7.1`, put the reusable live inference transform in
+`src/inference/live.py`. The core returns a frontend `Sample`-compatible dict
+and in-memory asset arrays (`ultrasound`, `target`, `prob`, `pred`). Later API
+or hosting layers will decide whether those arrays become file URLs or data
+URLs.
+
+Rationale:
+This keeps the model/geometry path independent from FastAPI and React. It also
+lets the existing exporter reuse shared helpers while preserving the static
+saved-output bundle contract.
+
+Alternatives considered:
+Writing the live inference path directly inside FastAPI; having the core write
+files unconditionally; returning only numeric fields and leaving image creation
+to the API layer.
+
+Impact on future work:
+- `demo_live/` can load the model once and call `LiveInferenceRunner`.
+- The API can map in-memory assets to local files for development or data URLs
+  for hosted demos.
+- The frontend should still consume assets through the planned `SampleAssets`
+  override helper.
+
+## 2026-05-03 - Public deployment uses a non-medical preview fallback
+
+Decision:
+For V2.S6, keep the real HC18 sample artifact bundle local and ignored, and add
+a committed non-medical placeholder sample set under `frontend/public/demo-samples/`
+for public static hosting. The frontend first tries `/samples/manifest.json` for
+local real saved-output mode, then falls back to `/demo-samples/manifest.json`
+when real sample artifacts are absent.
+
+Rationale:
+The portfolio site should load on Vercel or GitHub Pages without committing or
+publishing generated medical-image artifacts. A public-safe preview keeps the UI
+reviewable while preserving the stricter artifact policy for the actual HC18
+sample bundle.
+
+Alternatives considered:
+Committing curated HC18 PNGs directly; publishing a demo artifact zip before a
+distribution decision; letting the public site show a manifest error; requiring
+raw HC18 data or checkpoints at app startup.
+
+Impact on future work:
+- Public hosting can be configured immediately with `vercel.json`.
+- Local reviewers with HC18 artifacts still get the real saved-output demo via
+  `./start_demo.sh`.
+- README must clearly distinguish public preview mode from local real-artifact
+  mode.
+- A public URL can be added after the repository is connected to Vercel or
+  GitHub Pages.
+
+## 2026-05-02 - Curated live inference is the V2.S7 path
+
+Decision:
+Implement live inference, when started, as an optional curated-sample mode after
+the static React MVP. Static saved-output replay remains the default. The first
+live path uses a FastAPI companion server under `demo_live/`, returns data
+compatible with the React `Sample` interface, and sends live image assets
+through URL/data-URL overrides. Arbitrary public upload is not part of the first
+live milestone.
+
+Rationale:
+Curated live inference gives the strongest interview moment while preserving the
+reliability of the static portfolio demo. It lets the backend reuse known pixel
+spacing, target masks, and sample metadata, and avoids turning the project into
+a public medical-image upload/measurement service.
+
+Alternatives considered:
+Making live inference mandatory before deployment; adding public upload first;
+using Vercel serverless for PyTorch inference; committing or deploying curated
+medical-image bundles and checkpoints by default.
+
+Impact on future work:
+- `docs/v2_demo/live-inference-plan.md` is the planning source for `V2.S7`.
+- `V2.S7` is split into live core, FastAPI server, React live mode, and optional
+  deployment packaging sub-sessions.
+- Public checkpoint or curated-image hosting requires explicit user approval.
+- Vercel/GitHub Pages remain the static frontend hosting path; Hugging Face
+  Spaces is the preferred candidate if a hosted live ML backend is approved.
+
 ## 2026-05-01 - Claude Design pivot is the current MVP direction
 
 Decision:

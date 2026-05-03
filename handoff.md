@@ -24,11 +24,434 @@ Newest entry stays at the top.
   `outputs/runs/<run_id>/predictions/` and `outputs/runs/<run_id>/evaluation/`.
 - The local React scaffold now lives under `frontend/`, with the generated
   sample bundle copied to ignored `frontend/public/samples/` for development.
-- V2.S4 core UI is implemented: sticky nav/tour, hero, sample gallery, pipeline
-  stepper/detail, and threshold canvas. Geometry, metrics, and research
-  dashboard sections are placeholders for V2.S5.
+- V2.S5 is implemented: the React app now has the full saved-output explorer
+  with geometry comparison, selected-case metrics, real run cards/sparklines,
+  model ablation, and post-processing ablation sections.
+- V2.S6 portfolio polish is prepared but blocked on external deployment account
+  work: README, `start_demo.sh`, `vercel.json`, and public-safe preview assets
+  exist; a public URL still needs Vercel/GitHub Pages connection.
+- `docs/v2_demo/public-deployment-checklist.md` now captures the exact shared
+  steps and what the user must do in Vercel/GitHub Pages to unblock the first
+  public deployment URL.
+- Live inference planning now lives at
+  `docs/v2_demo/live-inference-plan.md`; Claude Code review has been integrated
+  into the roadmap/task docs before V2.S7 implementation.
+- V2.S7.1 is implemented: `src/inference/live.py` provides the reusable
+  curated-sample live inference core, with in-memory assets and frontend
+  `Sample`-compatible output. FastAPI and React live mode remain next.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+Push current progress and add public deployment runbook
+
+Branch:
+`v2-demo`
+
+Goal:
+Push the current safe v2 progress to GitHub and document the exact shared steps
+required to get the first public deployment URL.
+
+Files changed:
+
+- `docs/v2_demo/public-deployment-checklist.md`
+- `handoff.md`
+
+Commands run:
+
+- `git status --short --branch`
+- `git remote -v`
+- `rg -n ... .gitignore`
+- `find frontend/public -maxdepth 3 -type f | sort`
+- `find frontend/src/components/experiments frontend/src/components/geometry frontend/src/components/metrics -maxdepth 2 -type f | sort`
+- `find docs/v2_demo -maxdepth 1 -type f | sort`
+
+Verification result:
+
+- Confirmed the repo points to `origin https://github.com/Endlesscrazz/Fetal-Head-Measurement.git`
+- Confirmed `frontend/public/samples/` remains gitignored while safe public
+  preview assets under `frontend/public/demo-samples/` are available to commit
+- Wrote a shared deployment checklist that records the exact Vercel settings and
+  the account-linked steps only the user can complete
+
+Decisions made:
+
+- Keep the first public deployment runbook Vercel-first because the repo already
+  contains `vercel.json` and a static public-preview fallback
+- Continue treating the real HC18-derived sample bundle as local-only until the
+  user explicitly approves a different artifact policy
+
+Open issues:
+
+- The actual public URL still depends on the user's Vercel or GitHub Pages
+  account flow
+- This session should end with a GitHub push of the current safe repo state
+
+Next exact task:
+
+- Push the current branch snapshot to GitHub, then wait for the user's Vercel
+  import URL or deployment choice
+
+## Previous Session
+
+Date: 2026-05-03
+
+Task id:
+`V2.S7.1` - Live Inference Core
+
+Branch:
+`v2-demo`
+
+Goal:
+Extract the single-sample checkpoint inference transform into reusable Python
+code that can support the future FastAPI live demo without disturbing static
+saved-output replay.
+
+Files changed:
+
+- `src/inference/live.py`
+- `scripts/export_demo_artifacts.py`
+- `tests/test_live_inference_contract.py`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/roadmap.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n ... AGENTS.md project-tasks.md handoff.md docs/v2_demo/* docs/v1/*`
+- `sed -n ... scripts/export_demo_artifacts.py src/inference/predict.py src/utils/geometry.py src/data/dataset.py`
+- `rg -n ... src tests docs/v2_demo`
+- `.venv/bin/python -m pytest tests/test_live_inference_contract.py`
+- `.venv/bin/python scripts/export_demo_artifacts.py --run-id attention_unet_local_baseline --split test --sample-id 296_HC --sample-id 793_HC --output-dir outputs/demo_samples_live_check`
+- `.venv/bin/python -m pytest tests/test_demo_manifest.py tests/test_live_inference_contract.py`
+- `.venv/bin/python -m py_compile src/inference/live.py scripts/export_demo_artifacts.py tests/test_live_inference_contract.py`
+- `.venv/bin/python -m pytest`
+- `cd frontend && npm run build`
+- `git diff --check`
+
+Verification result:
+
+- `tests/test_live_inference_contract.py` passed, including a synthetic contract
+  test and a local curated `296_HC` checkpoint smoke test when artifacts are
+  present.
+- `tests/test_demo_manifest.py` plus live inference contract tests passed
+  together: 5 passed.
+- Exporter smoke with one strong and one failure sample passed and produced a
+  schema-version-2 bundle under ignored `outputs/demo_samples_live_check/`.
+- Python compile checks passed for the changed Python files.
+- Full Python test suite passed: 29 passed.
+- Frontend production build passed with no TypeScript errors.
+- `git diff --check` passed.
+
+Decisions made:
+
+- The live core returns a frontend `Sample`-compatible dict plus in-memory asset
+  arrays. The future API layer will map assets to file URLs or data URLs.
+- Keep static saved-output replay unchanged. The exporter now reuses shared live
+  helpers for dataset loading, curated sample handling, image normalization, and
+  probability-map conversion while continuing to copy the saved cleaned masks and
+  real evaluation metrics.
+
+Open issues:
+
+- `V2.S7.2` still needs `demo_live/` FastAPI endpoints, startup model loading,
+  CORS, request validation, and result caching.
+- React live mode and asset override helpers are not implemented yet.
+- Public deployment from `V2.S6` remains blocked on external account connection.
+
+Next exact task:
+
+- Start `V2.S7.2 - FastAPI Demo Server`, unless the user wants to pause for a
+  commit or resolve the public deployment blocker first.
+
+## Previous Session
+
+Date: 2026-05-03
+
+Task id:
+`V2.S6` - Build, Deploy, And Portfolio Polish
+
+Branch:
+`v2-demo`
+
+Goal:
+Prepare the React demo for portfolio use, local reviewer startup, and public
+static hosting without committing or deploying the real HC18 sample image bundle.
+
+Files changed:
+
+- `README.md`
+- `start_demo.sh`
+- `vercel.json`
+- `frontend/src/types/sample.ts`
+- `frontend/src/data/samples.ts`
+- `frontend/src/components/hero/Hero.tsx`
+- `frontend/src/components/gallery/SampleGallery.tsx`
+- `frontend/src/components/pipeline/StageDetail.tsx`
+- `frontend/src/components/threshold/ThresholdViewer.tsx`
+- `frontend/src/components/geometry/ContourEllipse.tsx`
+- `frontend/public/demo-samples/manifest.json`
+- `frontend/public/demo-samples/public-preview/*.svg`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/architecture.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/roadmap.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n ... AGENTS.md project-tasks.md handoff.md docs/v2_demo/* docs/v1/* README.md frontend/src/*`
+- `git remote -v`
+- `mkdir -p frontend/public/demo-samples/public-preview`
+- `chmod +x start_demo.sh`
+- `cd frontend && npm run build`
+- `bash -n start_demo.sh`
+- `node -e ...` to validate `frontend/public/demo-samples/manifest.json`
+- `node -e ...` to validate `vercel.json`
+- `curl -I http://127.0.0.1:5173/demo-samples/manifest.json`
+- `curl -I http://127.0.0.1:5173/demo-samples/public-preview/prob.svg`
+- `git status --short --ignored frontend/public`
+- `git diff --check`
+
+Verification result:
+
+- `npm run build` passed with no TypeScript errors.
+- `start_demo.sh` passed shell syntax validation and is executable.
+- Public preview manifest validates with schema version 2 and three preview
+  samples.
+- Existing Vite dev server returned `200 OK` for the preview manifest and SVG
+  probability asset.
+- `git diff --check` passed.
+- `frontend/public/samples/` remains ignored; it should not be committed.
+
+Decisions made:
+
+- Public static hosting will use non-medical placeholder preview assets by
+  default when `/samples/manifest.json` is absent.
+- Real HC18-derived demo artifacts remain local under ignored
+  `frontend/public/samples/`, populated by `./start_demo.sh`.
+- Use Vercel config for the static frontend, with public URL entry deferred
+  until the user's deployment account is connected.
+
+Open issues:
+
+- No public URL was created in this session because Vercel/GitHub Pages setup
+  requires external account connection and likely a commit/push.
+- README has deployment instructions but no final live URL yet.
+- Full browser visual regression testing is still manual; no Playwright suite exists.
+
+Next exact task:
+
+- Connect the branch to Vercel or GitHub Pages and record the public URL, or
+  explicitly move to `V2.S7.1 - Live Inference Core` while deployment remains
+  blocked.
+
+## Previous Session
+
+Date: 2026-05-02
+
+Task id:
+`V2.S5` - Geometry Panel, Metrics, And Experiment Dashboard
+
+Branch:
+`v2-demo`
+
+Goal:
+Complete the remaining React saved-output sections using real v1 data:
+contour-vs-ellipse geometry, per-sample metrics, and the experiment dashboard.
+
+Files changed:
+
+- `frontend/src/App.tsx`
+- `frontend/src/styles.css`
+- `frontend/src/components/geometry/ContourEllipse.tsx`
+- `frontend/src/components/metrics/MetricsPanel.tsx`
+- `frontend/src/components/experiments/ExperimentDashboard.tsx`
+- `frontend/src/components/threshold/ThresholdViewer.tsx`
+- `frontend/public/experiments/summary.json`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/roadmap.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n ... AGENTS.md project-tasks.md handoff.md docs/v2_demo/* docs/v1/* frontend/src/*`
+- `sed -n ... /Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/components/insight.jsx`
+- `sed -n ... /Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/components/experiments.jsx`
+- `find outputs/runs -maxdepth 3 -name metrics.csv -o -name aggregate_metrics.csv`
+- `sed -n ... outputs/runs/*/metrics.csv outputs/runs/*/evaluation/test/aggregate_metrics.csv outputs/tables/local_ablation_summary.csv outputs/tables/local_postprocess_ablation_summary.csv`
+- `mkdir -p frontend/public/experiments`
+- `node -e ...` to generate `frontend/public/experiments/summary.json` from real v1 CSVs
+- `cd frontend && npm run build`
+- `rg -n "makeCurve|synthetic|ComingNextPanel|Geometry controls are next|Human-readable metrics arrive|Experiment dashboard comes next|U-Net\\+\\+|unet_pp|m\\.hd95\\b|hd95\\b" frontend/src frontend/public/experiments docs/v2_demo/project-tasks.md`
+- `curl -I http://127.0.0.1:5173/`
+- `curl -I http://127.0.0.1:5173/experiments/summary.json`
+- `node -e ...` to validate `summary.json` has three runs, ten epochs per run,
+  and ablation/post-processing rows
+- `git diff --check`
+- `git status --short --branch`
+
+Verification result:
+
+- `npm run build` passed with no TypeScript errors.
+- Existing Vite dev server returned `200 OK` for `/` and
+  `/experiments/summary.json`.
+- Experiment dashboard data comes from real `metrics.csv`, aggregate metrics,
+  `local_ablation_summary.csv`, and `local_postprocess_ablation_summary.csv`.
+- Removed the design's synthetic experiment curves and replaced the threshold
+  histogram with bins computed from real `prob.png` pixel data.
+
+Decisions made:
+
+- Use the real cleaned prediction mask asset as the contour visual layer instead
+  of inventing a fake contour path.
+- Commit only static experiment metrics JSON; medical image samples remain in
+  ignored `frontend/public/samples/`.
+
+Open issues:
+
+- Full browser interaction testing is still manual; no Playwright suite exists.
+- `V2.S6` still needs README polish, deployment configuration, and portfolio
+  artifact distribution decisions.
+- Public sample artifact distribution remains undecided.
+
+Next exact task:
+
+- Start `V2.S6 - Build, Deploy, And Portfolio Polish`.
+
+## Previous Session
+
+Date: 2026-05-02
+
+Task id:
+Live inference plan review integration for `V2.S7`
+
+Branch:
+`v2-demo`
+
+Goal:
+Analyze the Claude-reviewed live inference plan, confirm it fits the current
+React/static setup, and reconcile the roadmap, task plan, architecture, and
+decision docs before implementation continues.
+
+Files changed:
+
+- `docs/v2_demo/live-inference-plan.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/roadmap.md`
+- `docs/v2_demo/architecture.md`
+- `docs/v2_demo/project-spec.md`
+- `docs/v2_demo/DECISIONS.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n ... docs/v2_demo/live-inference-plan.md docs/v2_demo/project-tasks.md docs/v2_demo/roadmap.md docs/v2_demo/architecture.md docs/v2_demo/DECISIONS.md handoff.md project-tasks.md`
+- `rg -n "V2\\.P4|Live inference|live inference|V2\\.S7|backend|FastAPI|upload|uploaded|curated" docs/v2_demo/live-inference-plan.md docs/v2_demo/project-tasks.md docs/v2_demo/roadmap.md docs/v2_demo/architecture.md docs/v2_demo/project-spec.md project-tasks.md`
+- `rg -n "backend/main|backend/inference|backend/requirements|POST /predict|uploaded or selected|run model prediction on selected or uploaded|single session|Optional Live Inference FastAPI Backend|live-adapter" docs/v2_demo project-tasks.md handoff.md`
+- `rg -n "live-inference-plan|V2\\.S7\\.1|V2\\.S7\\.2|V2\\.S7\\.3|V2\\.S7\\.4|curated-sample|demo_live|assetOverrides|SampleAssets|arbitrary public" docs/v2_demo/project-tasks.md docs/v2_demo/roadmap.md docs/v2_demo/architecture.md docs/v2_demo/project-spec.md docs/v2_demo/DECISIONS.md project-tasks.md handoff.md`
+- `git diff --check`
+- `git status --short --branch`
+
+Verification result:
+
+- Confirmed the live inference plan is compatible with the current app if it
+  remains optional, curated-sample-first, and feeds the same React `Sample`
+  contract with asset overrides.
+- Updated V2.S7 from a broad single backend/upload task into four sub-sessions:
+  live inference core, FastAPI demo server, React live mode, and deployment
+  packaging.
+- Recorded that public upload, checkpoint publishing, and curated medical-image
+  hosting remain out of scope until explicitly approved.
+- `git diff --check` passed.
+
+Decisions made:
+
+- Use `demo_live/` for the FastAPI companion server.
+- Keep static saved-output replay as the default public portfolio path.
+- Prefer local live mode plus demo video first; use Hugging Face Spaces only if
+  publishing artifacts/checkpoints is later approved.
+
+Open issues:
+
+- Public distribution of checkpoint and curated medical-image artifacts is still
+  undecided.
+- The hosted curated-bundle input source is planned but not implemented.
+- `V2.S5` remains the next implementation session before live inference work.
+
+Next exact task:
+
+- Continue with `V2.S5 - Geometry Panel, Metrics, And Experiment Dashboard`
+  unless the user explicitly reprioritizes live inference.
+
+## Previous Session
+
+Date: 2026-05-02
+
+Task id:
+Live inference planning for `V2.S7`
+
+Branch:
+`v2-demo`
+
+Goal:
+Write a reviewable live inference plan covering reuse, integration with the
+current React/static setup, API shape, deployment options, and free-tier hosting
+tradeoffs.
+
+Files changed:
+
+- `docs/v2_demo/live-inference-plan.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n ... AGENTS.md project-tasks.md handoff.md docs/v2_demo/* docs/v1/*`
+- `rg --files docs/v2_demo docs/v1`
+- `rg -n "def main|predict|load_checkpoint|build_model|sigmoid|clean|ellipse|mask_contour|fit" src scripts/export_demo_artifacts.py src/inference src/utils src/data tests`
+- `sed -n ... scripts/export_demo_artifacts.py src/inference/predict.py src/utils/geometry.py`
+- Web review of official hosting docs for Vercel, GitHub Pages, and Hugging
+  Face Spaces.
+
+Verification result:
+
+- Confirmed v1 code already exposes reusable model loading, dataset loading,
+  probability inference, thresholding, geometry cleanup, ellipse fitting, and
+  contour HC utilities.
+- Confirmed current frontend can keep the existing `Sample` contract and add
+  live asset overrides rather than replacing the saved-output path.
+- Confirmed static hosting is suitable for Vercel/GitHub Pages, while Hugging
+  Face Spaces is the best candidate for hosted live ML inference.
+
+Decisions made:
+
+- Keep live inference optional and post-MVP; static saved-output mode remains
+  the reliable default.
+- Plan curated-sample live inference before any arbitrary upload workflow.
+- Prefer local live backend first, then decide whether to publish a Hugging Face
+  Space after artifact/checkpoint distribution review.
+
+Open issues:
+
+- Claude Code still needs to review `docs/v2_demo/live-inference-plan.md`.
+- Public distribution of checkpoint and curated medical-image artifacts is still
+  undecided.
+- `V2.S5` remains the next implementation session before live inference work.
+
+Next exact task:
+
+- Have Claude Code review `docs/v2_demo/live-inference-plan.md`, then continue
+  with `V2.S5 - Geometry Panel, Metrics, And Experiment Dashboard` unless the
+  user explicitly reprioritizes live inference.
+
+## Previous Session
 
 Date: 2026-05-02
 

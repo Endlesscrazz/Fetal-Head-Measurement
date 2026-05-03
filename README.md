@@ -28,6 +28,76 @@ use `Myproject.sh` as the executable runner, not `Myproject.ipynb`.
 - Complete v1 locally with clearly documented reduced-resource settings, then
   optionally rerun larger configs on CHPC.
 
+## V2 Portfolio Demo
+
+The v2 demo is a Vite + React + TypeScript pipeline explorer that turns the v1
+saved outputs into an interactive visual walkthrough:
+
+```text
+ultrasound -> target mask -> CNN probability -> thresholded mask -> ellipse fit -> HC measurement
+```
+
+Educational demo only. Not for clinical use.
+
+What the demo shows:
+
+- curated saved-output cases with successes, typical behavior, and failures,
+- stage-by-stage mask/probability/ellipse visualization,
+- a live threshold slider driven by exported `prob.png` probability maps,
+- contour-vs-ellipse HC comparison,
+- selected-case Dice, IoU, HD95, and HC error,
+- real local v1 experiment cards, sparklines, and ablation summaries.
+
+### Public Preview And Real Local Mode
+
+The repository does not commit or deploy the generated HC18 sample image bundle.
+If `frontend/public/samples/manifest.json` is absent, the app automatically loads
+a committed non-medical placeholder preview from `frontend/public/demo-samples/`.
+That keeps the public site safe to host while preserving the full UI.
+
+To view the public-safe preview locally:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+To view the real saved-output demo locally after exporting the curated HC18
+artifacts:
+
+```bash
+./start_demo.sh
+```
+
+`start_demo.sh` uses `outputs/demo_samples/` when present. If that bundle is
+missing, it runs:
+
+```bash
+.venv/bin/python scripts/export_demo_artifacts.py --run-id attention_unet_local_baseline --split test
+```
+
+Then it copies the generated bundle into ignored `frontend/public/samples/` and
+starts Vite at `http://localhost:5173`.
+
+### Deployment
+
+Vercel configuration is included in `vercel.json`.
+Public URL: pending first deployment connection.
+
+Recommended Vercel settings:
+
+```text
+Framework preset: Other
+Install command: npm --prefix frontend install
+Build command: npm --prefix frontend run build
+Output directory: frontend/dist
+```
+
+Until a public artifact policy is approved, deploy the placeholder preview only.
+The real HC18 sample bundle should remain local or be distributed separately
+after explicit approval.
+
 ## Expected Repository Structure
 
 ```text
@@ -52,6 +122,7 @@ use `Myproject.sh` as the executable runner, not `Myproject.ipynb`.
 │   │   └── submission-packaging.md
 │   └── v2_demo/
 ├── handoff.md
+├── frontend/
 ├── outputs/
 │   └── runs/
 ├── project-tasks.md

@@ -1,0 +1,110 @@
+{
+  "schema_version": 2,
+  "created_from_run_id": "public_preview_placeholder",
+  "created_from_split": "preview",
+  "safety_text": "Educational demo only. Not for clinical use.",
+  "samples": [
+    {
+      "id": "PUBLIC_STRONG",
+      "label": "Public preview: clean measurement path",
+      "cat": "strong",
+      "split": "preview",
+      "summary": "Non-medical placeholder art for the hosted preview. Run locally with exported HC18 artifacts for real saved model outputs.",
+      "assetBasePath": "/demo-samples/public-preview",
+      "assetExtension": "svg",
+      "previewOnly": true,
+      "metrics": {
+        "dice": 0.9907,
+        "iou": 0.9816,
+        "hd95_mm": 0.7,
+        "hcErr": 0.03,
+        "predHC": 191.44,
+        "targetHC": 191.47
+      },
+      "predEllipse": {
+        "cx": 198,
+        "cy": 128,
+        "rx": 132,
+        "ry": 88,
+        "rot": 0.08
+      },
+      "contourHC": 203.09,
+      "confidence": 0.98,
+      "spacingXMm": 0.246,
+      "spacingYMm": 0.249,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Public-safe schematic preview, not a medical image."
+    },
+    {
+      "id": "PUBLIC_TYPICAL",
+      "label": "Public preview: typical threshold case",
+      "cat": "typical",
+      "split": "preview",
+      "summary": "The same public-safe visual assets exercise the full UI when private sample artifacts are not deployed.",
+      "assetBasePath": "/demo-samples/public-preview",
+      "assetExtension": "svg",
+      "previewOnly": true,
+      "metrics": {
+        "dice": 0.9815,
+        "iou": 0.9636,
+        "hd95_mm": 1.63,
+        "hcErr": 2.33,
+        "predHC": 226.13,
+        "targetHC": 223.8
+      },
+      "predEllipse": {
+        "cx": 198,
+        "cy": 128,
+        "rx": 132,
+        "ry": 88,
+        "rot": 0.08
+      },
+      "contourHC": 232.15,
+      "confidence": 0.94,
+      "spacingXMm": 0.246,
+      "spacingYMm": 0.249,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Public-safe schematic preview, not a medical image."
+    },
+    {
+      "id": "PUBLIC_LIMIT",
+      "label": "Public preview: limitation case",
+      "cat": "failure",
+      "split": "preview",
+      "summary": "A preview case for discussing limits; local mode replaces this with real selected HC18 failure examples.",
+      "assetBasePath": "/demo-samples/public-preview",
+      "assetExtension": "svg",
+      "previewOnly": true,
+      "metrics": {
+        "dice": 0.8316,
+        "iou": 0.7118,
+        "hd95_mm": 8.13,
+        "hcErr": 11.84,
+        "predHC": 77.21,
+        "targetHC": 65.37
+      },
+      "predEllipse": {
+        "cx": 198,
+        "cy": 128,
+        "rx": 132,
+        "ry": 88,
+        "rot": 0.08
+      },
+      "contourHC": 91.4,
+      "confidence": 0.86,
+      "spacingXMm": 0.246,
+      "spacingYMm": 0.249,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Public-safe schematic preview, not a medical image."
+    }
+  ]
+}

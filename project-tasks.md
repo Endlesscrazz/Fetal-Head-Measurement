@@ -282,7 +282,7 @@ Done criteria:
 
 ### V2.P3 - React saved-output explorer
 
-Status: todo
+Status: done
 
 Goal:
 Build the portfolio app using saved v1 artifacts, not live model inference.
@@ -301,20 +301,33 @@ Done criteria:
 
 ### V2.P4 - Live inference integration
 
-Status: todo
+Status: in_progress
+
+Status note:
+`V2.S7.1` is complete: `src/inference/live.py` provides the reusable
+single-sample inference core and exporter helper reuse, with contract tests and
+a local curated-sample smoke path.
 
 Goal:
-Add optional checkpoint-backed inference through a swappable adapter.
+Add optional curated-sample checkpoint inference through a swappable adapter.
+Detailed planning lives in `docs/v2_demo/live-inference-plan.md`.
 
 Done criteria:
 
 - live mode works on at least one local sample;
 - live mode returns JSON compatible with the React `Sample` interface;
-- saved-output mode still works without checkpoints.
+- saved-output mode still works without checkpoints;
+- arbitrary public upload and artifact/checkpoint publishing remain out of
+  scope unless explicitly approved.
 
 ### V2.P5 - Portfolio README polish and screenshots
 
-Status: todo
+Status: blocked
+
+Status note:
+README polish, `start_demo.sh`, Vercel config, and public-safe preview assets
+are prepared. A public URL still requires connecting/pushing the branch to the
+user's Vercel or GitHub Pages setup.
 
 Goal:
 Make the project easy to review from GitHub and interview demos.

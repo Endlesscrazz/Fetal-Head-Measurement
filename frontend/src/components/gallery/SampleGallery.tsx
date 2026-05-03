@@ -11,10 +11,10 @@ function SampleCard({ sample, active, onClick }: { sample: Sample; active: boole
   return (
     <button className={`sample-card ${active ? "active" : ""}`} onClick={onClick} type="button">
       <div className="sample-card__thumb">
-        <img alt={`${sample.id} ultrasound`} src={sampleAssetPath(sample.id, "ultrasound")} />
+        <img alt={`${sample.id} ultrasound`} src={sampleAssetPath(sample, "ultrasound")} />
         <div
           className="sample-card__mask"
-          style={{ backgroundImage: `url(${sampleAssetPath(sample.id, "pred")})` }}
+          style={{ backgroundImage: `url(${sampleAssetPath(sample, "pred")})` }}
         />
         <div className="sample-card__badge">
           <CategoryBadge cat={sample.cat} size="sm" />
@@ -53,13 +53,18 @@ export function SampleGallery({
 }) {
   const filtered = filter === "all" ? samples : samples.filter((sample) => sample.cat === filter);
   const filters: GalleryFilter[] = ["all", "strong", "typical", "failure"];
+  const previewOnly = samples.every((sample) => sample.previewOnly);
 
   return (
     <div className="gallery">
       <div className="section-heading">
         <div>
           <div className="eyebrow">01 / Pick a case</div>
-          <h2 className="serif">Six curated examples: successes, typical cases, and failures.</h2>
+          <h2 className="serif">
+            {previewOnly
+              ? "Public preview cases: non-medical art with the same pipeline UI."
+              : `${samples.length} curated examples: successes, typical cases, and failures.`}
+          </h2>
         </div>
         <div className="gallery__filters" role="tablist" aria-label="Sample filters">
           {filters.map((nextFilter) => (

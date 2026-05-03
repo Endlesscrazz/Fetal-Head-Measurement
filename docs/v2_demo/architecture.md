@@ -35,14 +35,18 @@ Vite + React static frontend
 Future live inference adds:
 
 ```text
-Uploaded or selected image
+Selected curated image
         |
         v
-Checkpoint inference adapter
+FastAPI checkpoint inference adapter
         |
         v
 JSON compatible with the same React Sample interface
 ```
+
+Arbitrary upload is a later, explicitly approved extension. The first live mode
+is curated-sample-only so it can reuse known spacing, target metadata, and demo
+copy without turning the app into a public medical-image upload tool.
 
 ## 3. App modes
 
@@ -70,13 +74,21 @@ Live-inference mode is a later extension.
 Responsibilities:
 
 - load a PyTorch checkpoint,
-- preprocess selected or uploaded images,
+- preprocess selected curated images,
 - run model inference,
 - produce the same stage objects as saved-output mode,
+- return live-generated image assets as URLs or data URLs through component
+  asset overrides,
 - use the existing deterministic geometry utilities.
 
-This mode may require a checkpoint and the original HC18 image or a user-provided
-image. It must keep the safety disclaimer visible.
+This mode may require a checkpoint and either the local HC18 sample source or an
+approved curated live bundle. It must keep the safety disclaimer visible and
+must not become a dependency of saved-output mode.
+
+Implementation plan:
+See `docs/v2_demo/live-inference-plan.md`. The first implementation should use
+`demo_live/` as the FastAPI companion server and keep `frontend/public/samples/`
+manifest loading unchanged for static replay.
 
 ## 4. Demo file layout
 
@@ -322,6 +334,14 @@ For portfolio polish, prefer one of these paths after the local MVP works:
 
 This keeps the saved-output app stable while leaving the artifact-distribution
 choice explicit.
+
+Public hosting fallback:
+The committed app includes non-medical preview assets under
+`frontend/public/demo-samples/`. At runtime, the frontend first tries
+`/samples/manifest.json` for the real local saved-output bundle. If that file
+is absent on a public static host, it falls back to
+`/demo-samples/manifest.json` so the deployed app remains reviewable without
+publishing HC18-derived sample images.
 
 ## 10. Boundaries
 

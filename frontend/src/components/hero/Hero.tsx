@@ -40,6 +40,8 @@ export function Hero({
   sampleCount: number;
   onStartTour: () => void;
 }) {
+  const previewOnly = activeSample.previewOnly === true;
+
   return (
     <header className="hero">
       <div className="hero__copy">
@@ -51,8 +53,9 @@ export function Hero({
           See how a CNN measures the circumference of a fetal head, stage by stage.
         </h1>
         <p>
-          From a noisy ultrasound to a single number in millimetres: six visible steps, real saved
-          model outputs, and no retraining during the demo.
+          {previewOnly
+            ? "Public preview mode uses non-medical placeholder art. Run locally with exported HC18 artifacts to see the real saved model outputs."
+            : "From a noisy ultrasound to a single number in millimetres: six visible steps, real saved model outputs, and no retraining during the demo."}
         </p>
         <div className="hero__actions">
           <button className="hero__primary" onClick={onStartTour} type="button">
@@ -70,7 +73,7 @@ export function Hero({
           <Stat k="Curated samples" v={String(sampleCount)} />
           <Stat k="Pipeline stages" v="6" />
           <Stat k="Architecture" v="Attention U-Net" />
-          <Stat k="Mode" v="Static replay" />
+          <Stat k="Mode" v={previewOnly ? "Public preview" : "Static replay"} />
         </div>
       </div>
 

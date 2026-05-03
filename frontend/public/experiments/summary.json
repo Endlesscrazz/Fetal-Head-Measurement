@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "created_from": [
+    "outputs/runs/*/metrics.csv",
+    "outputs/runs/*/evaluation/test/aggregate_metrics.csv",
+    "outputs/tables/local_ablation_summary.csv",
+    "outputs/tables/local_postprocess_ablation_summary.csv"
+  ],
+  "training_note": "Local training: 10 epochs, 256x384, base channels 16.",
+  "runs": [
+    {
+      "id": "unet_local_baseline",
+      "name": "U-Net",
+      "tag": "baseline",
+      "model": "unet",
+      "split": "test",
+      "epochs": 10,
+      "imageSize": "256x384",
+      "baseChannels": 16,
+      "curve": [
+        {
+          "epoch": 1,
+          "train_loss": 0.315226,
+          "val_loss": 0.213756,
+          "val_dice": 0.87707
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.139286,
+          "val_loss": 0.10755,
+          "val_dice": 0.924412
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.095889,
+          "val_loss": 0.094385,
+          "val_dice": 0.930965
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.07842,
+          "val_loss": 0.074712,
+          "val_dice": 0.944445
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.070328,
+          "val_loss": 0.077616,
+          "val_dice": 0.943386
+        },
+        {
+          "epoch": 6,
+          "train_loss": 0.062392,
+          "val_loss": 0.06864,
+          "val_dice": 0.950315
+        },
+        {
+          "epoch": 7,
+          "train_loss": 0.059814,
+          "val_loss": 0.086868,
+          "val_dice": 0.940879
+        },
+        {
+          "epoch": 8,
+          "train_loss": 0.056206,
+          "val_loss": 0.064235,
+          "val_dice": 0.954548
+        },
+        {
+          "epoch": 9,
+          "train_loss": 0.052074,
+          "val_loss": 0.062983,
+          "val_dice": 0.952941
+        },
+        {
+          "epoch": 10,
+          "train_loss": 0.046167,
+          "val_loss": 0.069958,
+          "val_dice": 0.947683
+        }
+      ],
+      "summary": {
+        "n_samples": 149,
+        "mean_dice": 0.960029464691031,
+        "mean_iou": 0.9261325010083027,
+        "mean_hd95_mm": 3.0243472892924705,
+        "mae_hc_mm": 3.7794031714112966,
+        "rmse_hc_mm": 5.560335660834409,
+        "mean_signed_hc_error_mm": 0.5191292403048311
+      }
+    },
+    {
+      "id": "attention_unet_local_baseline",
+      "name": "Attention U-Net",
+      "tag": "best",
+      "model": "attention_unet",
+      "split": "test",
+      "epochs": 10,
+      "imageSize": "256x384",
+      "baseChannels": 16,
+      "curve": [
+        {
+          "epoch": 1,
+          "train_loss": 0.344667,
+          "val_loss": 0.282903,
+          "val_dice": 0.875544
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.154214,
+          "val_loss": 0.137113,
+          "val_dice": 0.915947
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.101698,
+          "val_loss": 0.093464,
+          "val_dice": 0.932974
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.079492,
+          "val_loss": 0.113505,
+          "val_dice": 0.91946
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.070902,
+          "val_loss": 0.082422,
+          "val_dice": 0.946811
+        },
+        {
+          "epoch": 6,
+          "train_loss": 0.061805,
+          "val_loss": 0.075532,
+          "val_dice": 0.946023
+        },
+        {
+          "epoch": 7,
+          "train_loss": 0.061335,
+          "val_loss": 0.064625,
+          "val_dice": 0.952655
+        },
+        {
+          "epoch": 8,
+          "train_loss": 0.052922,
+          "val_loss": 0.063976,
+          "val_dice": 0.953319
+        },
+        {
+          "epoch": 9,
+          "train_loss": 0.046727,
+          "val_loss": 0.061137,
+          "val_dice": 0.956836
+        },
+        {
+          "epoch": 10,
+          "train_loss": 0.047634,
+          "val_loss": 0.057424,
+          "val_dice": 0.958867
+        }
+      ],
+      "summary": {
+        "n_samples": 149,
+        "mean_dice": 0.9669096504804796,
+        "mean_iou": 0.9373004088319428,
+        "mean_hd95_mm": 2.377857831681982,
+        "mae_hc_mm": 3.3690199740621067,
+        "rmse_hc_mm": 4.676737310905865,
+        "mean_signed_hc_error_mm": 0.8438133065652521
+      }
+    },
+    {
+      "id": "attention_unet_aug",
+      "name": "Attn U-Net + Aug",
+      "tag": "ablation",
+      "model": "attention_unet",
+      "split": "test",
+      "epochs": 10,
+      "imageSize": "256x384",
+      "baseChannels": 16,
+      "curve": [
+        {
+          "epoch": 1,
+          "train_loss": 0.344655,
+          "val_loss": 0.233223,
+          "val_dice": 0.905294
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.153228,
+          "val_loss": 0.140143,
+          "val_dice": 0.91769
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.101066,
+          "val_loss": 0.135665,
+          "val_dice": 0.911531
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.08329,
+          "val_loss": 0.110353,
+          "val_dice": 0.921822
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.071966,
+          "val_loss": 0.083844,
+          "val_dice": 0.947363
+        },
+        {
+          "epoch": 6,
+          "train_loss": 0.06597,
+          "val_loss": 0.081299,
+          "val_dice": 0.945046
+        },
+        {
+          "epoch": 7,
+          "train_loss": 0.065486,
+          "val_loss": 0.075653,
+          "val_dice": 0.947993
+        },
+        {
+          "epoch": 8,
+          "train_loss": 0.060224,
+          "val_loss": 0.064117,
+          "val_dice": 0.952831
+        },
+        {
+          "epoch": 9,
+          "train_loss": 0.053944,
+          "val_loss": 0.067554,
+          "val_dice": 0.954144
+        },
+        {
+          "epoch": 10,
+          "train_loss": 0.053244,
+          "val_loss": 0.057748,
+          "val_dice": 0.958629
+        }
+      ],
+      "summary": {
+        "n_samples": 149,
+        "mean_dice": 0.9606493234015508,
+        "mean_iou": 0.9275399068905833,
+        "mean_hd95_mm": 2.8275554051082685,
+        "mae_hc_mm": 3.7176904327597384,
+        "rmse_hc_mm": 5.849106431712689,
+        "mean_signed_hc_error_mm": 0.5697613330815456
+      }
+    }
+  ],
+  "ablation": [
+    {
+      "run_id": "unet_local_baseline",
+      "label": "unet bce dice no aug",
+      "model": "unet",
+      "loss": "bce_dice",
+      "augmentation": true,
+      "mean_dice": 0.960029464691031,
+      "mean_iou": 0.9261325010083028,
+      "mean_hd95_mm": 3.0243472892924705,
+      "mae_hc_mm": 3.779403171411297,
+      "rmse_hc_mm": 5.560335660834409
+    },
+    {
+      "run_id": "attention_unet_local_baseline",
+      "label": "attention unet bce dice no aug",
+      "model": "attention_unet",
+      "loss": "bce_dice",
+      "augmentation": true,
+      "mean_dice": 0.9669096504804796,
+      "mean_iou": 0.9373004088319428,
+      "mean_hd95_mm": 2.377857831681982,
+      "mae_hc_mm": 3.3690199740621067,
+      "rmse_hc_mm": 4.676737310905865
+    },
+    {
+      "run_id": "attention_unet_dice_loss",
+      "label": "attention unet dice no aug",
+      "model": "attention_unet",
+      "loss": "dice",
+      "augmentation": true,
+      "mean_dice": 0.9614551247310964,
+      "mean_iou": 0.9293343631739684,
+      "mean_hd95_mm": 2.483984151607048,
+      "mae_hc_mm": 3.4548179339722496,
+      "rmse_hc_mm": 5.130971798245132
+    },
+    {
+      "run_id": "attention_unet_aug",
+      "label": "attention unet bce dice +aug",
+      "model": "attention_unet",
+      "loss": "bce_dice",
+      "augmentation": true,
+      "mean_dice": 0.9606493234015508,
+      "mean_iou": 0.9275399068905832,
+      "mean_hd95_mm": 2.8275554051082685,
+      "mae_hc_mm": 3.7176904327597384,
+      "rmse_hc_mm": 5.849106431712689
+    }
+  ],
+  "postprocess": [
+    {
+      "variant": "raw_contour_all_components",
+      "label": "raw contour all components",
+      "mean_signed_hc_error_mm": 16.7299116974229,
+      "mae_hc_mm": 16.7299116974229,
+      "rmse_hc_mm": 21.26963938439102,
+      "success_rate": 1,
+      "n_samples": 149
+    },
+    {
+      "variant": "raw_largest_contour_ellipse",
+      "label": "raw largest contour ellipse",
+      "mean_signed_hc_error_mm": 0.8438133065652521,
+      "mae_hc_mm": 3.3690199740621067,
+      "rmse_hc_mm": 4.676737310905865,
+      "success_rate": 1,
+      "n_samples": 149
+    },
+    {
+      "variant": "cleaned_contour",
+      "label": "cleaned contour",
+      "mean_signed_hc_error_mm": 14.03564224550388,
+      "mae_hc_mm": 14.036674358188709,
+      "rmse_hc_mm": 16.184570073468613,
+      "success_rate": 1,
+      "n_samples": 149
+    },
+    {
+      "variant": "cleaned_ellipse",
+      "label": "cleaned ellipse",
+      "mean_signed_hc_error_mm": 0.8438133065652512,
+      "mae_hc_mm": 3.3690199740621063,
+      "rmse_hc_mm": 4.676737310905865,
+      "success_rate": 1,
+      "n_samples": 149
+    }
+  ]
+}

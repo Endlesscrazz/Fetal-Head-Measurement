@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
+import { ExperimentDashboard } from "./components/experiments/ExperimentDashboard";
 import { SampleGallery, type GalleryFilter } from "./components/gallery/SampleGallery";
+import { ContourEllipse } from "./components/geometry/ContourEllipse";
 import { Hero } from "./components/hero/Hero";
+import { MetricsPanel } from "./components/metrics/MetricsPanel";
 import { NAV_SECTIONS, StickyNav, type NavSectionId } from "./components/nav/StickyNav";
 import { TourBar } from "./components/nav/TourBar";
 import { PipelineStepper } from "./components/pipeline/PipelineStepper";
@@ -58,24 +61,6 @@ function ActiveSampleStrip({ sample }: { sample: Sample }) {
         <Vital label="HC error" value={formatMm(sample.metrics.hcErr)} accent />
         <Vital label="Dice" value={sample.metrics.dice.toFixed(4)} />
       </div>
-    </div>
-  );
-}
-
-function ComingNextPanel({
-  eyebrow,
-  title,
-  body,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="card coming-next">
-      <div className="eyebrow">{eyebrow}</div>
-      <h2 className="serif">{title}</h2>
-      <p>{body}</p>
     </div>
   );
 }
@@ -232,27 +217,15 @@ function App() {
             </Section>
 
             <Section id="geometry">
-              <ComingNextPanel
-                body="V2.S5 will expand this section into the contour-vs-ellipse comparison using the real contourHC and predEllipse fields already present in this manifest."
-                eyebrow="04 / Geometry"
-                title="Geometry controls are next."
-              />
+              <ContourEllipse sample={activeSample} />
             </Section>
 
             <Section id="metrics">
-              <ComingNextPanel
-                body={`For the active sample, predicted HC is ${formatMm(activeSample.metrics.predHC)}, target HC is ${formatMm(activeSample.metrics.targetHC)}, and error is ${formatMm(activeSample.metrics.hcErr)}.`}
-                eyebrow="05 / Metrics"
-                title="Human-readable metrics arrive in S5."
-              />
+              <MetricsPanel sample={activeSample} />
             </Section>
 
             <Section className="research-section" id="research">
-              <ComingNextPanel
-                body={`This static replay is sourced from ${manifest.created_from_run_id}. V2.S5 will add real v1 run cards, sparklines, and ablation tables.`}
-                eyebrow="06 / Research"
-                title="Experiment dashboard comes next."
-              />
+              <ExperimentDashboard />
             </Section>
 
             <footer className="footer-strip">

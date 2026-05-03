@@ -17,25 +17,25 @@ function StageImage({ sample, stageId }: { sample: Sample; stageId: string }) {
       <img
         alt={`${sample.id} ultrasound`}
         className="stage-image__base"
-        src={sampleAssetPath(sample.id, "ultrasound")}
+        src={sampleAssetPath(sample, "ultrasound")}
         style={{ opacity: stageId === "target" ? 0.35 : stageId === "input" ? 1 : 0.62 }}
       />
       <img
         alt={`${sample.id} target mask`}
         className="stage-image__overlay stage-image__overlay--cyan"
-        src={sampleAssetPath(sample.id, "target")}
+        src={sampleAssetPath(sample, "target")}
         style={{ opacity: stageId === "target" ? 0.86 : 0 }}
       />
       <img
         alt={`${sample.id} probability map`}
         className="stage-image__overlay stage-image__overlay--amber"
-        src={sampleAssetPath(sample.id, "prob")}
+        src={sampleAssetPath(sample, "prob")}
         style={{ opacity: stageId === "prob" ? 0.86 : 0 }}
       />
       <img
         alt={`${sample.id} predicted mask`}
         className="stage-image__overlay stage-image__overlay--cyan"
-        src={sampleAssetPath(sample.id, "pred")}
+        src={sampleAssetPath(sample, "pred")}
         style={{ opacity: stageId === "mask" || stageId === "ellipse" || stageId === "hc" ? 0.58 : 0 }}
       />
 
@@ -117,7 +117,11 @@ function StageCallout({ sample, stageId }: { sample: Sample; stageId: string }) 
     case "target":
       return (
         <div className="stage-callout">
-          <Stat label="Target source" value="HC18 annotation" hint="Converted to a binary mask" />
+          <Stat
+            label="Target source"
+            value={sample.previewOnly ? "Preview mask" : "HC18 annotation"}
+            hint={sample.previewOnly ? "Non-medical placeholder art" : "Converted to a binary mask"}
+          />
           <Stat label="Target HC" value={formatMm(metrics.targetHC)} hint="Reference circumference" />
         </div>
       );
@@ -125,7 +129,11 @@ function StageCallout({ sample, stageId }: { sample: Sample; stageId: string }) 
       return (
         <div className="stage-callout">
           <Stat label="Mean confidence" value={`${(sample.confidence * 100).toFixed(0)}%`} hint="Inside predicted mask" />
-          <Stat label="Architecture" value="Attention U-Net" hint="Saved local checkpoint output" />
+          <Stat
+            label="Architecture"
+            value={sample.previewOnly ? "Preview mode" : "Attention U-Net"}
+            hint={sample.previewOnly ? "Local run shows real model output" : "Saved local checkpoint output"}
+          />
         </div>
       );
     case "mask":

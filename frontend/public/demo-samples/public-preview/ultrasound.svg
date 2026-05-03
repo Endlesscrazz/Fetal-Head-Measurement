@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="256" viewBox="0 0 384 256">
+  <defs>
+    <radialGradient id="beam" cx="50%" cy="46%" r="58%">
+      <stop offset="0%" stop-color="#8b95a4"/>
+      <stop offset="48%" stop-color="#2e3642"/>
+      <stop offset="100%" stop-color="#05070b"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="18"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.18"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="384" height="256" fill="#05070b"/>
+  <path d="M28 238 L118 22 Q192 5 266 22 L356 238 Z" fill="url(#beam)" opacity="0.82"/>
+  <ellipse cx="198" cy="128" rx="132" ry="88" fill="none" stroke="#d7dde8" stroke-width="10" opacity="0.44" transform="rotate(4.5 198 128)"/>
+  <ellipse cx="198" cy="128" rx="102" ry="62" fill="#111722" opacity="0.5" transform="rotate(4.5 198 128)"/>
+  <path d="M98 139 C132 96 178 72 232 78 C278 83 306 114 315 150" fill="none" stroke="#cfd5df" stroke-width="4" opacity="0.32"/>
+  <rect width="384" height="256" filter="url(#grain)" opacity="0.7"/>
+</svg>

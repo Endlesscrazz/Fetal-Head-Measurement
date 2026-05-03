@@ -19,7 +19,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.validate_demo_manifest import REQUIRED_SAFETY_TEXT, validate_manifest
-from src.data.dataset import HC18Dataset
+from src.inference.live import build_dataset_by_sample
+from src.inference.live import category_for_frontend
+from src.inference.live import load_curated_samples
+from src.inference.live import load_json
+from src.inference.live import probability_to_uint8
+from src.inference.live import run_probability_inference
+from src.inference.live import summary_from_curated
+from src.inference.live import tensor_to_uint8_image
 from src.inference.predict import load_model_from_checkpoint
 from src.inference.predict import save_mask
 from src.utils.geometry import mask_contour_length_mm
@@ -27,11 +34,6 @@ from src.utils.geometry import mask_contour_length_mm
 
 DEFAULT_CURATED_PATH = Path("docs/v2_demo/curated-samples.json")
 DEFAULT_OUTPUT_DIR = Path("outputs/demo_samples")
-
-
-def _load_json(path: str | Path) -> dict[str, Any]:
-    with Path(path).open("r", encoding="utf-8") as handle:
-        return json.load(handle)
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -58,82 +60,6 @@ def _read_binary_mask(path: str | Path) -> np.ndarray:
     if mask is None:
         raise FileNotFoundError(f"Could not read mask: {path}")
     return (mask > 0).astype(np.uint8)
-
-
-def _tensor_to_uint8_image(image_tensor) -> np.ndarray:
-    image = image_tensor.squeeze(0).detach().cpu().numpy()
-    image = image - image.min()
-    denom = image.max()
-    if denom > 1e-6:
-        image = image / denom
-    return (image * 255).astype(np.uint8)
-
-
-def _probability_to_uint8(probability: np.ndarray) -> np.ndarray:
-    return np.clip(np.rint(probability * 255.0), 0, 255).astype(np.uint8)
-
-
-def _run_probability_inference(model: torch.nn.Module, image_tensor: torch.Tensor, device: torch.device) -> np.ndarray:
-    image = image_tensor.unsqueeze(0).to(device)
-    with torch.no_grad():
-        logits = model(image)
-        probability = torch.sigmoid(logits).squeeze().detach().cpu().numpy()
-    return probability.astype(np.float32)
-
-
-def _category_for_frontend(category: str) -> str:
-    if category in {"strong", "typical", "failure"}:
-        return category
-    if category in {"high_error", "edge"}:
-        return "failure"
-    if category in {"cleanup_ellipse", "cleanup", "ellipse"}:
-        return "typical"
-    return "typical"
-
-
-def _summary_from_curated(curated_sample: dict[str, Any]) -> str:
-    reason = str(curated_sample.get("reason", "")).strip()
-    if reason:
-        return reason
-    return str(curated_sample.get("label", curated_sample.get("id", "")))
-
-
-def _load_curated_samples(path: Path, sample_ids: list[str] | None) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    curated = _load_json(path)
-    samples = list(curated.get("samples", []))
-    if sample_ids:
-        by_id = {str(sample["id"]): sample for sample in samples}
-        selected = []
-        for sample_id in sample_ids:
-            selected.append(
-                by_id.get(
-                    sample_id,
-                    {
-                        "id": sample_id,
-                        "label": sample_id,
-                        "category": "custom",
-                        "tags": ["custom"],
-                        "reason": "Selected through --sample-id override.",
-                    },
-                )
-            )
-        samples = selected
-    if not samples:
-        raise ValueError("No curated samples found")
-    return curated, samples
-
-
-def _build_dataset_by_sample(config: dict[str, Any], split: str) -> dict[str, dict[str, Any]]:
-    dataset_config = config["dataset"]
-    dataset = HC18Dataset(
-        dataset_config["root"],
-        split_file=Path(config["splits"]["dir"]) / f"{split}.csv",
-        subset=dataset_config.get("subset", "training"),
-        image_size=tuple(dataset_config["image_size"]),
-        target_type=dataset_config.get("target_type", "filled"),
-        band_width=int(dataset_config.get("band_width", 3)),
-    )
-    return {str(sample["sample_id"]): sample for sample in dataset}
 
 
 def _require_raw_data(config: dict[str, Any]) -> None:
@@ -170,13 +96,13 @@ def export_demo_artifacts(
     metrics_path = run_dir / "evaluation" / split / "per_sample_metrics.csv"
     checkpoint_path = run_dir / "best_model.pt"
 
-    config = _load_json(config_path)
+    config = load_json(config_path)
     _require_raw_data(config)
     if not checkpoint_path.exists():
         raise FileNotFoundError(f"Missing checkpoint required for prob.png export: {checkpoint_path}")
 
-    curated, curated_samples = _load_curated_samples(curated_path, sample_ids)
-    dataset_by_sample = _build_dataset_by_sample(config, split)
+    curated, curated_samples = load_curated_samples(curated_path, sample_ids)
+    dataset_by_sample = build_dataset_by_sample(config, split)
     predictions = pd.read_csv(predictions_path).set_index("sample_id")
     metrics = pd.read_csv(metrics_path).set_index("sample_id")
     device = torch.device("cpu")
@@ -203,18 +129,18 @@ def export_demo_artifacts(
         prob_path = sample_dir / "prob.png"
         metadata_path = sample_dir / "metadata.json"
 
-        image_uint8 = _tensor_to_uint8_image(sample["image"])
+        image_uint8 = tensor_to_uint8_image(sample["image"])
         ultrasound_path.parent.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(ultrasound_path), image_uint8)
         save_mask(target_path, sample["mask"].squeeze(0).detach().cpu().numpy())
         _copy_required_file(prediction["cleaned_mask_path"], pred_path)
 
-        probability = _run_probability_inference(model, sample["image"], device)
+        probability = run_probability_inference(model, sample["image"], device)
         if probability.shape != image_uint8.shape:
             raise ValueError(
                 f"{sample_id}: probability shape {probability.shape} does not match image shape {image_uint8.shape}"
             )
-        cv2.imwrite(str(prob_path), _probability_to_uint8(probability))
+        cv2.imwrite(str(prob_path), probability_to_uint8(probability))
 
         spacing = (float(prediction["spacing_x_mm"]), float(prediction["spacing_y_mm"]))
         cleaned_mask = _read_binary_mask(pred_path)
@@ -236,7 +162,7 @@ def export_demo_artifacts(
             "ry": float(prediction["ellipse_semi_axis_b"]),
             "rot": float(math.radians(angle_deg)),
         }
-        frontend_category = _category_for_frontend(str(curated_sample.get("category", "")))
+        frontend_category = category_for_frontend(str(curated_sample.get("category", "")))
         metrics_payload = {
             "dice": float(metric["dice"]),
             "iou": float(metric["iou"]),
@@ -254,7 +180,7 @@ def export_demo_artifacts(
             "cat": frontend_category,
             "source_category": str(curated_sample.get("category", "")),
             "label": str(curated_sample.get("label", sample_id)),
-            "summary": _summary_from_curated(curated_sample),
+            "summary": summary_from_curated(curated_sample),
             "tags": list(curated_sample.get("tags", [])),
             "reason": str(curated_sample.get("reason", "")),
             "threshold": float(prediction["threshold"]),
@@ -294,7 +220,7 @@ def export_demo_artifacts(
                 "label": str(curated_sample.get("label", sample_id)),
                 "cat": frontend_category,
                 "split": split,
-                "summary": _summary_from_curated(curated_sample),
+                "summary": summary_from_curated(curated_sample),
                 "metrics": metrics_payload,
                 "predEllipse": pred_ellipse,
                 "contourHC": float(contour_hc_mm),

@@ -1,10 +1,14 @@
-import type { Manifest } from "../types/sample";
+import type { Manifest, Sample } from "../types/sample";
 
 const DEFAULT_MANIFEST_PATH = "/samples/manifest.json";
+const PUBLIC_PREVIEW_MANIFEST_PATH = "/demo-samples/manifest.json";
 
 export async function loadManifest(path = DEFAULT_MANIFEST_PATH): Promise<Manifest> {
   const response = await fetch(path);
   if (!response.ok) {
+    if (path === DEFAULT_MANIFEST_PATH) {
+      return loadManifest(PUBLIC_PREVIEW_MANIFEST_PATH);
+    }
     throw new Error(`Could not load manifest at ${path}: ${response.status} ${response.statusText}`);
   }
 
@@ -18,6 +22,8 @@ export async function loadManifest(path = DEFAULT_MANIFEST_PATH): Promise<Manife
   return manifest;
 }
 
-export function sampleAssetPath(sampleId: string, filename: "ultrasound" | "target" | "pred" | "prob"): string {
-  return `/samples/${sampleId}/${filename}.png`;
+export function sampleAssetPath(sample: Sample, filename: "ultrasound" | "target" | "pred" | "prob"): string {
+  const base = sample.assetBasePath ?? `/samples/${sample.id}`;
+  const extension = sample.assetExtension ?? "png";
+  return `${base}/${filename}.${extension}`;
 }

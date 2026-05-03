@@ -99,9 +99,10 @@ The v2 MVP is successful when:
 
 After saved-output MVP:
 
-- add live checkpoint inference,
-- add an upload/select-image workflow,
-- add a FastAPI backend for optional live inference,
+- add curated-sample live checkpoint inference through a FastAPI companion
+  server,
+- add an upload/select-image workflow only after curated live inference is
+  stable and explicitly approved,
 - add failure-case gallery,
 - add a model comparison view,
 - add README screenshots or an animated GIF,

@@ -154,7 +154,7 @@ Done criteria:
 
 ## V2.P3 - React saved-output explorer
 
-Status: todo
+Status: done
 
 Estimated effort:
 8-12 hours
@@ -197,26 +197,47 @@ Done criteria:
 
 ## V2.P4 - Live inference integration
 
-Status: todo
+Status: in_progress
+
+Status note:
+`V2.S7.1` live inference core is implemented. The remaining live work is the
+FastAPI companion server, React live-mode controls, and live deployment
+packaging.
 
 Estimated effort:
-6-10 hours
+8-14 hours
 
 Goal:
-Add optional model inference through a swappable adapter.
+Add optional curated-sample checkpoint inference through a swappable adapter.
+
+Planning source:
+`docs/v2_demo/live-inference-plan.md`
 
 Expected behavior:
 
-- load a checkpoint when provided,
-- run model prediction on selected or uploaded images,
+- saved-output mode stays the default and works without a backend,
+- load a checkpoint once in a FastAPI demo server when live mode is enabled,
+- run model prediction on selected curated samples first,
 - produce JSON compatible with the React `Sample` interface defined in
   `docs/v2_demo/architecture.md`,
-- show probability heatmaps when available.
+- provide live image assets as URLs or data URLs through asset overrides,
+- show probability heatmaps when available,
+- show backend-offline and backend-waking states gracefully.
+
+Out of scope for the first live milestone:
+
+- arbitrary public medical-image uploads,
+- web retraining,
+- publishing checkpoints, raw HC18 data, or curated medical-image bundles
+  without explicit user approval.
 
 Verification:
 
 - live mode works on at least one local sample,
-- saved-output mode still works without checkpoint files.
+- saved-output mode still works without checkpoint files,
+- `StageDetail` and `ThresholdViewer` render both static paths and live assets,
+- live API responses validate against the same required fields as static
+  manifest samples.
 
 Done criteria:
 
@@ -224,7 +245,12 @@ Done criteria:
 
 ## V2.P5 - Portfolio README polish and screenshots
 
-Status: todo
+Status: blocked
+
+Status note:
+Local run docs, `start_demo.sh`, Vercel config, and public-safe preview assets
+are ready. Public URL publication still requires connecting the GitHub branch to
+Vercel or GitHub Pages.
 
 Estimated effort:
 3-4 hours
