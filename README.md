@@ -83,7 +83,7 @@ starts Vite at `http://localhost:5173`.
 ### Deployment
 
 Vercel configuration is included in `vercel.json`.
-Public URL: pending first deployment connection.
+Public URL: `https://fetal-head-measurement-mgv1fgahc-shreyas-projects-843f684c.vercel.app/`
 
 Recommended Vercel settings:
 

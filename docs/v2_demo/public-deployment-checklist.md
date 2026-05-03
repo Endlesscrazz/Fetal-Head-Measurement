@@ -6,6 +6,9 @@ Purpose:
 This is the shared runbook for getting the v2 React demo to a public URL
 without publishing the real HC18 sample bundle.
 
+Current public preview URL:
+`https://fetal-head-measurement-mgv1fgahc-shreyas-projects-843f684c.vercel.app/`
+
 Recommended path:
 Use Vercel for the static frontend. The current app already includes a safe
 public fallback preview under `frontend/public/demo-samples/`, so we can deploy
@@ -105,6 +108,9 @@ Branch recommendation:
 
 Owner:
 Shared
+
+Status:
+Initial Vercel preview URL exists
 
 What to check:
 

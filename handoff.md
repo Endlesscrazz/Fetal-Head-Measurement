@@ -29,7 +29,8 @@ Newest entry stays at the top.
   model ablation, and post-processing ablation sections.
 - V2.S6 portfolio polish is prepared but blocked on external deployment account
   work: README, `start_demo.sh`, `vercel.json`, and public-safe preview assets
-  exist; a public URL still needs Vercel/GitHub Pages connection.
+  exist; the first Vercel preview URL is live and now needs verification/polish
+  rather than initial setup.
 - `docs/v2_demo/public-deployment-checklist.md` now captures the exact shared
   steps and what the user must do in Vercel/GitHub Pages to unblock the first
   public deployment URL.
@@ -41,6 +42,63 @@ Newest entry stays at the top.
   `Sample`-compatible output. FastAPI and React live mode remain next.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+Vercel preview URL review and favicon follow-up
+
+Branch:
+`v2-demo`
+
+Goal:
+Record the first public Vercel preview URL, explain the reported browser
+resource errors, and remove the missing favicon request from the deployed app.
+
+Files changed:
+
+- `frontend/index.html`
+- `frontend/public/favicon.svg`
+- `README.md`
+- `docs/v2_demo/public-deployment-checklist.md`
+- `handoff.md`
+
+Commands run:
+
+- `curl -I https://fetal-head-measurement-mgv1fgahc-shreyas-projects-843f684c.vercel.app/`
+- `curl -I https://fetal-head-measurement-mgv1fgahc-shreyas-projects-843f684c.vercel.app/favicon.ico`
+- `sed -n '1,200p' frontend/index.html`
+- `find frontend/public -maxdepth 2 -type f | sort`
+
+Verification result:
+
+- Confirmed the deployed page currently returns Vercel auth-protected responses
+  to unauthenticated `curl`, which means browser-only Vercel access policy is
+  in effect.
+- Confirmed the app had no favicon declared, so `/favicon.ico` 404s were
+  expected from the browser.
+- Added a linked SVG favicon so the next deployment should stop the missing
+  favicon request in normal browser loads.
+
+Decisions made:
+
+- Record the current Vercel preview URL in repo docs now that it exists.
+- Treat the `favicon.ico` error as an app polish issue and the
+  `2filler...checkSupportDomain` console message as external/non-app unless it
+  reproduces from the app bundle itself.
+
+Open issues:
+
+- The favicon fix still needs a fresh Vercel deployment to appear publicly.
+- The deployed site appears to be behind Vercel authentication for non-browser
+  requests; decide whether to keep that or make the preview fully public.
+
+Next exact task:
+
+- Redeploy the updated branch to Vercel, then verify the favicon request is gone
+  and decide whether Vercel deployment protection should remain enabled.
+
+## Previous Session
 
 Date: 2026-05-03
 
