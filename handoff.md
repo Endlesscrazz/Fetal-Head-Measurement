@@ -31,6 +31,10 @@ Newest entry stays at the top.
   work: README, `start_demo.sh`, `vercel.json`, and public-safe preview assets
   exist; the first Vercel preview URL is live and now needs verification/polish
   rather than initial setup.
+- Production preview cleanup is partially complete: the frontend now prefers the
+  public preview manifest on non-local hosts and requests Canvas 2D contexts
+  with `willReadFrequently` to avoid noisy deployment-console warnings after the
+  next Vercel redeploy.
 - `docs/v2_demo/public-deployment-checklist.md` now captures the exact shared
   steps and what the user must do in Vercel/GitHub Pages to unblock the first
   public deployment URL.
@@ -42,6 +46,65 @@ Newest entry stays at the top.
   `Sample`-compatible output. FastAPI and React live mode remain next.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+Vercel preview manifest fallback and canvas warning cleanup
+
+Branch:
+`v2-demo`
+
+Goal:
+Remove the expected-but-misleading production `/samples/manifest.json` 404 from
+the public Vercel preview and quiet the Canvas 2D readback warning in the
+threshold viewer.
+
+Files changed:
+
+- `frontend/src/data/samples.ts`
+- `frontend/src/components/threshold/ThresholdViewer.tsx`
+- `frontend/src/App.tsx`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n '1,240p' frontend/src/data/samples.ts`
+- `sed -n '1,320p' frontend/src/components/threshold/ThresholdViewer.tsx`
+- `sed -n '1,240p' frontend/src/App.tsx`
+- `rg -n "getImageData|/samples/manifest.json|/demo-samples/manifest.json" frontend -g '*.*'`
+- `cd frontend && npm run build`
+- `git diff --check`
+
+Verification result:
+
+- Frontend production build passed.
+- `git diff --check` passed.
+- Confirmed the loader now prefers `/demo-samples/manifest.json` on deployed
+  non-local hosts, while localhost still prefers `/samples/manifest.json`.
+- Confirmed canvas contexts used for repeated `getImageData` calls now request
+  `{ willReadFrequently: true }`.
+
+Decisions made:
+
+- Keep the dual-manifest fallback, but reverse the preference by hostname so
+  deployed previews stop generating a harmless 404 before loading the real
+  public-preview content.
+- Treat the `checkSupportDomain` message as external to the app bundle unless a
+  concrete repo-owned source is identified.
+
+Open issues:
+
+- The Vercel preview must redeploy from the latest branch commit before the
+  browser console reflects these fixes.
+- Deployment protection/public-access policy still needs a final decision.
+
+Next exact task:
+
+- Push the preview cleanup commit and verify the redeployed Vercel console no
+  longer shows the manifest-path 404 or the canvas readback warning.
+
+## Previous Session
 
 Date: 2026-05-03
 

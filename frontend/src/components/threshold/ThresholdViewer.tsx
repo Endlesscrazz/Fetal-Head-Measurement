@@ -101,7 +101,7 @@ export function ThresholdViewer({ sample }: { sample: Sample }) {
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       if (!ctx) return;
       ctx.drawImage(probImg, 0, 0, width, height);
       probDataRef.current = ctx.getImageData(0, 0, width, height);
@@ -128,7 +128,7 @@ export function ThresholdViewer({ sample }: { sample: Sample }) {
     const ultrasound = ultrasoundRef.current;
     if (!canvas || !probData || !ultrasound) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
     ctx.drawImage(ultrasound, 0, 0, width, height);

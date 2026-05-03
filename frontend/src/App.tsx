@@ -75,6 +75,13 @@ function App() {
   const [tourStep, setTourStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const loadingManifestPath =
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+      ? "/demo-samples/manifest.json"
+      : "/samples/manifest.json";
+
   useEffect(() => {
     let cancelled = false;
 
@@ -181,7 +188,7 @@ function App() {
         {!manifest && !error && (
           <section className="card load-state">
             <div className="eyebrow">Loading</div>
-            <p>Loading /samples/manifest.json...</p>
+            <p>Loading {loadingManifestPath}...</p>
           </section>
         )}
 

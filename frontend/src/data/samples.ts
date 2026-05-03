@@ -3,11 +3,24 @@ import type { Manifest, Sample } from "../types/sample";
 const DEFAULT_MANIFEST_PATH = "/samples/manifest.json";
 const PUBLIC_PREVIEW_MANIFEST_PATH = "/demo-samples/manifest.json";
 
-export async function loadManifest(path = DEFAULT_MANIFEST_PATH): Promise<Manifest> {
+function preferredManifestPath(): string {
+  if (typeof window === "undefined") {
+    return DEFAULT_MANIFEST_PATH;
+  }
+
+  const { hostname } = window.location;
+  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
+  return isLocalHost ? DEFAULT_MANIFEST_PATH : PUBLIC_PREVIEW_MANIFEST_PATH;
+}
+
+export async function loadManifest(path = preferredManifestPath()): Promise<Manifest> {
   const response = await fetch(path);
   if (!response.ok) {
     if (path === DEFAULT_MANIFEST_PATH) {
       return loadManifest(PUBLIC_PREVIEW_MANIFEST_PATH);
+    }
+    if (path === PUBLIC_PREVIEW_MANIFEST_PATH) {
+      return loadManifest(DEFAULT_MANIFEST_PATH);
     }
     throw new Error(`Could not load manifest at ${path}: ${response.status} ${response.statusText}`);
   }
