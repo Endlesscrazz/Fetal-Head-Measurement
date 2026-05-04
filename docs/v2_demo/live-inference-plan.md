@@ -74,14 +74,19 @@ The React frontend already has most of the visual system needed:
 
 - `frontend/src/types/sample.ts`
   - keep the `Sample` interface as the shared app-facing contract.
-- `frontend/src/components/gallery/SampleGallery.tsx`
-  - reuse the selected sample and active state.
-- `frontend/src/components/pipeline/PipelineStepper.tsx`
-  - reuse for live progress stages.
-- `frontend/src/components/pipeline/StageDetail.tsx`
+- `frontend/src/components/hero/HeroPlayer.tsx`
+  - keep the top-level player shell; live mode should swap data and status, not
+    redesign the hero.
+- `frontend/src/components/transport/Transport.tsx`
+  - reuse for live progress stages, status pill, and timing chip.
+- `frontend/src/components/stage/MediaStage.tsx`
   - reuse once live outputs are converted to the same asset paths or data URLs.
-- `frontend/src/components/threshold/ThresholdViewer.tsx`
+- `frontend/src/components/hero/StageCaption.tsx`
+  - reuse the stable caption slot for live sample metadata and per-stage facts.
+- `frontend/src/components/threshold/ThresholdSection.tsx`
   - reuse if live inference returns a `prob.png` URL or same-origin data URL.
+- `frontend/src/components/nav/SubNav.tsx`
+  - reuse the mode-toggle stub rather than adding a second live-mode entry point.
 - `frontend/src/components/shared/SafetyChip.tsx`
   - keep always visible.
 - `frontend/src/data/samples.ts`
@@ -93,10 +98,13 @@ Expected frontend additions:
 ```text
 frontend/src/data/live-api.ts
 frontend/src/types/live.ts
-frontend/src/components/live/ModeToggle.tsx
 frontend/src/components/live/LiveRunPanel.tsx
 frontend/src/components/live/RunStatus.tsx
 ```
+
+Mode-toggle note:
+The live/static toggle is integrated into the right cluster of `SubNav.tsx` in
+the redesign handoff. Do not create a separate `ModeToggle.tsx` component.
 
 ### Backend and v1 reuse
 
@@ -141,6 +149,7 @@ def run_live_inference(
     threshold: float = 0.5,
     device: str = "cpu",
     timeout_s: float = 30.0,
+    include_attention: bool = False,
 ) -> LiveInferenceResult:
     ...
 ```
@@ -148,6 +157,14 @@ def run_live_inference(
 The `timeout_s` parameter should raise `TimeoutError` if the forward pass plus
 geometry steps exceed the limit. CPU inference on 256×384 typically takes
 ~300–800 ms; 30 s is generous but prevents hung requests on overloaded hosts.
+
+The `include_attention` flag controls whether forward hooks are registered on the
+attention gate sub-modules before the forward pass. When `True`, the returned
+`LiveInferenceResult` includes a dict of attention coefficient maps keyed by gate
+name (e.g., `"decoder4"`, `"decoder3"`). Hook registration belongs in the FastAPI
+server layer (V2.S7.2), not in callers that do not need attention maps. Setting
+`include_attention=False` (the default) adds no overhead to the saved-output
+exporter path.
 
 ## 4. Target Architecture
 
@@ -222,6 +239,14 @@ Response:
 {
   "mode": "live",
   "runtime_ms": 742,
+  "step_times_ms": {
+    "preprocess": 12,
+    "inference": 680,
+    "threshold": 8,
+    "cleanup": 14,
+    "ellipse": 18,
+    "measurement": 10
+  },
   "sample": {
     "id": "296_HC",
     "label": "Strong prediction: near-perfect HC",
@@ -254,7 +279,11 @@ Response:
     "ultrasound": "/live/runs/abc123/ultrasound.png",
     "target": "/live/runs/abc123/target.png",
     "prob": "/live/runs/abc123/prob.png",
-    "pred": "/live/runs/abc123/pred.png"
+    "pred": "/live/runs/abc123/pred.png",
+    "attention": {
+      "decoder4": "/live/runs/abc123/attention_decoder4.png",
+      "decoder3": "/live/runs/abc123/attention_decoder3.png"
+    }
   }
 }
 ```
@@ -303,29 +332,30 @@ can be ephemeral. The frontend can support both:
 
 ```typescript
 type SampleAssets = {
-  ultrasound: string; // URL or data URL
-  target: string;
-  prob: string;
-  pred: string;
+  ultrasound?: string;  // URL or data:image/png;base64,... string
+  target?: string;
+  prob?: string;
+  pred?: string;
+  attention?: Record<string, string>;  // gate name → URL or data URL
 };
 ```
 
-Then `StageDetail` and `ThresholdViewer` should accept asset overrides instead
+Then `MediaStage` and `ThresholdSection` should accept asset overrides instead
 of always deriving `/samples/<id>/<file>.png`.
 
-**Required `StageDetail` refactor:** add an `assetOverrides` prop so live mode
+**Required stage/media refactor:** add an `assetOverrides` prop so live mode
 can supply URLs without changing how static mode works:
 
 ```typescript
-interface StageDetailProps {
+interface MediaStageProps {
   sample: Sample;
-  stageIndex: number;
+  stageIdx: number;
   assetOverrides?: SampleAssets; // undefined = static mode, derive paths from id
 }
 ```
 
 Static paths are derived as before when `assetOverrides` is undefined.
-Live mode passes `liveRun.assets`. `ThresholdViewer` needs the same treatment
+Live mode passes `liveRun.assets`. `ThresholdSection` needs the same treatment
 so it reads from `assetOverrides.prob` in live mode instead of
 `/samples/<id>/prob.png`.
 
@@ -347,8 +377,9 @@ This is the integration point between saved-output replay and live inference.
 Components should consume `SampleAssets`; they should not know whether the
 assets came from `frontend/public/samples/`, `demo_live/.cache/`, or data URLs.
 
-Place this helper at `frontend/src/utils/assets.ts`. Import it in `StageDetail`,
-`ThresholdViewer`, and `LiveRunPanel` — nowhere else should derive image paths.
+Place this helper at `frontend/src/utils/assets.ts`. Import it in `MediaStage`,
+`ThresholdSection`, `GeometryV2`, and `LiveRunPanel` — nowhere else should
+derive image paths.
 
 ## 6. Frontend Integration Plan
 
@@ -769,9 +800,12 @@ Expected files:
 ```text
 frontend/src/data/live-api.ts
 frontend/src/types/live.ts
-frontend/src/components/live/ModeToggle.tsx
 frontend/src/components/live/LiveRunPanel.tsx
 ```
+
+Mode-toggle note:
+The toggle lives in the right cluster of `SubNav.tsx` in the redesign handoff.
+Do not create a separate `ModeToggle.tsx` component.
 
 Verification:
 
@@ -859,8 +893,8 @@ path URL or a `data:image/png;base64,...` string). Default to file URLs in
 local mode, data URLs for hosted mode where ephemeral storage cannot be
 assumed.
 
-The frontend must never assume an asset URL format. `ThresholdViewer` and
-`StageDetail` should accept the URL string and let the browser or canvas API
+The frontend must never assume an asset URL format. `ThresholdSection` and
+`MediaStage` should accept the URL string and let the browser or canvas API
 handle both forms.
 
 **Q3 — Refactor exporter before building backend?**

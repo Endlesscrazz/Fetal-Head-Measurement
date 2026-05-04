@@ -31,6 +31,6 @@ export async function loadManifest(path = preferredManifestPath()): Promise<Mani
 
 export function sampleAssetPath(sample: Sample, filename: "ultrasound" | "target" | "pred" | "prob"): string {
   const base = sample.assetBasePath ?? `/samples/${sample.id}`;
-  const extension = sample.assetExtension ?? "png";
+  const extension = (sample.assetExtension ?? "png").replace(/^\./, "");
   return `${base}/${filename}.${extension}`;
 }

@@ -1,21 +1,33 @@
 # Production and Visualization Roadmap
 
 Date: 2026-05-03
+Last reviewed: 2026-05-04
 
 Purpose:
 Document the two deployment paths, how to make live inference production-grade
 without cost, and a research-backed set of visualization improvements to make
 the demo meaningfully better than a generic ML project page.
 
-Current project status (as of 2026-05-03):
+Current project status (as of 2026-05-04 review):
 - V2.S0 through V2.S6 are complete. The static MVP is live at
   https://fetal-head-measurement.vercel.app/
+- V2.S6.1 (Frontend Redesign Refresh From Handoff V2) is implemented locally.
+  The redesign spec at `docs/v2_demo/frontend-design-handoff-v2.md` is now the
+  real code path in `frontend/src/`. The existing deployed site still runs the
+  pre-redesign UI until the next frontend deployment.
 - V2.S7 is in_progress: V2.S7.1 (live inference core) is done; V2.S7.2–S7.4
-  (FastAPI server, React live mode, deployment) are todo.
-- Path A is now implemented locally: the app prefers `/samples/manifest.json`
-  on every host, `frontend/public/samples/` is intended for the committed
-  curated public bundle, and `frontend/public/demo-samples/` remains as a
-  fallback preview bundle until the real bundle is absent.
+  (FastAPI server, React live mode, deployment) are todo. The next exact task
+  is now `V2.S7.2`.
+- Path A is complete and deployed: `frontend/public/samples/` contains the
+  committed curated real HC18-derived bundle. The manifest loader calls
+  `preferredManifestPath()` which now returns `/samples/manifest.json`
+  unconditionally on all hosts.
+
+Pre-implementation note (2026-05-04):
+The planning-doc cleanup identified during the cross-review has now been
+applied across `architecture.md`, `project-tasks.md`, `live-inference-plan.md`,
+and `DECISIONS.md`. V2.S6.1 is now greenlit from a documentation perspective.
+Section 7 is retained as an audit trail of the fixes that were applied.
 
 ---
 
@@ -50,17 +62,16 @@ these policy and architecture questions:
 Current recommendation:
 
 - treat public real artifacts as approved for the curated static portfolio demo
+  (DECIDED: Path A approved 2026-05-03; bundle deployed)
 - treat public checkpoint publication as a separate, higher-risk decision
 - keep the public static site and live backend decoupled until live-hosting
   decisions are explicitly approved
 
 Why this matters:
 
-- The current repo intentionally keeps `frontend/public/samples/` local-only.
-- Reversing that policy changes both the public artifact story and the hosting
-  architecture.
-- The static Vercel site can be truly public today; the live backend has
-  different security, cost, and reliability constraints.
+- The current repo commits `frontend/public/samples/` publicly.
+- The live backend has different security, cost, and reliability constraints.
+- The static Vercel site is truly public today; the live backend is not yet built.
 
 Evidence reviewed:
 
@@ -86,8 +97,8 @@ Evidence reviewed:
 **What this path does:**
 The six curated sample images (ultrasound, target mask, prediction mask, probability
 map) are committed directly to the repo and deployed on Vercel alongside the app.
-The ThresholdViewer, ContourEllipse, and MetricsPanel all work on real HC18-derived
-data with no backend required.
+The redesigned `HeroPlayer`, `ThresholdSection`, `GeometryV2`, and
+`MetricsSection` all work on real HC18-derived data with no backend required.
 
 **Current state:**
 
@@ -99,22 +110,20 @@ data with no backend required.
 | Artifact bundle size | 1.4 MB total (trivially small for Vercel) |
 | Preferred public manifest path | `/samples/manifest.json` on all hosts |
 | Fallback public manifest path | `/demo-samples/manifest.json` |
-| Real images committed to repo | ready in workspace; commit/push required for deploy |
+| Real images committed and deployed | done — deployed to Vercel production |
 
 **What's needed for Path A:**
 
-1. Commit and push `frontend/public/samples/` so Vercel can actually serve the
-   curated real bundle.
+1. Ship the next frontend deployment so the public site picks up the already-
+   implemented hero-player redesign.
 
-2. Redeploy Vercel and verify the live site is rendering from
-   `/samples/manifest.json`.
-
-3. Keep attribution in the app footer and README, and keep
+2. Keep attribution in the app footer and README, and keep
    `frontend/public/demo-samples/` as a fallback bundle rather than deleting it.
 
-**Effort:** low — mostly repo sync + redeploy.
+**Effort:** low — static bundle and redesign implementation are done; only the
+next deploy needs to pick up the new frontend.
 **Risk:** low. The main policy decision has already been made; remaining work is
-shipping and verification.
+the UI refresh and any export-script updates for optional visualization features.
 
 ---
 
@@ -123,7 +132,7 @@ shipping and verification.
 **What this path does:**
 A "Run live" toggle in the React app sends a selected sample ID to a FastAPI
 backend, which runs the checkpoint forward pass and returns the same `Sample`
-JSON and image assets. The ThresholdViewer and StageDetail components render the
+JSON and image assets. MediaStage, ThresholdSection, and GeometryV2 render the
 live outputs via `assetOverrides` — no duplicate UI.
 
 **Current state:**
@@ -150,10 +159,10 @@ Frontend (V2.S7.3):
 - `frontend/src/utils/assets.ts` — `getSampleAssets(sample, overrides?)` helper
 - `frontend/src/types/live.ts` — `liveStatus: "idle"|"waking"|"running"|"done"|"error"`
 - `frontend/src/data/live-api.ts` — `POST /live/infer`, `GET /health` polling
-- `frontend/src/components/live/ModeToggle.tsx`
+- mode toggle wired into right cluster of `SubNav.tsx` (NOT a separate ModeToggle component)
 - `frontend/src/components/live/RunStatus.tsx`
 - `frontend/src/components/live/LiveRunPanel.tsx`
-- `StageDetail` and `ThresholdViewer`: add `assetOverrides?: SampleAssets` prop
+- `MediaStage`, `ThresholdSection`, `GeometryV2`: add `assetOverrides?: SampleAssets` prop
 
 Hosting decision (V2.S7.4):
 See Section 2 — Google Colab Pro is the strongest no-cost option for a GPU backend.
@@ -584,10 +593,10 @@ tables that can drift apart.
 
 The canonical sequence is:
 
-1. Path A (real images) — policy decision + one-line code fix + redeploy.
-2. Threshold sweep Play button + inline probability callout — no backend, immediate.
-3. Pre-compute threshold-Dice curve in export — adds real evaluation insight.
-4. Live inference backend (V2.S7.2) including attention gate maps.
+1. V2.S7.2 — FastAPI live server and response contract against the redesigned UI.
+2. V2.S7.3 — React live mode wiring into `SubNav`, `HeroPlayer`, and shared assets.
+3. Threshold sweep Play button + inline probability callout — no backend, immediate.
+4. Pre-compute threshold-Dice curve in export — adds real evaluation insight.
 5. Optional static polish: HC ruler, failure narrative, contour evolution frames.
 6. Blocked until explicit decision: MC Dropout (retrain), fetal growth chart
    (no gestational age in HC18).
@@ -597,151 +606,83 @@ The canonical sequence is:
 ## 6. Blind Spots and Cross-Document Gaps
 
 This section documents issues found by cross-referencing the roadmap against the
-actual codebase (`config.json`, `samples.ts`, `attention_unet.py`) and the
-planning docs (`architecture.md`, `project-tasks.md`). Items are grouped by
-severity.
+actual codebase and planning docs. Items are marked with their current resolution
+status.
+
+Status markers:
+- FIXED — resolved in current docs/code as of the 2026-05-04 review
+- OPEN — still needs attention
+- FUTURE — deferred, no blocker for current sessions
 
 ---
 
 ### 6.1 Hard Blockers — These Features Cannot Be Built As Described
 
-**MC Dropout uncertainty map is impossible without retraining.**
+**MC Dropout uncertainty map — OPEN (still blocked)**
 
 `outputs/runs/attention_unet_local_baseline/config.json` contains `"dropout": 0.0`.
 The model was trained with zero dropout. There are no active dropout layers to
 sample from during inference. Calling `model.train()` changes BatchNorm behavior
 (it switches to per-batch statistics) but produces zero dropout stochasticity.
 
-Section 2.3 calls this "experimental" — it should say: **blocked, requires an
-explicit retraining decision first.** Before adding uncertainty estimation to the
-roadmap, decide:
+Status: BLOCKED. Before adding uncertainty estimation to the roadmap, decide:
 - Retrain a new checkpoint with `dropout: 0.1` or `0.2` (adds one config change
   and one training run).
-- OR pick a non-dropout uncertainty method (test-time augmentation: run inference
-  on flipped/rotated versions and measure prediction variance — this works even
-  with `dropout: 0.0` and requires no retraining).
+- OR pick test-time augmentation (run inference on flipped/rotated versions and
+  measure prediction variance — this works even with `dropout: 0.0`).
 
-**Fetal growth context chart has no data source in this project.**
+**Fetal growth context chart — OPEN (still blocked)**
 
 HC18 annotation CSVs contain only: `filename`, ellipse center/semi-axes/angle,
-and pixel spacing. Gestational age is not included. A fetal growth reference
-chart requires gestational age per sample, which this dataset does not provide.
-Remove item 11 from the priority table, or re-scope it as:
-- Show where the predicted HC falls relative to the 6-sample range in this
-  curated set (does not require gestational age — just dataset-level context).
-- Or label it explicitly as "requires external clinical reference table" and
-  treat it as a separately approved feature.
+and pixel spacing. Gestational age is not included. Remove from priority table
+or re-scope as in-range alternative: show where the predicted HC falls relative
+to the 6-sample range in this curated set, without requiring gestational age.
 
 ---
 
-### 6.2 Critical Implementation Gap — Path A Will Not Work As Described
+### 6.2 Path A Manifest Loading Fix — FIXED
 
-**The manifest loading code in `frontend/src/data/samples.ts` uses a hostname
-check, not a fetch-and-fallback.**
+**FIXED as of 2026-05-03 code + 2026-05-04 architecture.md update.**
 
-The roadmap says: "commit real images, update the manifest path, redeploy."
-That is not sufficient.
+The original issue: `preferredManifestPath()` used a hostname check and
+unconditionally returned `/demo-samples/manifest.json` on non-localhost hosts.
+This was fixed: `preferredManifestPath()` now returns `DEFAULT_MANIFEST_PATH`
+(`/samples/manifest.json`) unconditionally on all hosts. The existing 404
+fallback in `loadManifest()` handles hosts where the real curated bundle is
+absent. The fix is documented in `docs/v2_demo/architecture.md` Section 4.
 
-Actual code:
-
-```typescript
-function preferredManifestPath(): string {
-  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
-  return isLocalHost ? DEFAULT_MANIFEST_PATH : PUBLIC_PREVIEW_MANIFEST_PATH;
-}
-```
-
-On Vercel (non-localhost), the app unconditionally loads `/demo-samples/manifest.json`
-(the SVG placeholder path) regardless of whether real images are present. Committing
-real sample PNGs does not change this — the samples.ts hostname routing takes
-precedence.
-
-To make Path A work on Vercel, change `preferredManifestPath()` to always try
-`/samples/manifest.json` first and fall back to `/demo-samples/manifest.json` on
-a 404. There is already partial fallback logic: if the initial load fails for any
-reason, it retries the other path. The fix is to make the default path
-`DEFAULT_MANIFEST_PATH` regardless of hostname, and let the existing fallback
-handle Vercel deployments where real images are absent:
-
-```typescript
-// Simplified: always try real samples first, fall back to preview on 404
-function preferredManifestPath(): string {
-  return DEFAULT_MANIFEST_PATH;  // /samples/manifest.json
-}
-// The existing fallback in loadManifest() already handles the 404 case.
-```
-
-This single-line change + committing real images is all that is needed for Path A.
+No further action needed.
 
 ---
 
-### 6.3 Design Corrections — Features Are Feasible But Described Incorrectly
+### 6.3 Design Corrections — FIXED (feasibility confirmed, implementation pending)
 
-**Attention gate visualization does NOT require model changes.**
+**Attention gate visualization does NOT require model changes — FIXED (documented)**
 
-Section 3.1 says "we likely need a small model change." This is wrong. Inspecting
-`AttentionGate.forward`:
+The `register_forward_hook` approach on `model.decoder4.gate.attention` is
+confirmed to work without model changes. This is now correctly documented in
+`docs/v2_demo/project-tasks.md` V2.S7.2 subtasks. The hook belongs in the
+FastAPI layer (V2.S7.2), not in `src/inference/live.py` (V2.S7.1).
 
-```python
-def forward(self, skip, gating):
-    coefficients = self.attention(skip_proj + gating_proj)  # [B, 1, H, W], sigmoid 0–1
-    return skip * coefficients
-```
+Implementation status: not yet built, but correctly scoped to V2.S7.2.
 
-The `coefficients` tensor IS the attention map. It is computed inside `forward`
-before the return. A `register_forward_hook` on the `self.attention` sequential
-captures it at inference time without touching model weights or architecture:
+**Threshold sweep Dice curve requires pre-computation — FIXED (documented)**
 
-```python
-attention_maps = {}
-def _hook(module, input, output):
-    attention_maps['decoder4_gate'] = output.detach().cpu()
+The correct approach is confirmed: compute Dice at thresholds 0.10–0.90 during
+artifact export (`scripts/export_demo_artifacts.py`) and store as
+`thresholdCurve` in the per-sample metadata and manifest. The field is now
+documented in the `Sample` interface in `docs/v2_demo/architecture.md` Section 5.
+No client-side Dice computation. Implementation pending (V2.S9 optional session).
 
-# Register on the attention sequential (last layer is Sigmoid → output is [0,1])
-model.decoder4.gate.attention.register_forward_hook(_hook)
-```
+**Contour evolution animation — OPEN (no change)**
 
-The hook captures a `[1, 1, H, W]` map for each decoder-level attention gate.
-These can be exported as additional PNGs in V2.S7.1 or as base64 data in the
-live `/infer` response, with no model rebuild or retraining required.
-
-**Threshold sweep Dice curve requires the target mask to be in the browser.**
-
-Section 3.2 says: "overlay a Dice-vs-threshold curve (pre-computed from static
-manifest or returned by backend)." The pre-compute path is the right one.
-
-Computing Dice client-side in the browser requires the target mask at runtime.
-The target mask (`target.png`) is already in the curated bundle but computing
-Dice from canvas pixel data in JavaScript is non-trivial and slow.
-
-Correct implementation: during artifact export (`scripts/export_demo_artifacts.py`),
-compute Dice at thresholds 0.1, 0.15, ..., 0.90 using `prob.png` vs `target.png`
-and store the curve as a per-sample field in `metadata.json` and the manifest.
-The browser reads this static data and renders it as an SVG path overlay. No
-client-side Dice computation needed.
-
-This requires a manifest schema update — see Section 6.5.
-
-**Contour evolution animation requires JavaScript morphological operations.**
-
-Section 3.4 says: "recompute client-side from existing `pred.png` mask data."
-The contour evolution (raw mask → remove small components → fill holes → final
-mask) requires connected-component labeling and binary fill, which have no
-native browser APIs.
-
-Options in order of feasibility:
-1. Pre-render each step as separate PNGs during artifact export and serve them
-   as static assets — simplest, no browser compute needed.
-2. Use `opencv.js` (WebAssembly port, ~8 MB) — adds a large dependency.
-3. Implement a minimal flood-fill in JavaScript — feasible but nontrivial.
-
-Option 1 is recommended. Add `raw_mask.png` (already exists in the sample
-directory from V2.S2 export) and intermediate-step PNGs to the curated bundle
-if this feature is prioritized.
+Pre-rendering intermediate PNGs during export is still the recommended path.
+No browser morphological operations. Deferred as optional visualization work
+(V2.S9 session). No blocking action needed before V2.S6.1.
 
 ---
 
-### 6.4 Colab Backend URL Rotation — Mitigation Strategy
+### 6.4 Colab Backend URL Rotation — FUTURE
 
 The roadmap notes that ngrok URLs rotate with every session, requiring a Vercel
 env var update plus redeploy. For a demo-only workflow this is acceptable; for
@@ -762,211 +703,225 @@ Three concrete mitigations, in order of effort:
    deploy to HF Spaces CPU Basic (always-on, cold start expected). This matches
    Combination 1 + 3 from the live-inference-plan.md.
 
+Deferred until V2.S7.2 is built and tested locally.
+
 ---
 
-### 6.5 Architecture.md and project-tasks.md Gaps
+### 6.5 Planning Doc Gaps — Status Summary
 
-**architecture.md — file layout is stale.**
-The file layout (Section 4) was written before the demo-samples/ fallback
-path was implemented. Current actual layout:
+**architecture.md file layout stale — FIXED**
+`frontend/public/samples/` (real curated bundle) and
+`frontend/public/demo-samples/` (fallback preview bundle) are now both documented
+in architecture.md Section 4. The artifact mirror rule is in Section 9.
 
-```text
-frontend/public/
-  samples/             ← real curated public bundle
-  demo-samples/
-    manifest.json      ← fallback preview manifest
-    public-preview/    ← SVG fallback assets
-  experiments/
-    summary.json
-```
+**architecture.md manifest schema missing thresholdCurve — FIXED**
+`thresholdCurve?` is now a documented optional field in the `Sample` interface
+in architecture.md Section 5.
 
-Section 9 also describes the fallback as "tries /samples/ first, falls back to
-/demo-samples/" — but the actual `samples.ts` code does the reverse: non-localhost
-defaults to `/demo-samples/` unconditionally. See Section 6.2 above.
+**architecture.md live response contract underspecified — FIXED**
+Section 11 was added to architecture.md with TypeScript and Pydantic contracts
+for `SampleAssets`, `LiveInferResponse`, `LiveStatus`, and `LiveErrorResponse`.
 
-**architecture.md — manifest schema is missing planned fields.**
-If threshold-sweep curves (Section 3.2) are pre-computed during export, the
-manifest schema needs a new optional field:
+**architecture.md boundary text — FIXED**
+Section 10 now distinguishes three modes (local saved-output, static Vercel,
+hosted live backend) instead of blanket "no internet access."
 
-```typescript
-thresholdCurve?: {
-  thresholds: number[];           // [0.10, 0.15, ..., 0.90]
-  dice: number[];                 // Dice at each threshold
-  optimalThreshold: number;       // threshold that maximizes Dice
-  optimalDice: number;
-};
-```
+**Artifact mirror rule — FIXED**
+`outputs/demo_samples/` = generated source of truth; `frontend/public/samples/`
+= publish mirror; never hand-edit the mirror. Documented in architecture.md
+Section 9.
 
-This field lives in the per-sample `metadata.json` and is merged into
-`manifest.json` during export. It is optional (`?`) so old manifests remain valid.
+**V2.S7 attention gate export scope — FIXED**
+V2.S7.1 scope note clarifies the hook is not part of the completed core.
+V2.S7.2 subtasks list the hook registration and PNG encoding explicitly.
 
-**architecture.md — `frontend/src/utils/assets.ts` not in file layout.**
-This helper (`getSampleAssets`) is agreed upon in `live-inference-plan.md` and
-`project-tasks.md` but is absent from architecture.md Section 4.
+**architecture.md Sample interface missing assetBasePath/assetExtension — FIXED**
+The `Sample` interface in architecture.md Section 5 now includes both fields,
+explicitly documenting the `demo-samples` fallback path override contract for
+`getSampleAssets`.
 
-**project-tasks.md — V2.S0 through V2.S6 are all done.**
-The static MVP is complete and deployed. V2.S7 is in_progress (V2.S7.1 done,
-V2.S7.2–S7.4 todo). The session-dependency concern about V2.S5 no longer
-applies — all static-demo components (ContourEllipse, MetricsPanel,
-ExperimentDashboard) are live on the deployed app.
+**ModeToggle.tsx listed as separate component in V2.S7 — FIXED**
+`project-tasks.md` and `live-inference-plan.md` now both treat the mode toggle
+as part of the right cluster of `SubNav.tsx`. The docs explicitly say not to
+create a standalone `ModeToggle.tsx`.
 
-**project-tasks.md — V2.S7 missing attention gate export.**
-The attention gate visualization (priority item 4) requires V2.S7.1 to export
-the attention coefficient maps alongside `prob.png`. The V2.S7.1 subtasks in
-project-tasks.md don't mention this. Add: "register hooks on decoder attention
-gates and return attention maps as additional inference outputs."
+**DECISIONS.md contradictory entries — FIXED**
+The earlier 2026-05-03 preview-fallback decision is now marked superseded so it
+cannot be misread as the active public-static policy.
 
-Important implementation note:
-The current docs have drifted slightly ahead of the code. `project-tasks.md`
-now says this attention-hook work is part of completed `V2.S7.1`, but the
-current `src/inference/live.py` still returns only `ultrasound`, `target`,
-`prob`, and `pred` assets plus scalar metrics. There is no shipped attention-map
-capture path yet. Do not treat attention visualization as "already covered by
-S7.1"; either:
+**V2.S6.1 verification missing getSampleAssets wiring check — FIXED**
+`project-tasks.md` now includes the grep-based verification that all image paths
+flow through `frontend/src/utils/assets.ts`.
 
-- move it into `V2.S7.2` as part of the FastAPI payload work, or
-- add a small follow-up sub-session (`V2.S7.1b`) and keep `V2.S7.1` narrowly
-  defined as the core live inference path that already exists.
+**architecture.md assets.ts not in file layout — FIXED**
+Section 4 now lists `frontend/src/utils/assets.ts` in the frontend file layout.
 
-This keeps the task log honest and avoids future confusion during implementation.
+**Side-by-side comparison mode — FUTURE**
+Requires changing `activeId: string` to `activeIds: [string, string]` in App.tsx
+and refactoring all consumers. Not retroactively added to any existing session.
+Treat as optional post-V2.S6 work if prioritized.
 
-**architecture.md — live response contract is still underspecified.**
-The architecture file defines the static `Sample` contract well, but it does not
-yet define the full live API contract. The roadmap now assumes live mode may
-return:
-
-- `sample` (Sample-compatible object),
-- `assets` (URL or data-URL overrides),
-- `runtime_ms`,
-- optional `step_times_ms`,
-- potentially attention maps in a future revision.
-
-That deserves an explicit architecture section with concrete TypeScript/Pydantic
-shapes such as:
-
-```typescript
-type SampleAssets = {
-  ultrasound?: string;
-  target?: string;
-  prob?: string;
-  pred?: string;
-  attention?: Record<string, string>;
-};
-
-interface LiveInferResponse {
-  mode: "live";
-  runtime_ms: number;
-  step_times_ms?: Record<string, number>;
-  sample: Sample;
-  assets: SampleAssets;
-}
-```
-
-Without this, `architecture.md`, `project-tasks.md`, and the eventual FastAPI
-schemas are likely to drift.
-
-**Hosted curated-bundle spec is missing required target/spacing data.**
-Section 2.1 currently says a hosted Colab/Drive bundle only needs:
-
-- `best_model.pt`
-- `config.json`
-- six `ultrasound.png` files
-- metadata
-
-That is incomplete if we want the live backend to compute:
-
-- Dice/IoU/HD95,
-- target-vs-live metric deltas,
-- target-mask visualizations,
-- or regenerate target masks from annotations.
-
-For a hosted curated bundle, we need one of these explicit contracts:
-
-1. **Target-mask bundle**  
-   Store `target.png` plus per-sample spacing/labels.
-
-2. **Annotation bundle**  
-   Store the original annotation parameters needed to regenerate the target mask
-   plus spacing and any derived target HC metadata.
-
-The roadmap should treat this as a real data-contract decision before hosted
-live mode, not as a detail to infer later.
-
-**Path A needs a canonical artifact source-of-truth rule.**
-If public real artifacts are approved, there will be two near-identical trees:
-
-- `outputs/demo_samples/` — generated source bundle
-- `frontend/public/samples/` — runtime/public bundle
-
-Right now the docs explain the copy step, but not the ownership rule. Add this
-explicitly to avoid silent drift:
-
-- `outputs/demo_samples/` remains the generated source of truth
-- `frontend/public/samples/` is a copied publish/runtime mirror
-- never hand-edit `frontend/public/samples/`
-- when curated artifacts change, regenerate under `outputs/demo_samples/` and
-  then sync-copy into `frontend/public/samples/`
-
-This matters more once `frontend/public/samples/` becomes committed for Path A.
-
-**Path A should keep the placeholder fallback, not delete it.**
-Section 1 currently says the split between `samples/` and `demo-samples/` "can
-be collapsed." That is optional, but not obviously desirable. Keeping
-`demo-samples/` committed as a fallback still helps:
-
-- fresh clones before local artifact generation,
-- forks where users do not want to publish HC18-derived files,
-- future policy rollback,
-- visual QA when real artifacts are intentionally absent.
-
-Recommended adjustment: for Path A, make `/samples/manifest.json` the preferred
-path everywhere, but keep `/demo-samples/manifest.json` as a committed fallback
-rather than deleting the preview bundle.
-
-**architecture.md boundary text should distinguish local/static from hosted/live.**
-Section 10 says "The demo should not require internet access." That is true for
-the local saved-output MVP, but it is not true for:
-
-- the public Vercel portfolio site,
-- any Colab/ngrok or HF Spaces live backend,
-- runtime Gist-based backend URL discovery if we adopt that mitigation.
-
-The architecture should clarify that:
-
-- local saved-output mode should run offline after artifacts are present
-- public hosting and hosted live inference obviously require network access
-
-That keeps the boundary meaningful without accidentally contradicting the live
-deployment plan.
-
-**project-tasks.md — side-by-side comparison mode needs a new optional session.**
-Comparison mode requires changing `activeId: string` to `activeIds: [string, string]`
-in App.tsx and refactoring all consumers. This is a nontrivial state model change.
-It should not be added to V2.S4 or V2.S5 scope retroactively — treat it as a
-post-V2.S6 optional session if prioritized.
+**Hosted curated-bundle spec for live backend — OPEN (V2.S7.4 concern)**
+Section 2.1 says the hosted Colab/Drive bundle needs `best_model.pt`, `config.json`,
+and six `ultrasound.png` files. If the backend also needs to compute Dice/IoU/HD95
+or return target-mask visualizations, the bundle must also include `target.png` plus
+pixel spacing. This is a data-contract decision for V2.S7.4, not for V2.S6.1.
 
 ---
 
 ### 6.6 Revised Priority Table
 
-Incorporating the corrections from this section:
-
 | Priority | Improvement | Path | Effort | Status |
 |---|---|---|---|---|
-| 1 | Fix `preferredManifestPath()` + commit real samples (Path A) | Static | 1–2 h | Implemented locally; commit/push + redeploy pending |
-| 2 | Threshold sweep animation (Play button, no Dice curve) | Static | 2 h | No backend, no blockers |
-| 3 | Inline probability callout on canvas hover | Static | 2 h | No blockers |
-| 4 | Pre-compute threshold-Dice curve in export script | Static | 2–3 h | Requires V2.S2 revision |
-| 5 | Define live API contract in architecture + schemas | Live | 1–2 h | Prevents FastAPI/TS drift before S7.2 |
-| 6 | Attention gate visualization via forward hook | Live | 3–4 h | No model changes needed, but not yet implemented |
-| 7 | Step-by-step timing animation | Live | 2 h | Needs `step_times_ms` in live response |
-| 8 | Colab Pro T4 GPU backend | Live | 2–3 h setup | Needs curated hosted-bundle contract first |
-| 9 | Contour evolution — pre-render intermediate PNGs | Static | 2–3 h | Export script change |
-| 10 | HC ruler overlay on image | Static | 2 h | No blockers (V2.S5 done) |
-| 11 | Side-by-side comparison mode | Static | 5–7 h | Requires App state refactor |
-| 12 | Failure analysis narrative | Static | 1–2 h | No blockers (V2.S5 done) |
-| 13 | MC Dropout uncertainty map | Live | — | **BLOCKED** — retrain needed |
-| 14 | Fetal growth context chart | Static | — | **BLOCKED** — no gestational age in HC18 |
+| 0 | V2.S7.2 — FastAPI live server + contract | Live | 4–6 h | Next exact implementation step |
+| 1 | V2.S7.3 — React live mode wiring | Live | 4–6 h | Follows once server contract is stable |
+| 2 | Threshold sweep animation (Play button, no Dice curve) | Static | 2 h | Good post-redesign polish |
+| 3 | Inline probability callout on canvas hover | Static | 2 h | Good post-redesign polish |
+| 4 | Pre-compute threshold-Dice curve in export script | Static | 2–3 h | Requires V2.S9 / export script update |
+| 5 | Attention gate visualization via forward hook | Live | 3–4 h | Planned for V2.S7.2; no model changes needed |
+| 6 | Step-by-step timing animation | Live | 2 h | Needs `step_times_ms` in live response (V2.S7.2) |
+| 7 | Colab Pro T4 GPU backend | Live | 2–3 h setup | Needs curated hosted-bundle contract first |
+| 8 | Contour evolution — pre-render intermediate PNGs | Static | 2–3 h | Export script change |
+| 9 | HC ruler overlay on image | Static | 2 h | No blockers |
+| 10 | Side-by-side comparison mode | Static | 5–7 h | Requires App state refactor — post-V2.S6 |
+| 11 | Failure analysis narrative | Static | 1–2 h | No blockers |
+| 12 | MC Dropout uncertainty map | Live | — | BLOCKED — retrain needed |
+| 13 | Fetal growth context chart | Static | — | BLOCKED — no gestational age in HC18 |
+
+---
+
+## 7. Pre-Implementation Fix Audit Trail
+
+These four edits were the planning-doc corrections identified before V2.S6.1.
+They have now been applied. This section is kept as a compact audit trail so a
+future reviewer can see exactly what changed and why.
+
+---
+
+### Fix 1 — Remove phantom ModeToggle.tsx from V2.S7 and live-inference-plan.md (APPLIED)
+
+**Why:**
+`frontend-design-handoff-v2.md` Section 6 specifies that the mode toggle is in
+the right cluster of `SubNav.tsx` — it is not a separate file. V2.S6.1 will
+build the toggle into SubNav. If V2.S7.3 later creates a separate `ModeToggle.tsx`
+and wires it outside SubNav, it conflicts structurally with what V2.S6.1 built.
+
+**File: `docs/v2_demo/project-tasks.md`**
+
+Edit 1a — V2.S7 expected files list:
+
+```
+Remove this line:
+  - `frontend/src/components/live/ModeToggle.tsx`
+
+Replace with:
+  (mode toggle is integrated into the right cluster of SubNav.tsx per handoff-v2
+  Section 6 — do not create a separate ModeToggle component)
+```
+
+Edit 1b — V2.S7.3 subtasks:
+
+```
+Replace:
+  - Add `frontend/src/components/live/ModeToggle.tsx`.
+
+With:
+  - Wire mode-toggle state and handler into the right cluster of the existing
+    `SubNav.tsx`. Do not create a separate ModeToggle component — the toggle
+    was built into SubNav during V2.S6.1.
+```
+
+**File: `docs/v2_demo/live-inference-plan.md`**
+
+Edit 1c — "Expected frontend additions" list (around line 101):
+
+```
+Remove:
+  frontend/src/components/live/ModeToggle.tsx
+
+Add note:
+  (mode toggle integrated into SubNav.tsx right cluster — see handoff-v2 Section 6)
+```
+
+Edit 1d — Path B frontend list (around line 800):
+
+```
+Remove:
+  frontend/src/components/live/ModeToggle.tsx
+
+Add note:
+  (mode toggle is in SubNav.tsx, not a separate file)
+```
+
+---
+
+### Fix 2 — Add assetBasePath and assetExtension to Sample interface (APPLIED)
+
+**Why:**
+`docs/v2_demo/architecture.md` line 164 explicitly says the demo-samples fallback
+manifest uses `assetBasePath` and `assetExtension` fields. But the `Sample`
+interface definition in Section 5 (lines 187–218) does not include them. Any
+Codex implementing `getSampleAssets` from Section 5 alone will not handle the
+fallback-bundle fields and the fallback bundle will break.
+
+**File: `docs/v2_demo/architecture.md`**
+
+Edit 2 — inside the `Sample` interface, after the `notes?: string` line:
+
+```
+Add these two lines:
+  assetBasePath?: string;    // demo-samples fallback only — overrides /samples/<id>/
+  assetExtension?: string;   // demo-samples fallback only — e.g. ".svg" instead of ".png"
+```
+
+---
+
+### Fix 3 — Mark the superseded DECISIONS.md entry (APPLIED)
+
+**Why:**
+Two 2026-05-03 entries are contradictory. The earlier entry says "keep real HC18
+bundle local and use non-medical preview fallback for public hosts." The later
+entry (same day) approves Path A and makes the real bundle the preferred public
+source. The earlier entry is not marked superseded, which is inconsistent with
+how other DECISIONS entries are handled (Streamlit, DemoSample dataclass, etc.
+all have explicit superseded notices).
+
+**File: `docs/v2_demo/DECISIONS.md`**
+
+Edit 3 — find the entry titled:
+
+```
+## 2026-05-03 - Public deployment uses a non-medical preview fallback
+```
+
+Add immediately after the date line and before "Decision:":
+
+```
+Status: superseded — the same-day Path A approval entry below overrides this
+decision. Real HC18-derived curated artifacts are now the preferred static source.
+```
+
+---
+
+### Fix 4 — Add getSampleAssets wiring check to V2.S6.1 verification (APPLIED)
+
+**Why:**
+`getSampleAssets` in `utils/assets.ts` is the single integration point between
+static and live asset paths. If any component in V2.S6.1 constructs image paths
+directly (e.g., `` `/samples/${id}/prob.png` ``), V2.S7.3 will need to patch
+multiple components instead of one helper. The verification step should catch
+any missed direct-path construction.
+
+**File: `docs/v2_demo/project-tasks.md`**
+
+Edit 4 — in the `V2.S6.1` Verification section, after the existing verification
+commands, add:
+
+```
+- `grep -r "'/samples/" frontend/src/ | grep -v "assets.ts"` must return no
+  matches — all image src values must be derived via getSampleAssets in
+  frontend/src/utils/assets.ts, not constructed inline in components.
+```
 
 ---
 
@@ -987,4 +942,4 @@ The visualization improvements in Section 3 draw from:
 - HC18 Zenodo dataset: https://zenodo.org/records/1322001
 - HC18 Zenodo dataset v2 record: https://zenodo.org/records/1327317
 - Zenodo license/reuse guidance: https://support.zenodo.org/help/en-gb/2-content/21-can-i-get-permission-to-use-a-specific-record
-- HC18 paper / data-availability statement: https://doi.org/10.1371/journal.pone.0200412
+- HC18 paper / data-availability statement: https://doi.org/10.1371/journal.pone.0214725

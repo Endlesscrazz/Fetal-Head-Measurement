@@ -25,6 +25,7 @@ Critical path for the resume/LinkedIn MVP:
 5. `V2.S4` - React pipeline explorer (core UI — gallery, stepper, threshold).
 6. `V2.S5` - Geometry panel, metrics, and experiment dashboard with real data.
 7. `V2.S6` - Build, deploy to Vercel/GitHub Pages, and portfolio polish.
+8. `V2.S6.1` - Frontend redesign refresh from the v2 handoff. (done locally)
 
 Post-MVP:
 
@@ -32,13 +33,15 @@ Post-MVP:
 2. `V2.S8` - Optional HC18 challenge exporter.
 
 Frontend: Vite + React + TypeScript. No Streamlit. No backend for MVP.
-Design reference: `docs/v2_demo/frontend-design-handoff.md`
+Design reference: `docs/v2_demo/frontend-design-handoff-v2.md`
 
 Planning note:
 Sessions `V2.S2` through `V2.S4` were previously completed for a Streamlit
 prototype. The Claude Design pivot supersedes that path. Current work resumes
 at `V2.S2` as a React artifact-contract revision, using the already-curated
 sample list rather than the design prototype's placeholder sample IDs.
+The 2026-05-04 redesign handoff superseded the first React UI pass and has now
+been implemented locally, so the next implementation task is `V2.S7.2`.
 
 ## V2.S0 - Session Plan
 
@@ -557,6 +560,105 @@ Done criteria:
 - `start_demo.sh` works for local reviewers who have HC18 data,
 - no raw HC18 files or checkpoints are committed or deployed.
 
+## V2.S6.1 - Frontend Redesign Refresh From Handoff V2
+
+Status: done
+
+Status note:
+Completed locally on 2026-05-04. The app now uses the redesigned hero-owned
+player, `SubNav`, stable `MediaStage`, reserved-slot geometry controls,
+`MetricsSection`, and `MethodSection`. The public Vercel site will show this UI
+after the next frontend deployment.
+
+Roadmap phase:
+`V2.P3` / `V2.P5`
+
+Target window:
+Before `V2.S7.2`
+
+Estimated effort:
+6-10 hours
+
+Goal:
+Refactor the shipped static UI to match the approved v2 redesign handoff before
+we add more live-inference UI on top of the older structure.
+
+Outcome:
+The static public app keeps the same real curated data bundle, but the hero now
+owns the pipeline player, the probability stage uses iso-contour visualization,
+the geometry section has stable height, and the experiment dashboard is replaced
+by the smaller method narrative section.
+
+Required reading before this session:
+
+- `docs/v2_demo/frontend-design-handoff-v2.md`
+- `docs/v2_demo/architecture.md`
+- `docs/v2_demo/live-inference-plan.md` Sections on frontend reuse / asset overrides
+
+Expected files:
+
+- `frontend/src/App.tsx`
+- `frontend/src/components/nav/SubNav.tsx`
+- `frontend/src/components/hero/HeroPlayer.tsx`
+- `frontend/src/components/hero/CasePickerCompact.tsx`
+- `frontend/src/components/hero/StageCaption.tsx`
+- `frontend/src/components/stage/MediaStage.tsx`
+- `frontend/src/components/stage/Outline.tsx`
+- `frontend/src/components/stage/ProbabilityViz.tsx`
+- `frontend/src/components/stage/EllipseLayer.tsx`
+- `frontend/src/components/transport/Transport.tsx`
+- `frontend/src/components/threshold/ThresholdSection.tsx`
+- `frontend/src/components/threshold/ProbThresholdLayer.tsx`
+- `frontend/src/components/geometry/GeometryV2.tsx`
+- `frontend/src/components/geometry/ContourPath.tsx`
+- `frontend/src/components/metrics/MetricsSection.tsx`
+- `frontend/src/components/metrics/ArcCard.tsx`
+- `frontend/src/components/metrics/BarCard.tsx`
+- `frontend/src/components/method/MethodSection.tsx`
+- `frontend/src/styles.css`
+- root `handoff.md`
+
+Allowed implementation files:
+`frontend/src/` tree, `frontend/src/styles.css`, root `handoff.md`
+
+Subtasks:
+
+- Replace the old hero + gallery + pipeline-card structure with `HeroPlayer`:
+  title row, compact six-case picker, stable media stage, stage caption, and
+  transport rail.
+- Replace `StickyNav` with `SubNav` and remove tour-mode state/UI.
+- Pin case switching to stage 0 (`Input`) rather than auto-jumping to CNN.
+- Replace the full-frame probability wash with `ProbabilityViz` iso-contours,
+  focus reticle, and legend.
+- Keep all image loading routed through `getSampleAssets(sample, overrides?)`
+  so live mode can reuse the same components later.
+- Replace `ContourEllipse` with `GeometryV2`, including the reserved slider slot
+  and the single-sample vs dataset-level comparison story.
+- Replace the experiment dashboard with `MethodSection`. Keep experiment files in
+  the repo, but un-wire them from the main page.
+- Keep `SafetyChip` visible and unchanged.
+- Preserve the committed curated runtime bundle under `frontend/public/samples/`
+  and the fallback preview bundle under `frontend/public/demo-samples/`.
+
+Verification:
+
+- `cd frontend && npm run build`
+- The hero shows the active stage player above the fold on desktop.
+- Switching samples resets the stage to `Input`.
+- Probability stage uses iso-contour overlays rather than a full amber flood.
+- Geometry `Morph` mode does not change card height.
+- Main page now has five sections: Play, Threshold, Geometry, Metrics, Method.
+- `grep -r "'/samples/" frontend/src/ | grep -v "assets.ts"` returns no
+  matches — all image sources are routed through `getSampleAssets`.
+- `git diff --check`
+
+Done criteria:
+
+- the shipped static UI matches the v2 redesign handoff closely enough to use as
+  the base for future live-mode work,
+- the redesign removes the old gallery / tour / experiment-dashboard dependency,
+- static replay still works without a backend.
+
 ## V2.S7 - Optional Curated Live Inference Mode
 
 Status: in_progress
@@ -565,7 +667,10 @@ Status note:
 `V2.S7.1` is complete. The shared Python live inference core now exists under
 `src/inference/live.py`, exporter helper logic has been refactored to reuse it,
 and contract tests cover both synthetic output shape/field validation and one
-local curated-sample smoke run when HC18 artifacts are available.
+local curated-sample smoke run when HC18 artifacts are available. `V2.S6.1` is
+now complete locally, so the next exact implementation step is `V2.S7.2` —
+build the FastAPI server and live response contract against the new HeroPlayer /
+Transport / MediaStage structure.
 
 Roadmap phase:
 `V2.P4`
@@ -609,12 +714,16 @@ Expected files:
 - `tests/test_live_api.py`
 - `frontend/src/data/live-api.ts`
 - `frontend/src/types/live.ts`
-- `frontend/src/components/live/ModeToggle.tsx`
 - `frontend/src/components/live/LiveRunPanel.tsx`
 - `frontend/src/components/live/RunStatus.tsx`
 - `frontend/src/utils/assets.ts` (shared `getSampleAssets` helper)
 - README/docs updates for static vs live mode
 - root `handoff.md`
+
+Mode-toggle note:
+The mode toggle is integrated into the right cluster of `SubNav.tsx` per
+`frontend-design-handoff-v2.md` Section 6. Do not create a separate
+`ModeToggle.tsx` component.
 
 ### V2.S7.1 - Live Inference Core
 
@@ -711,12 +820,14 @@ Subtasks:
 - Implement `getSampleAssets` helper in `frontend/src/utils/assets.ts` — the
   single place that derives image paths for static mode or forwards live asset
   URLs/data URLs. All image-consuming components must use this helper.
-- Add `frontend/src/components/live/ModeToggle.tsx`.
+- Wire mode-toggle state and handler into the right cluster of the existing
+  `SubNav.tsx`. Do not create a separate `ModeToggle` component.
 - Add `frontend/src/components/live/RunStatus.tsx` — renders waking/running/done/
   error states; used inside `LiveRunPanel`.
 - Add `frontend/src/components/live/LiveRunPanel.tsx` — wraps RunStatus and the
   Run live button.
-- Add `assetOverrides` support to `StageDetail` and `ThresholdViewer`.
+- Add `assetOverrides` support to `MediaStage`, `ThresholdSection`, and
+  `GeometryV2`.
 - Poll `GET /health` and show backend-offline or backend-waking states without
   breaking static replay.
 - Keep SafetyChip visible in both modes.
@@ -908,16 +1019,16 @@ The v2 MVP is complete when sessions `V2.S1` through `V2.S6` are done and:
 
 - `npm run dev` inside `frontend/` launches the app at `localhost:5173`,
 - the app is deployed to a public URL (Vercel or GitHub Pages),
-- a user can select a sample from the visual card gallery,
+- a user can select a sample from the compact hero case picker,
+- the hero contains the primary pipeline player above the fold,
 - the app shows original ultrasound, target mask, CNN prediction, threshold slider,
   cleaned mask, ellipse overlay, and HC measurement in mm,
 - the threshold slider re-thresholds `prob.png` in canvas in real time,
 - the contour-vs-ellipse comparison panel shows real `contourHC` values,
 - the metrics panel shows arc gauges with color-coded Dice and IoU,
-- the experiment dashboard shows the three real v1 runs (not U-Net++),
-- training sparklines show real `val_dice` from `outputs/runs/*/metrics.csv`,
+- the method section explains architecture, training setup, and geometry prior,
 - the SafetyChip is always visible ("Educational demo · Not for clinical use"),
-- the guided tour works end-to-end through all six sections,
+- the redesigned static UI has five sections (Play, Threshold, Geometry, Metrics, Method),
 - `npm run build` produces no TypeScript errors,
 - no medical image artifacts are committed to the repository,
 - README includes the live public URL and local run instructions.

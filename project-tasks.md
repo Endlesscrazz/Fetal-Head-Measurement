@@ -284,19 +284,26 @@ Done criteria:
 
 Status: done
 
+Status note:
+The first React static explorer shipped, and the approved 2026-05-04 redesign
+refresh has now been implemented locally. Future live work should target the
+hero-player / five-section surface captured in
+`docs/v2_demo/frontend-design-handoff-v2.md`.
+
 Goal:
 Build the portfolio app using saved v1 artifacts, not live model inference.
 
 Done criteria:
 
 - `npm run dev` launches the app from `frontend/`;
-- user can select a sample from the visual gallery;
-- app shows the design's six sections: cases, pipeline, threshold, geometry,
-  metrics, and research;
+- user can select a sample from the compact hero case picker;
+- app shows the redesigned five-section flow: play, threshold, geometry,
+  metrics, and method;
+- the hero owns the primary pipeline player above the fold;
 - app reads `frontend/public/samples/manifest.json`;
 - threshold slider re-thresholds real `prob.png` files in canvas;
 - app shows contour-vs-ellipse comparison when both values are available;
-- app includes training/validation loss curves from saved v1 metrics;
+- app includes the method narrative section instead of the old research dashboard;
 - fixed safety chip says the demo is educational and not for clinical use.
 
 ### V2.P4 - Live inference integration

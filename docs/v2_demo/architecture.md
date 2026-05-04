@@ -11,7 +11,7 @@ Claude Design handoff. The MVP is fully static — the frontend reads
 pre-generated JSON and PNG artifacts with no Python backend required. A later
 milestone can add a FastAPI backend for live checkpoint inference.
 
-Canonical design reference: `docs/v2_demo/frontend-design-handoff.md`
+Canonical design reference: `docs/v2_demo/frontend-design-handoff-v2.md`
 
 ## 2. High-level flow
 
@@ -25,11 +25,11 @@ Saved v1 artifacts
         v
 Vite + React static frontend
         |
-        +--> Data and target-mask view
-        +--> CNN prediction/probability view
-        +--> Threshold and cleanup view
-        +--> Ellipse and HC measurement view
-        +--> Experiment dashboard
+        +--> Hero player with stable media stage
+        +--> Threshold section
+        +--> Geometry section
+        +--> Metrics section
+        +--> Method section
 ```
 
 Future live inference adds:
@@ -57,10 +57,11 @@ Saved-output mode is the v2 MVP.
 Responsibilities:
 
 - load a small manifest of curated samples,
-- read exported demo artifacts plus existing v1 result tables,
+- read exported demo artifacts,
 - display each pipeline stage without loading a model checkpoint,
+- keep one stable media frame while stage overlays change,
 - compute lightweight interactive geometry variants when needed,
-- show v1 result tables and figures.
+- reuse the same player shell for later live inference mode.
 
 This mode should run without raw HC18 data or checkpoints if the curated
 artifacts are present. Existing files under `outputs/runs/<run_id>/` can seed
@@ -97,11 +98,30 @@ The frontend is a React app. The Python `demo/` directory is no longer used.
 ```text
 frontend/                         ← Vite + React + TypeScript app
   src/
-    components/                   ← one folder per design component
+    components/
+      nav/SubNav.tsx
+      hero/HeroPlayer.tsx
+      hero/CasePickerCompact.tsx
+      hero/StageCaption.tsx
+      stage/MediaStage.tsx
+      stage/Outline.tsx
+      stage/ProbabilityViz.tsx
+      stage/EllipseLayer.tsx
+      transport/Transport.tsx
+      threshold/ThresholdSection.tsx
+      threshold/ProbThresholdLayer.tsx
+      geometry/GeometryV2.tsx
+      geometry/ContourPath.tsx
+      metrics/MetricsSection.tsx
+      metrics/ArcCard.tsx
+      metrics/BarCard.tsx
+      method/MethodSection.tsx
+      shared/SafetyChip.tsx
+      shared/CategoryBadge.tsx
     data/                         ← stages.ts, metric-copy.ts, samples.ts, live-api.ts
     types/sample.ts               ← TypeScript interfaces (Section 5)
     utils/assets.ts               ← getSampleAssets(sample, overrides?) helper
-    styles.css                    ← design tokens (from design handoff styles.css)
+    styles.css                    ← merged base tokens + v2 additions from styles-v2.css
     App.tsx
   public/
     samples/                      ← real curated artifacts for the public Path A demo
@@ -118,8 +138,6 @@ frontend/                         ← Vite + React + TypeScript app
         target.svg
         pred.svg
         prob.svg
-    experiments/
-      summary.json                ← static experiment results for dashboard
   package.json
   vite.config.ts
 
@@ -161,7 +179,7 @@ cd frontend && npm run build                 # production → frontend/dist/
 
 The frontend TypeScript `Sample` interface is the authoritative data contract.
 The Python `DemoSample` dataclass is no longer used. See
-`docs/v2_demo/frontend-design-handoff.md` Section 6 for the full interface.
+`docs/v2_demo/frontend-design-handoff-v2.md` Section 5 for the full interface.
 
 Summary of required fields per sample in `manifest.json`:
 
@@ -197,11 +215,13 @@ interface Sample {
     optimalDice: number;
   };
   notes?: string;
+  assetBasePath?: string;         // demo-samples fallback only — override /samples/<id>/
+  assetExtension?: string;        // demo-samples fallback only — e.g. ".svg"
 }
 ```
 
 The frontend TypeScript interface is the authoritative contract. See Section 5 above
-and `docs/v2_demo/frontend-design-handoff.md` Section 6.
+and `docs/v2_demo/frontend-design-handoff-v2.md` Section 5.
 
 ## 6. Manifest schema
 
@@ -256,23 +276,24 @@ Notes on generation:
 
 ## 7. Core components
 
-The frontend components are defined in the design handoff. See
-`docs/v2_demo/frontend-design-handoff.md` for the full component inventory and
-porting instructions. Summary:
+The frontend components are defined in the redesign handoff. See
+`docs/v2_demo/frontend-design-handoff-v2.md` for the full component inventory
+and porting instructions. Summary:
 
-### SampleGallery
-Card gallery with category filter (All / Strong / Typical / Failure).
-Active card gets cyan glow border. Clicking a card sets `activeId` and
-auto-advances the pipeline stepper.
+### HeroPlayer + MediaStage + Transport
+The hero is the player. A stable 4:3 media frame stays fixed while stage
+overlays fade in and out. `Transport` owns play/pause/seek plus the future live
+status and timing slot.
 
-### PipelineStepper + StageDetail
-Six-stage horizontal stepper with connecting progress line. Each stage shows
-an image composite (ultrasound + mask/prob overlay via CSS blend modes + SVG
-ellipse). Stage detail panel shows plain-English explanation and per-stage callout.
+### CasePickerCompact + SubNav
+The standalone gallery and guided tour are removed in the redesign. Sample
+selection moves into a compact six-button picker inside the hero, and the nav
+shrinks to five scrollspy sections plus a mode toggle stub for future live mode.
 
-### ThresholdViewer (hero interaction)
-Canvas-based real-time re-thresholding of `prob.png` pixel data. Must preserve
-the soft-edge blend and histogram strip from the design exactly.
+### ThresholdSection
+Canvas-based re-thresholding of `prob.png` remains the key interaction, but the
+section now sits below the hero and uses a stable stage frame plus quieter
+screen-blended cyan/amber overlays rather than the old full-image wash.
 
 ### CNN prediction visualization
 
@@ -293,21 +314,18 @@ This view uses existing geometry utilities where possible:
 - HC in millimeters.
 
 It should always show the contour-vs-ellipse comparison when both measurements
-are available, because this was one of the strongest v1 findings. If contour HC
-cannot be computed for a sample, the UI should mark that value unavailable
-rather than hiding the ellipse result.
+are available, because this was one of the strongest v1 findings. The redesign
+adds both a single-sample verdict panel and a dataset-level stripe chart so the
+UI can explain how one sample may favor contour even when ellipse is more robust
+overall.
 
-### Experiment dashboard
+### MetricsSection + MethodSection
 
-The dashboard reads v1 report tables and figures, especially:
-
-- main test results,
-- Attention U-Net ablations,
-- post-processing ablation,
-- HC MAE figures,
-- training loss and validation loss curves from `outputs/runs/*/metrics.csv`.
-
-The dashboard should emphasize that v1 used a local reduced-resource setup.
+The v2 redesign removes the old experiment dashboard from the main page. The
+metrics section stays as a 2×2 set of interpretable metric cards, while a new
+`MethodSection` explains architecture, training setup, and the geometry prior in
+three narrative cards. Existing experiment JSON stays in the repo for possible
+future use, but it is not part of the redesigned main flow.
 
 ## 8. Artifact export step
 

@@ -24,7 +24,7 @@ export interface Sample {
   split: string;
   summary: string;
   assetBasePath?: string;
-  assetExtension?: "png" | "svg";
+  assetExtension?: "png" | "svg" | ".png" | ".svg";
   previewOnly?: boolean;
   metrics: SampleMetrics;
   predEllipse: Ellipse;
@@ -33,6 +33,12 @@ export interface Sample {
   spacingXMm: number;
   spacingYMm: number;
   resolution: { w: number; h: number };
+  thresholdCurve?: {
+    thresholds: number[];
+    dice: number[];
+    optimalThreshold: number;
+    optimalDice: number;
+  };
   notes?: string;
 }
 

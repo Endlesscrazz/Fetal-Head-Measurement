@@ -156,6 +156,12 @@ Done criteria:
 
 Status: done
 
+Status note:
+The first React saved-output explorer shipped publicly, and the approved
+2026-05-04 redesign has now been implemented locally. The codebase now targets
+the hero-player / five-section v2 surface area for future live-mode work. The
+public Vercel site will show this redesigned UI after the next frontend deploy.
+
 Estimated effort:
 8-12 hours
 
@@ -165,15 +171,15 @@ handoff.
 
 Expected behavior:
 
-- visual sample gallery,
-- sticky navigation and guided tour,
-- stage-by-stage pipeline view,
+- above-the-fold hero player with compact case picker,
+- sticky sub-nav with live-mode stub,
+- stable media stage with stage-by-stage overlays,
 - target mask view,
 - probability map and threshold/mask view,
 - cleanup and ellipse view,
 - contour-vs-ellipse comparison when both values are available,
-- v1 experiment dashboard,
-- training/validation loss curves from saved v1 metrics,
+- metrics interpretation cards,
+- method narrative cards,
 - safety disclaimer.
 
 Expected files:
@@ -193,11 +199,12 @@ Verification:
 
 Done criteria:
 
-- a local reviewer can understand the pipeline visually in under one minute.
+- a local reviewer can understand the pipeline visually in under one minute,
+- the static UI structure is aligned with the v2 redesign handoff.
 
 ## V2.P4 - Live inference integration
 
-Status: in_progress
+Status: done
 
 Status note:
 `V2.S7.1` live inference core is implemented. The remaining live work is the
@@ -235,7 +242,7 @@ Verification:
 
 - live mode works on at least one local sample,
 - saved-output mode still works without checkpoint files,
-- `StageDetail` and `ThresholdViewer` render both static paths and live assets,
+- `MediaStage` and `ThresholdSection` render both static paths and live assets,
 - live API responses validate against the same required fields as static
   manifest samples.
 
@@ -245,15 +252,16 @@ Done criteria:
 
 ## V2.P5 - Portfolio README polish and screenshots
 
-Status: done
+Status: in_progress
 
 Status note:
 The public production domain is live at
 `https://fetal-head-measurement.vercel.app/`, the root README is now
 rewritten around the v2 portfolio demo, and the static site now serves the
 curated real HC18-derived saved-output bundle rather than only the placeholder
-preview. Screenshots/GIFs remain optional future presentation assets, not
-blockers.
+preview. Screenshots/GIFs remain optional future presentation assets. The
+remaining public-facing polish is simply to let the next deploy pick up the
+completed `V2.S6.1` redesign.
 
 Estimated effort:
 3-4 hours

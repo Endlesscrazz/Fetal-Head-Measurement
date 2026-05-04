@@ -11,6 +11,66 @@ Each entry should include:
 - alternatives considered,
 - impact on future work.
 
+## 2026-05-04 - Frontend redesign v2 is now the implemented static UI path
+
+Decision:
+Treat the `V2.S6.1` redesign refresh as implemented in `frontend/src/`. The
+app shell now uses `SubNav`, `HeroPlayer`, `MediaStage`, `Transport`,
+`ThresholdSection`, `GeometryV2`, `MetricsSection`, and `MethodSection`, with
+all image loading routed through `frontend/src/utils/assets.ts`.
+
+Rationale:
+The redesign was not just a visual preference; it was the cleanest way to fix
+discoverability, layout reflow, probability-map legibility, and live-mode
+extensibility in one pass. Landing it before live inference keeps the API work
+targeted at the right UI surface.
+
+Alternatives considered:
+Keeping the old gallery/tour/dashboard UI alive until after live inference; or
+rewriting the live work twice, once for the old surface and again for the new
+one.
+
+Impact on future work:
+- `V2.S7.2` should now wire the FastAPI contract against the redesigned UI
+  components, not the old gallery-and-stage-card stack.
+- The old components can remain in the repo as historical reference, but they
+  are no longer the app shell used by `frontend/src/App.tsx`.
+- The next public frontend deploy should surface the redesigned static UI on
+  Vercel.
+
+## 2026-05-04 - Frontend redesign handoff v2 supersedes the original React handoff
+
+Decision:
+Adopt `docs/v2_demo/frontend-design-handoff-v2.md` as the canonical frontend
+implementation reference for the next static UI pass. The hero now owns the
+pipeline player, the compact case picker replaces the standalone gallery
+section, `Transport` replaces the old pipeline stepper, the tour flow is
+removed, and the experiment dashboard is replaced by a smaller narrative
+`MethodSection`.
+
+Rationale:
+The first deployed React version exposed real implementation pain: the main
+player sat too low on the page, stage transitions felt like card swaps, the
+probability stage overused full-frame amber tinting, the geometry section
+reflowed in Morph mode, and the UI had no natural slot for future live-inference
+status. The v2 redesign addresses those issues while preserving the project’s
+visual identity and making the same surface reusable for static replay and live
+inference later.
+
+Alternatives considered:
+Keeping the original React handoff unchanged and patching small CSS issues in
+place; moving straight to live inference on top of the old UI; creating a
+completely unrelated visual redesign.
+
+Impact on future work:
+- `docs/v2_demo/frontend-design-handoff-v2.md` is now the source of truth for
+  frontend implementation.
+- `docs/v2_demo/frontend-design-handoff.md` becomes historical reference only.
+- The next exact implementation task moves back to a static frontend redesign
+  pass before `V2.S7.2`.
+- Planning docs must stop assuming the old gallery / tour / experiment-dashboard
+  structure and instead target the 5-section hero-player architecture.
+
 ## 2026-05-03 - Public static deployment now serves the curated real HC18-derived bundle
 
 Decision:
@@ -67,6 +127,10 @@ Impact on future work:
   override helper.
 
 ## 2026-05-03 - Public deployment uses a non-medical preview fallback
+
+Status: superseded — the same-day Path A approval entry above overrides this
+decision. Real HC18-derived curated artifacts are now the preferred static
+source, while the preview bundle remains the fallback path.
 
 Decision:
 For V2.S6, keep the real HC18 sample artifact bundle local and ignored, and add

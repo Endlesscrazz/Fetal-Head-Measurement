@@ -15,9 +15,10 @@ ultrasound image -> target mask -> CNN prediction -> mask cleanup -> ellipse fit
 The first milestone is a static saved-output single-page app ported from the
 Claude Design handoff at
 `/Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/`. That milestone is
-now deployed publicly with the curated real HC18-derived saved-output bundle.
-The next milestone adds curated live checkpoint inference through a separate
-backend without rewriting the visual frontend.
+already deployed publicly with the curated real HC18-derived saved-output
+bundle. The redesign refresh driven by
+`docs/v2_demo/frontend-design-handoff-v2.md` is now implemented locally, so the
+next product phase is curated live checkpoint inference on top of the new UI.
 
 ## 2. Audience
 
@@ -55,7 +56,9 @@ The v2 MVP is successful when:
 - the app reports predicted HC in millimeters when available,
 - the app includes a contour-vs-ellipse measurement comparison whenever both
   measurements are available,
-- the app includes v1 experiment summary results,
+- the app exposes the pipeline player above the fold in the hero,
+- the app keeps a stable media frame while stage overlays change,
+- the app includes metric interpretation cards and a method narrative section,
 - the app clearly says: "Educational demo only. Not for clinical use.",
 - the app can run locally without retraining,
 - the default saved-output mode can run without raw HC18 data or checkpoints
@@ -80,7 +83,7 @@ The v2 MVP is successful when:
 - Build the app under `frontend/`, with reusable components under
   `frontend/src/components/`.
 - Port the design tokens and interactions from
-  `docs/v2_demo/frontend-design-handoff.md`.
+  `docs/v2_demo/frontend-design-handoff-v2.md`.
 - Export curated samples to `outputs/demo_samples/`, then copy them to
   `frontend/public/samples/`. `outputs/demo_samples/` remains the generated
   source of truth; `frontend/public/samples/` is the public/runtime mirror.
@@ -92,7 +95,10 @@ The v2 MVP is successful when:
   recomputing geometry in the UI.
 - Generate `prob.png` during artifact export by running local checkpoint
   inference once. The frontend must not load a checkpoint at runtime.
-- Keep the UI focused on stage-by-stage visual comparison.
+- Keep the UI focused on one stable hero-player media frame, compact sample
+  switching, restrained overlay colors, and stage-by-stage visual comparison.
+- Treat live-inference readiness as a UI constraint now: the transport rail and
+  mode toggle should be reusable later without another redesign.
 - Keep long text out of the main app. Use concise captions and visual panels.
 - Keep v1 pipeline code stable unless a demo task reveals a real bug.
 - Document frontend dependencies in `frontend/package.json`. Python demo
@@ -108,7 +114,7 @@ After saved-output MVP:
   server,
 - add an upload/select-image workflow only after curated live inference is
   stable and explicitly approved,
-- add failure-case gallery,
+- add richer failure-case storytelling or side-by-side comparison views,
 - add a model comparison view,
 - add README screenshots or an animated GIF,
 - add optional HC18 challenge CSV export.

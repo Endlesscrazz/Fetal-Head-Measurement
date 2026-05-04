@@ -46,6 +46,11 @@ Newest entry stays at the top.
   boundary overlay instead of relying on mask-fill tint, and the pipeline
   section includes a playable walkthrough with scrub controls that can carry
   forward into live inference.
+- The approved 2026-05-04 redesign now supersedes the first React UI pass:
+  `frontend-design-handoff-v2.md` is the active frontend reference, the hero
+  will own the player, the transport rail replaces the old stepper, the tour is
+  removed, and the experiment dashboard is replaced by a smaller method
+  narrative section.
 - Live inference planning now lives at
   `docs/v2_demo/live-inference-plan.md`; Claude Code review has been integrated
   into the roadmap/task docs before V2.S7 implementation.
@@ -62,8 +67,190 @@ Newest entry stays at the top.
   Path A source-of-truth rules, placeholder fallback retention, and the
   mismatch between the documented `V2.S7.1` attention-hook scope and the
   current `src/inference/live.py` implementation.
+- The roadmap/task/doc sync pass is now complete: the remaining roadmap-side
+  planning gaps were marked resolved, and `V2.S6.1` is now fully greenlit from
+  a documentation perspective.
+- `V2.S6.1` is now implemented locally: the app shell has been replaced with
+  the hero-owned player, compact case picker, stable `MediaStage`, transport
+  rail, redesigned threshold/geometry/metrics/method sections, and shared
+  asset helper. The public Vercel site will reflect this after the next deploy.
 
 ## Latest Session
+
+Date: 2026-05-04
+
+Task id:
+V2.S6.1 frontend redesign implementation
+
+Branch:
+`v2-demo`
+
+Goal:
+Implement the approved v2 redesign refresh in the real React frontend so the
+static site matches the new handoff before live inference work begins.
+
+Files changed:
+
+- `frontend/src/App.tsx`
+- `frontend/src/data/samples.ts`
+- `frontend/src/styles.css`
+- `frontend/src/types/sample.ts`
+- `frontend/src/components/nav/SubNav.tsx`
+- `frontend/src/components/hero/HeroPlayer.tsx`
+- `frontend/src/components/hero/CasePickerCompact.tsx`
+- `frontend/src/components/hero/StageCaption.tsx`
+- `frontend/src/components/stage/MediaStage.tsx`
+- `frontend/src/components/stage/Outline.tsx`
+- `frontend/src/components/stage/ProbabilityViz.tsx`
+- `frontend/src/components/stage/EllipseLayer.tsx`
+- `frontend/src/components/transport/Transport.tsx`
+- `frontend/src/components/threshold/ThresholdSection.tsx`
+- `frontend/src/components/threshold/ProbThresholdLayer.tsx`
+- `frontend/src/components/geometry/GeometryV2.tsx`
+- `frontend/src/components/geometry/ContourPath.tsx`
+- `frontend/src/components/metrics/MetricsSection.tsx`
+- `frontend/src/components/metrics/ArcCard.tsx`
+- `frontend/src/components/metrics/BarCard.tsx`
+- `frontend/src/components/method/MethodSection.tsx`
+- `frontend/src/utils/assets.ts`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/production-and-visualization-roadmap.md`
+- `docs/v2_demo/project-spec.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/roadmap.md`
+- `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n '1,260p' docs/v2_demo/frontend-design-handoff-v2.md`
+- `find frontend/src -maxdepth 3 -type f | sort`
+- `sed -n '1,260p' frontend/src/App.tsx`
+- `sed -n '1,260p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/README.md`
+- `sed -n '260,620p' docs/v2_demo/frontend-design-handoff-v2.md`
+- `sed -n '620,980p' docs/v2_demo/frontend-design-handoff-v2.md`
+- `sed -n '1,260p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/app-v2.jsx`
+- `sed -n '1,320p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/components-v2/transport.jsx`
+- `sed -n '1,320p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/components-v2/geometry.jsx`
+- `sed -n '1,260p' frontend/src/types/sample.ts`
+- `sed -n '1,260p' frontend/src/data/stages.ts`
+- `sed -n '1,260p' frontend/src/data/metric-copy.ts`
+- `sed -n '1,260p' frontend/src/data/samples.ts`
+- `npm run build` (in `frontend/`)
+- `grep -r "'/samples/" frontend/src/ | grep -v "assets.ts"`
+- `git diff --check`
+- `git status --short --branch`
+
+Verification result:
+
+- Frontend build passed with the redesigned app shell.
+- The app now resets to stage 0 on sample change, keeps the player above the
+  fold, uses iso-probability contours instead of the old amber flood, keeps the
+  geometry slider slot reserved in Morph mode, and routes image assets through
+  `getSampleAssets`.
+- The direct-path grep check returned no matches outside `assets.ts`, and
+  `git diff --check` passed.
+
+Decisions made:
+
+- Treat the redesigned hero-player surface as the implemented base for all
+  future live-mode work.
+- Move the next exact task to `V2.S7.2 - FastAPI Demo Server`.
+
+Open issues:
+
+- `docs/v2_demo/frontend-design-handoff-v2.md` remains untracked locally and
+  should be committed alongside the redesign implementation when appropriate.
+- The deployed public site is still on the pre-redesign UI until the next
+  frontend deploy/push picks up this local implementation.
+
+Next exact task:
+
+- Start `V2.S7.2 - FastAPI Demo Server`.
+
+## Previous Session
+
+Date: 2026-05-04
+
+Task id:
+V2 redesign doc alignment
+
+Branch:
+`v2-demo`
+
+Goal:
+Review the new Claude Design v2 handoff plus the local design bundle, identify
+plan mismatches, and update the v2 docs so implementation targets the redesign
+before live inference resumes.
+
+Files changed:
+
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/architecture.md`
+- `docs/v2_demo/frontend-design-handoff-v2.md`
+- `docs/v2_demo/frontend-design-handoff.md`
+- `docs/v2_demo/live-inference-plan.md`
+- `docs/v2_demo/project-spec.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/roadmap.md`
+- `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n '1,240p' AGENTS.md`
+- `sed -n '1,260p' project-tasks.md`
+- `sed -n '1,260p' handoff.md`
+- `sed -n '1,260p' docs/v2_demo/DECISIONS.md`
+- `rg --files docs/v2_demo | sort`
+- `find /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2 -maxdepth 2 -type f | sort`
+- `sed -n '1,320p' docs/v2_demo/frontend-design-handoff-v2.md`
+- `sed -n '1,320p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/README.md`
+- `sed -n '1,360p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/app-v2.jsx`
+- `sed -n '1,260p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/components-v2/transport.jsx`
+- `sed -n '1,260p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/components-v2/geometry.jsx`
+- `sed -n '1,260p' /Users/shreyas/Downloads/fetal-head-claude-designs/design_handoff_fetal_hc_v2/data.js`
+- `rg -n "SampleGallery|PipelineStepper|StageDetail|ExperimentDashboard|tour|TourBar|StickyNav|gallery|research|MethodSection|HeroPlayer|Transport|GeometryV2|ThresholdSection|CasePickerCompact|SubNav" docs/v2_demo/*.md README.md project-tasks.md`
+- `sed -n '1,320p' docs/v2_demo/architecture.md`
+- `sed -n '1,320p' docs/v2_demo/roadmap.md`
+- `sed -n '320,760p' docs/v2_demo/project-tasks.md`
+- `sed -n '1,220p' docs/v2_demo/live-inference-plan.md`
+- `sed -n '220,420p' docs/v2_demo/live-inference-plan.md`
+- `sed -n '420,760p' docs/v2_demo/live-inference-plan.md`
+- `git status --short --branch`
+
+Verification result:
+
+- Confirmed the new design handoff and the local design bundle are aligned on
+  the major product changes: hero-owned player, compact case picker, transport
+  rail, stable media frame, probability iso-contours, geometry reserved-slot
+  controls, and MethodSection replacing the dashboard.
+- Confirmed the main remaining repo risk was documentation drift rather than a
+  design inconsistency in the new handoff itself.
+- Updated the spec, architecture, roadmap, session plan, live plan, and
+  decisions so the next implementation task is the redesign refresh before
+  `V2.S7.2`.
+
+Decisions made:
+
+- Treat `frontend-design-handoff-v2.md` as the canonical frontend source of
+  truth.
+- Keep `frontend-design-handoff.md` only as historical reference.
+- Pause further live UI wiring until the static redesign refresh lands.
+
+Open issues:
+
+- `docs/v2_demo/live-inference-plan.md` still contains local user-authored
+  changes; this session aligned it conceptually but did not freeze it as
+  finished implementation docs.
+- The public deployed site is still on the pre-redesign UI until implementation
+  work starts.
+
+Next exact task:
+
+- Start `V2.S6.1 - Frontend Redesign Refresh From Handoff V2`.
+
+## Previous Session
 
 Date: 2026-05-03
 

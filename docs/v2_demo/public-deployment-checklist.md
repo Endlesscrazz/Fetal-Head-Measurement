@@ -119,7 +119,7 @@ Production domain is live
 What to check:
 
 1. The homepage loads
-2. The sample gallery renders from the real curated `samples/manifest.json`
+2. The active-case UI renders from the real curated `samples/manifest.json`
 3. `ultrasound.png`, `target.png`, `pred.png`, and `prob.png` load from
    `/samples/<id>/...`
 4. The safety disclaimer is visible

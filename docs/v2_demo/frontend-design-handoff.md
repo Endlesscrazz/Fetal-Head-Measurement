@@ -3,6 +3,14 @@
 Source: `/Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/`
 Reviewed: 2026-05-01
 
+Superseded:
+This handoff is now superseded for active UI work by
+`docs/v2_demo/frontend-design-handoff-v2.md`.
+
+Historical note:
+Keep this file for traceability to the first React/Vite design pass, but do not
+use it as the implementation reference for the next frontend refresh.
+
 This document is the primary handoff reference for Codex implementing the v2 React
 frontend. Read this alongside `architecture.md` and `project-tasks.md` before
 writing any code.
