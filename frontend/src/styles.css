@@ -605,6 +605,82 @@ svg {
   margin-bottom: 22px;
 }
 
+.pipeline-player {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: rgba(110, 224, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.pipeline-player__button,
+.pipeline-player__ghost {
+  min-height: 36px;
+  padding: 8px 12px;
+  color: var(--fg-1);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+}
+
+.pipeline-player__button.active {
+  color: #07090f;
+  background: var(--cyan);
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.pipeline-player__scrub {
+  min-width: 0;
+}
+
+.pipeline-player__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.pipeline-player__meta span {
+  color: var(--fg-3);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.pipeline-player__meta strong {
+  color: var(--fg-0);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pipeline-player__scrub input {
+  width: 100%;
+  accent-color: var(--cyan);
+}
+
+.pipeline-player__labels {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.pipeline-player__labels span {
+  color: var(--fg-3);
+  font-size: 9px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .pipeline-stepper__track {
   position: relative;
   display: grid;
@@ -1243,7 +1319,7 @@ svg {
 }
 
 .geometry-image__base,
-.geometry-image__mask,
+.geometry-image__contour,
 .geometry-image__svg {
   position: absolute;
   inset: 0;
@@ -1252,7 +1328,7 @@ svg {
 }
 
 .geometry-image__base,
-.geometry-image__mask {
+.geometry-image__contour {
   object-fit: contain;
 }
 
@@ -1260,9 +1336,8 @@ svg {
   opacity: 0.72;
 }
 
-.geometry-image__mask {
-  filter: brightness(0) saturate(100%) invert(80%) sepia(60%) saturate(700%) hue-rotate(355deg) brightness(105%);
-  mix-blend-mode: screen;
+.geometry-image__contour {
+  filter: drop-shadow(0 0 6px rgba(255, 207, 110, 0.7));
   transition: opacity 250ms;
 }
 
@@ -1322,6 +1397,11 @@ svg {
   margin: 0;
   color: var(--fg-1);
   line-height: 1.6;
+}
+
+.geometry-panel__note {
+  color: var(--fg-2) !important;
+  font-size: 12px;
 }
 
 .segmented-control {
@@ -1942,6 +2022,16 @@ svg {
     grid-template-columns: repeat(6, minmax(72px, 1fr));
     overflow-x: auto;
     padding-bottom: 6px;
+  }
+
+  .pipeline-player {
+    grid-template-columns: 1fr;
+  }
+
+  .pipeline-player__meta {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
   }
 
   .pipeline-stepper__line,

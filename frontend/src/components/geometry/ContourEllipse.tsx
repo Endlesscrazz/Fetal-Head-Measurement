@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { sampleAssetPath } from "../../data/samples";
 import type { Sample } from "../../types/sample";
+import { getMaskOutlineDataUrl } from "../../utils/maskOutline";
 
 type GeometryView = "contour" | "ellipse" | "both" | "morph";
 
@@ -32,16 +33,39 @@ function HCRow({ color, label, value }: { color: string; label: string; value: n
 export function ContourEllipse({ sample }: { sample: Sample }) {
   const [view, setView] = useState<GeometryView>("both");
   const [morph, setMorph] = useState(0.5);
+  const [contourOutlineSrc, setContourOutlineSrc] = useState<string | null>(null);
   const width = sample.resolution.w;
   const height = sample.resolution.h;
   const ellipse = sample.predEllipse;
   const ellipseDegrees = (ellipse.rot * 180) / Math.PI;
+  const predictedMaskSrc = useMemo(() => sampleAssetPath(sample, "pred"), [sample]);
   const contourOpacity = view === "ellipse" ? 0 : view === "morph" ? 1 - morph : 0.72;
   const ellipseOpacity = view === "contour" ? 0 : view === "morph" ? morph : 1;
   const contourDiff =
     typeof sample.contourHC === "number" && Number.isFinite(sample.contourHC)
       ? sample.contourHC - sample.metrics.predHC
       : null;
+
+  useEffect(() => {
+    let cancelled = false;
+    setContourOutlineSrc(null);
+
+    getMaskOutlineDataUrl(predictedMaskSrc)
+      .then((nextSrc) => {
+        if (!cancelled) {
+          setContourOutlineSrc(nextSrc);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setContourOutlineSrc(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [predictedMaskSrc]);
 
   return (
     <div className="geometry-grid">
@@ -52,9 +76,9 @@ export function ContourEllipse({ sample }: { sample: Sample }) {
           src={sampleAssetPath(sample, "ultrasound")}
         />
         <img
-          alt={`${sample.id} cleaned predicted mask`}
-          className="geometry-image__mask"
-          src={sampleAssetPath(sample, "pred")}
+          alt={`${sample.id} contour outline`}
+          className="geometry-image__contour"
+          src={contourOutlineSrc ?? predictedMaskSrc}
           style={{ opacity: contourOpacity }}
         />
         <svg className="geometry-image__svg" viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
@@ -85,6 +109,10 @@ export function ContourEllipse({ sample }: { sample: Sample }) {
         <p>
           The predicted mask is useful, but head circumference is a geometric quantity. This panel
           compares the contour-derived HC with the ellipse fit used by the final v1 measurement.
+        </p>
+        <p className="geometry-panel__note">
+          Amber shows the cleaned contour boundary. Cyan shows the fitted ellipse used for the final
+          saved-output measurement.
         </p>
 
         <div className="segmented-control" aria-label="Geometry view">

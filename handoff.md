@@ -42,6 +42,10 @@ Newest entry stays at the top.
 - `docs/v2_demo/public-deployment-checklist.md` now captures the exact shared
   deployment state for the real curated static bundle plus the fallback preview
   path.
+- Static UX polish is now layered on top of Path A: Step 4 shows a real contour
+  boundary overlay instead of relying on mask-fill tint, and the pipeline
+  section includes a playable walkthrough with scrub controls that can carry
+  forward into live inference.
 - Live inference planning now lives at
   `docs/v2_demo/live-inference-plan.md`; Claude Code review has been integrated
   into the roadmap/task docs before V2.S7 implementation.
@@ -60,6 +64,75 @@ Newest entry stays at the top.
   current `src/inference/live.py` implementation.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+V2 static UX polish
+
+Branch:
+`v2-demo`
+
+Goal:
+Fix the confusing Step 4 contour-versus-ellipse behavior and add a stronger
+interactive walkthrough pattern that improves the static website now and maps
+cleanly to future live inference.
+
+Files changed:
+
+- `frontend/src/App.tsx`
+- `frontend/src/components/geometry/ContourEllipse.tsx`
+- `frontend/src/components/pipeline/PipelineStepper.tsx`
+- `frontend/src/styles.css`
+- `frontend/src/utils/maskOutline.ts`
+- `handoff.md`
+
+Commands run:
+
+- `git status --short --branch`
+- `sed -n '1,220p' frontend/src/components/geometry/ContourEllipse.tsx`
+- `sed -n '1,260p' frontend/src/components/pipeline/PipelineStepper.tsx`
+- `sed -n '1,260p' frontend/src/App.tsx`
+- `sed -n '1,240p' frontend/src/utils/maskOutline.ts`
+- `sed -n '1,260p' handoff.md`
+- `rg -n "pipeline-player|geometry-image__contour|geometry-panel__note" frontend/src/styles.css`
+- `sed -n '540,760p' frontend/src/styles.css`
+- `sed -n '760,980p' frontend/src/styles.css`
+- `sed -n '1300,1428p' frontend/src/styles.css`
+- `sed -n '2010,2045p' frontend/src/styles.css`
+- `npm run build` (in `frontend/`)
+- `git diff --check`
+
+Verification result:
+
+- Frontend production build passed after the geometry and walkthrough updates.
+- Step 4 now derives and renders an amber contour outline from the saved mask,
+  so the contour/ellipse toggle changes the visible shape rather than mostly
+  changing fill tint.
+- The pipeline section now includes a play/pause walkthrough, manual stage
+  scrubber, and restart control.
+
+Decisions made:
+
+- Use an interactive pipeline player instead of embedding a passive GIF/video,
+  because it reuses the real sample state today and can later map to live
+  inference progress without replacing the UI pattern.
+- Generate the contour boundary client-side from `pred.png` for the static demo
+  instead of widening exporter scope before live inference begins.
+
+Open issues:
+
+- `docs/v2_demo/live-inference-plan.md` still has user-authored local changes
+  outside this UI polish work.
+- This session improves the geometry readout, but it does not yet implement a
+  true contour-to-ellipse path morph.
+
+Next exact task:
+
+- Push the static UX polish, verify the public deployment, then resume
+  `V2.S7.2 - FastAPI Demo Server`.
+
+## Previous Session
 
 Date: 2026-05-03
 
@@ -137,8 +210,6 @@ Open issues:
 Next exact task:
 
 - Start `V2.S7.2 - FastAPI Demo Server` for curated live inference.
-
-## Previous Session
 
 Date: 2026-05-03
 

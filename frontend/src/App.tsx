@@ -13,6 +13,7 @@ import { StageDetail } from "./components/pipeline/StageDetail";
 import { SafetyChip } from "./components/shared/SafetyChip";
 import { ThresholdViewer } from "./components/threshold/ThresholdViewer";
 import { loadManifest, preferredManifestPath } from "./data/samples";
+import { STAGES } from "./data/stages";
 import type { Manifest, Sample } from "./types/sample";
 
 function formatMm(value: number): string {
@@ -70,6 +71,7 @@ function App() {
   const [activeId, setActiveId] = useState<string>("");
   const [filter, setFilter] = useState<GalleryFilter>("all");
   const [stageIdx, setStageIdx] = useState(0);
+  const [pipelinePlaying, setPipelinePlaying] = useState(false);
   const [activeSection, setActiveSection] = useState<NavSectionId>("cases");
   const [tourActive, setTourActive] = useState(false);
   const [tourStep, setTourStep] = useState(0);
@@ -125,6 +127,7 @@ function App() {
 
   useEffect(() => {
     if (!activeId) return;
+    setPipelinePlaying(false);
     setStageIdx(0);
     let index = 0;
     const timer = window.setInterval(() => {
@@ -138,6 +141,41 @@ function App() {
 
     return () => window.clearInterval(timer);
   }, [activeId]);
+
+  useEffect(() => {
+    if (!pipelinePlaying) return;
+    if (stageIdx >= STAGES.length - 1) {
+      setPipelinePlaying(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setStageIdx((current) => Math.min(current + 1, STAGES.length - 1));
+    }, 980);
+
+    return () => window.clearTimeout(timer);
+  }, [pipelinePlaying, stageIdx]);
+
+  const handleStagePick = (index: number) => {
+    setPipelinePlaying(false);
+    setStageIdx(index);
+  };
+
+  const handleTogglePipeline = () => {
+    if (pipelinePlaying) {
+      setPipelinePlaying(false);
+      return;
+    }
+    if (stageIdx >= STAGES.length - 1) {
+      setStageIdx(0);
+    }
+    setPipelinePlaying(true);
+  };
+
+  const handleRestartPipeline = () => {
+    setPipelinePlaying(false);
+    setStageIdx(0);
+  };
 
   const jumpTo = (id: NavSectionId) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -206,7 +244,13 @@ function App() {
             </div>
 
             <Section id="pipeline">
-              <PipelineStepper activeIdx={stageIdx} onPick={setStageIdx} sample={activeSample} />
+              <PipelineStepper
+                activeIdx={stageIdx}
+                isPlaying={pipelinePlaying}
+                onPick={handleStagePick}
+                onRestart={handleRestartPipeline}
+                onTogglePlay={handleTogglePipeline}
+              />
               <div className="pipeline-detail-wrap">
                 <StageDetail sample={activeSample} stageIdx={stageIdx} />
               </div>

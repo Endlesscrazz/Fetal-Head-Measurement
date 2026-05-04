@@ -1,20 +1,54 @@
 import { STAGES } from "../../data/stages";
-import type { Sample } from "../../types/sample";
 
 export function PipelineStepper({
   activeIdx,
+  isPlaying,
   onPick,
+  onRestart,
+  onTogglePlay,
 }: {
   activeIdx: number;
+  isPlaying: boolean;
   onPick: (index: number) => void;
-  sample: Sample;
+  onRestart: () => void;
+  onTogglePlay: () => void;
 }) {
+  const activeStage = STAGES[activeIdx];
+  const atEnd = activeIdx === STAGES.length - 1;
   const progress = (activeIdx / (STAGES.length - 1)) * 100;
 
   return (
     <div className="pipeline-stepper">
       <div className="eyebrow">02 / Inside the pipeline</div>
       <h2 className="serif">How the model goes from pixels to millimetres.</h2>
+      <div className="pipeline-player">
+        <button className={`pipeline-player__button ${isPlaying ? "active" : ""}`} onClick={onTogglePlay} type="button">
+          {isPlaying ? "Pause walkthrough" : atEnd ? "Replay walkthrough" : "Play walkthrough"}
+        </button>
+        <div className="pipeline-player__scrub">
+          <div className="pipeline-player__meta">
+            <span className="mono">Stage {String(activeIdx + 1).padStart(2, "0")} of 06</span>
+            <strong>{activeStage.title}</strong>
+          </div>
+          <input
+            aria-label="Scrub pipeline stage"
+            max={STAGES.length - 1}
+            min={0}
+            onChange={(event) => onPick(Number.parseInt(event.target.value, 10))}
+            step={1}
+            type="range"
+            value={activeIdx}
+          />
+          <div className="pipeline-player__labels mono">
+            {STAGES.map((stage) => (
+              <span key={stage.id}>{stage.short}</span>
+            ))}
+          </div>
+        </div>
+        <button className="pipeline-player__ghost" onClick={onRestart} type="button">
+          Restart
+        </button>
+      </div>
 
       <div className="pipeline-stepper__track">
         <div className="pipeline-stepper__line" />
