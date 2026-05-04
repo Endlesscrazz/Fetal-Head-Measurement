@@ -245,12 +245,13 @@ Done criteria:
 
 ## V2.P5 - Portfolio README polish and screenshots
 
-Status: in_progress
+Status: done
 
 Status note:
-The public production domain is now live at
-`https://fetal-head-measurement.vercel.app/`. Remaining work is polish:
-screenshots/GIFs, optional custom domain, and final portfolio copy cleanup.
+The public production domain is live at
+`https://fetal-head-measurement.vercel.app/`, and the root README is now
+rewritten around the v2 portfolio demo. Screenshots/GIFs remain optional future
+presentation assets, not blockers.
 
 Estimated effort:
 3-4 hours

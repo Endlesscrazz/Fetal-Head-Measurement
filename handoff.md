@@ -27,9 +27,10 @@ Newest entry stays at the top.
 - V2.S5 is implemented: the React app now has the full saved-output explorer
   with geometry comparison, selected-case metrics, real run cards/sparklines,
   model ablation, and post-processing ablation sections.
-- V2.S6 is no longer blocked on initial hosting: the public production URL is
-  live at `https://fetal-head-measurement.vercel.app/`. Remaining S6 work is
-  portfolio polish rather than deployment setup.
+- V2.S6 static deployment and portfolio polish are complete for the current
+  milestone: the public production URL is live at
+  `https://fetal-head-measurement.vercel.app/`, and the root README now leads
+  with the v2 portfolio demo rather than the archived course framing.
 - Production preview cleanup is partially complete: the frontend now prefers the
   public preview manifest on non-local hosts and requests Canvas 2D contexts
   with `willReadFrequently` to avoid noisy deployment-console warnings after the
@@ -45,6 +46,65 @@ Newest entry stays at the top.
   `Sample`-compatible output. FastAPI and React live mode remain next.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+V2 README and static deployment polish close-out
+
+Branch:
+`v2-demo`
+
+Goal:
+Finish the short static-polish pass by rewriting the root README around the v2
+portfolio demo and updating the v2 planning docs to mark the static deployment
+milestone complete.
+
+Files changed:
+
+- `README.md`
+- `docs/v2_demo/project-spec.md`
+- `docs/v2_demo/public-deployment-checklist.md`
+- `docs/v2_demo/roadmap.md`
+- `docs/v2_demo/project-tasks.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n '1,260p' README.md`
+- `sed -n '1,260p' docs/v2_demo/project-spec.md`
+- `sed -n '1,260p' docs/v2_demo/roadmap.md`
+- `sed -n '1,260p' docs/v2_demo/project-tasks.md`
+- `rg -n "V2\\.S6|V2\\.P5|portfolio|README" docs/v2_demo/project-tasks.md docs/v2_demo/roadmap.md project-tasks.md handoff.md`
+- `cd frontend && npm run build`
+- `git diff --check`
+
+Verification result:
+
+- Root README now presents the repository as a v2 portfolio/demo project.
+- The frontend still builds successfully after doc/readme polish.
+- `git diff --check` passed.
+- `V2.P5` and `V2.S6` docs now reflect the current completed static milestone.
+
+Decisions made:
+
+- Treat the v1 training/report material as archived background context in
+  `docs/v1/`, not as the primary README story.
+- Mark the static deployment/readme milestone complete and keep screenshots/GIFs
+  as optional future presentation assets.
+
+Open issues:
+
+- Optional screenshots/GIFs could still improve the public repo page later.
+- The next real implementation step is still `V2.S7.2 - FastAPI Demo Server`.
+
+Next exact task:
+
+- Push the README/doc polish commit, then begin `V2.S7.2 - FastAPI Demo Server`
+  unless the user asks for another portfolio-only pass.
+
+## Previous Session
 
 Date: 2026-05-03
 

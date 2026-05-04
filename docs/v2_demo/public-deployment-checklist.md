@@ -208,6 +208,6 @@ I will:
 
 ## 8. Current Blocking Item
 
-Current blocker:
-No blocking issue remains for the static public deployment. Remaining work is
-deployment polish and any optional custom domain decision.
+Current status:
+Static public deployment is complete. Remaining work is optional presentation
+polish and any custom-domain decision.

@@ -2,8 +2,9 @@
 
 ## 1. Project summary
 
-Build an interactive Vite + React + TypeScript demo that turns the completed v1
-fetal head circumference pipeline into a visual ML learning tool.
+Build and polish an interactive Vite + React + TypeScript portfolio demo that
+turns the completed fetal head circumference pipeline into a visual ML learning
+tool.
 
 The app should help a user understand this sequence:
 
@@ -13,9 +14,9 @@ ultrasound image -> target mask -> CNN prediction -> mask cleanup -> ellipse fit
 
 The first milestone is a static saved-output single-page app ported from the
 Claude Design handoff at
-`/Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/`. The app should be
-designed so live checkpoint inference can be added later through a separate
-backend without rewriting the visual frontend.
+`/Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/`. That milestone is
+now deployed publicly. The next milestone adds curated live checkpoint
+inference through a separate backend without rewriting the visual frontend.
 
 ## 2. Audience
 
@@ -28,16 +29,16 @@ Primary audience:
 
 Secondary audience:
 
-- classmates or instructors who want to understand the v1 pipeline visually,
-- future contributors who need a quick mental model of the system.
+- future contributors who need a quick mental model of the system,
+- anyone reviewing the older training/evaluation code alongside the new demo.
 
 ## 3. Product goals
 
 - Make the v1 pipeline understandable in under one minute.
 - Show that the project is more than model training: it includes data handling,
   segmentation, deterministic geometry, and evaluation.
-- Provide a polished resume artifact that can be shown locally or through a
-  short demo video.
+- Provide a polished public artifact that can be shared in resumes, portfolios,
+  and interviews.
 - Keep the implementation small enough to build on top of the existing v1 code.
 
 ## 4. MVP success criteria

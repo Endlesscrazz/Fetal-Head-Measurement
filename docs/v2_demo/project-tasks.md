@@ -478,13 +478,13 @@ Done criteria:
 
 ## V2.S6 - Build, Deploy, And Portfolio Polish
 
-Status: in_progress
+Status: done
 
 Status note:
 README, `start_demo.sh`, Vercel configuration, and public-safe placeholder
-preview assets are implemented. The public production URL is now live at
-`https://fetal-head-measurement.vercel.app/`. Remaining work is portfolio
-polish such as screenshots/GIFs and any final copy cleanup.
+preview assets are implemented. The public production URL is live at
+`https://fetal-head-measurement.vercel.app/`, and the root README now presents
+the repository as a v2 portfolio project rather than a course submission.
 
 Roadmap phase:
 `V2.P5`
