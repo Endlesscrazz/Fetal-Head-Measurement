@@ -102,6 +102,11 @@ Commands run:
 - `sed -n '2010,2045p' frontend/src/styles.css`
 - `npm run build` (in `frontend/`)
 - `git diff --check`
+- `git add frontend/src/App.tsx frontend/src/components/geometry/ContourEllipse.tsx frontend/src/components/pipeline/PipelineStepper.tsx frontend/src/styles.css frontend/src/utils/maskOutline.ts handoff.md`
+- `git commit -m "Polish geometry step and pipeline walkthrough"`
+- `git push origin v2-demo`
+- `curl -I https://fetal-head-measurement.vercel.app/`
+- `curl -L https://fetal-head-measurement.vercel.app/`
 
 Verification result:
 
@@ -111,6 +116,9 @@ Verification result:
   changing fill tint.
 - The pipeline section now includes a play/pause walkthrough, manual stage
   scrubber, and restart control.
+- Commit `fbf127a` is pushed to `origin/v2-demo`.
+- The production homepage returned `HTTP/2 200` and now references the updated
+  bundle files `index-CKt6NFWi.js` and `index-CDSKYzbc.css`.
 
 Decisions made:
 
@@ -129,8 +137,7 @@ Open issues:
 
 Next exact task:
 
-- Push the static UX polish, verify the public deployment, then resume
-  `V2.S7.2 - FastAPI Demo Server`.
+- Start `V2.S7.2 - FastAPI Demo Server`.
 
 ## Previous Session
 
