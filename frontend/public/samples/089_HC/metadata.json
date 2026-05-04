@@ -1,0 +1,64 @@
+{
+  "sample_id": "089_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "typical",
+  "source_category": "typical",
+  "label": "Geometry teaching case: ellipse wins",
+  "summary": "Clear geometry comparison case: cleanup dramatically reduces contour error, and ellipse fitting then lands much closer to target than the cleaned contour.",
+  "tags": [
+    "cleanup",
+    "ellipse",
+    "contour_comparison"
+  ],
+  "reason": "Clear geometry comparison case: cleanup dramatically reduces contour error, and ellipse fitting then lands much closer to target than the cleaned contour.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.1616175025701522,
+  "spacing_y_mm": 0.1636377125978469,
+  "spacingXMm": 0.1616175025701522,
+  "spacingYMm": 0.1636377125978469,
+  "hc_pred_mm": 73.41529846191406,
+  "hc_gt_mm": 73.7,
+  "metrics": {
+    "dice": 0.9743315508021392,
+    "iou": 0.9499493535124828,
+    "hd95_mm": 0.5877735704959879,
+    "hcErr": 0.2847015380859403,
+    "predHC": 73.41529846191406,
+    "targetHC": 73.7
+  },
+  "dice": 0.9743315508021392,
+  "iou": 0.9499493535124828,
+  "hd95_mm": 0.5877735704959879,
+  "hcErr": 0.2847015380859403,
+  "predHC": 73.41529846191406,
+  "targetHC": 73.7,
+  "signed_hc_error_mm": -0.2847015380859403,
+  "ellipse_params": {
+    "center_x": 178.3330535888672,
+    "center_y": 168.8411102294922,
+    "semi_axis_a": 77.63557434082031,
+    "semi_axis_b": 65.71485137939453,
+    "angle_deg": 74.93257141113281
+  },
+  "predEllipse": {
+    "cx": 178.3330535888672,
+    "cy": 168.8411102294922,
+    "rx": 77.63557434082031,
+    "ry": 65.71485137939453,
+    "rot": 1.3078200881100412
+  },
+  "contourHC": 77.52923583984375,
+  "confidence": 0.9776045083999634,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Clear geometry comparison case: cleanup dramatically reduces contour error, and ellipse fitting then lands much closer to target than the cleaned contour."
+}

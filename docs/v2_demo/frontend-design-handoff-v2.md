@@ -168,7 +168,7 @@ Use the real curated samples from `frontend/public/samples/manifest.json`:
 | 1 | `296_HC` | strong | 0.9907 | 0.03 mm |
 | 2 | `217_HC` | strong | ~0.988 | ~0.19 mm |
 | 3 | `663_HC` | typical | ~0.965 | ~1.6 mm |
-| 4 | `025_HC` | typical | ~0.961 | ~3.3 mm |
+| 4 | `089_HC` | typical | 0.9743 | 0.28 mm |
 | 5 | `793_HC` | failure | ~0.874 | ~10 mm |
 | 6 | `032_HC` | failure | ~0.831 | ~19.9 mm |
 

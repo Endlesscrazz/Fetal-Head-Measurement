@@ -160,6 +160,7 @@ function App() {
               setPlaying(true);
             }}
             onPrev={() => setStageIdx((current) => Math.max(0, current - 1))}
+            onReadMethod={() => jumpTo("method")}
             onRestart={() => {
               setPlaying(false);
               setStageIdx(0);

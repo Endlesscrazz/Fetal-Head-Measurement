@@ -42,15 +42,15 @@
       "pred_hc_mm": 226.13
     },
     {
-      "id": "025_HC",
-      "label": "Cleanup and ellipse teaching case",
+      "id": "089_HC",
+      "label": "Geometry teaching case: ellipse wins",
       "category": "typical",
       "tags": ["cleanup", "ellipse", "contour_comparison"],
-      "reason": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs.",
-      "dice": 0.9438,
-      "abs_hc_error_mm": 3.59,
-      "target_hc_mm": 70.51,
-      "pred_hc_mm": 66.92
+      "reason": "Clear geometry comparison case: cleanup dramatically reduces contour error, and ellipse fitting then lands much closer to target than the cleaned contour.",
+      "dice": 0.9743,
+      "abs_hc_error_mm": 0.28,
+      "target_hc_mm": 73.7,
+      "pred_hc_mm": 73.42
     },
     {
       "id": "793_HC",

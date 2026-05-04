@@ -1,60 +1,47 @@
-import { STAGES } from "../../data/stages";
 import type { Sample } from "../../types/sample";
 
-function stageFacts(sample: Sample) {
-  return {
-    input: [
-      ["Source", `${sample.id}.png`],
-      ["Channels", "1 (gray)"],
-    ],
-    target: [
-      ["Origin", "Radiologist"],
-      ["Role", "Ground truth"],
-    ],
-    prob: [
-      ["Mean conf.", `${Math.round(sample.confidence * 100)}%`],
-      ["Output", "P(skull) per pixel"],
-    ],
-    mask: [
-      ["Threshold", "0.50"],
-      ["Cleanup", "Fill / largest CC"],
-    ],
-    ellipse: [
-      ["Method", "Least-squares"],
-      ["Reject", "Non-elliptical drift"],
-    ],
-    hc: [
-      ["Predicted HC", `${sample.metrics.predHC.toFixed(2)} mm`],
-      ["Final error", `${sample.metrics.hcErr.toFixed(2)} mm`],
-    ],
-  } as const;
-}
-
-export function StageCaption({ sample, stageIdx }: { sample: Sample; stageIdx: number }) {
-  const stage = STAGES[stageIdx];
-  const facts = stageFacts(sample)[stage.id as keyof ReturnType<typeof stageFacts>] ?? stageFacts(sample).input;
-
+export function StageCaption({
+  onPlayPipeline,
+  onReadMethod,
+  sample,
+}: {
+  onPlayPipeline: () => void;
+  onReadMethod: () => void;
+  sample: Sample;
+}) {
   return (
-    <aside className="caption">
+    <aside className="caption caption--hero">
       <div>
-        <div className="mono caption__eyebrow">
-          Stage {String(stageIdx + 1).padStart(2, "0")} of {String(STAGES.length).padStart(2, "0")}
+        <div className="mono caption__eyebrow caption__eyebrow--hero">
+          <span className="caption__eyebrow-dot" />
+          From ultrasound to millimetres
         </div>
-        <h2 className="serif caption__title">{stage.title}</h2>
+        <h2 className="serif caption__title caption__title--hero">
+          A working CNN, explained <span>one stage at a time.</span>
+        </h2>
       </div>
 
-      <div className="caption__blurb-slot">
-        <p>{stage.blurb}</p>
-        <p className="caption__detail">{stage.detail}</p>
+      <div className="caption__blurb-slot caption__blurb-slot--hero">
+        <p>
+          Six visible stages. No black boxes. Press play and watch the network measure a fetal head
+          circumference from a noisy 2D ultrasound.
+        </p>
+        <p className="caption__detail">
+          Active case <span className="mono">{sample.id}</span> · {Math.round(sample.confidence * 100)}%
+          confidence · Dice {sample.metrics.dice.toFixed(4)}
+        </p>
       </div>
 
-      <div className="caption__facts">
-        {facts.map(([label, value]) => (
-          <div className="caption__fact" key={label}>
-            <div className="mono caption__fact-label">{label}</div>
-            <div className="mono caption__fact-value">{value}</div>
-          </div>
-        ))}
+      <div className="caption__actions">
+        <button className="hero-action hero-action--primary" onClick={onPlayPipeline} type="button">
+          <span className="hero-action__icon" aria-hidden="true">
+            ▶
+          </span>
+          Play pipeline
+        </button>
+        <button className="hero-action hero-action--ghost" onClick={onReadMethod} type="button">
+          Read method
+        </button>
       </div>
     </aside>
   );

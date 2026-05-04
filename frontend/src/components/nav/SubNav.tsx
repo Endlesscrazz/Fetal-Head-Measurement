@@ -27,7 +27,8 @@ export function SubNav({
             <ellipse cx="12" cy="12" rx="9" ry="6.5" stroke="var(--cyan)" strokeWidth="1.6" />
             <circle cx="12" cy="12" r="1.4" fill="var(--cyan)" />
           </svg>
-          <span className="mono">HC Explorer</span>
+          <span className="serif subnav__brand-name">Cephal</span>
+          <span className="mono subnav__brand-line">Pipeline Explorer · v0.5</span>
         </div>
 
         <nav className="subnav__pills" aria-label="Sections">

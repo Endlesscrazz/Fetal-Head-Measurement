@@ -101,35 +101,35 @@
       "notes": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough."
     },
     {
-      "id": "025_HC",
-      "label": "Cleanup and ellipse teaching case",
+      "id": "089_HC",
+      "label": "Geometry teaching case: ellipse wins",
       "cat": "typical",
       "split": "test",
-      "summary": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs.",
+      "summary": "Clear geometry comparison case: cleanup dramatically reduces contour error, and ellipse fitting then lands much closer to target than the cleaned contour.",
       "metrics": {
-        "dice": 0.9438002073075926,
-        "iou": 0.8935843964671246,
-        "hd95_mm": 1.256810188293457,
-        "hcErr": 3.593671569824224,
-        "predHC": 66.91632843017578,
-        "targetHC": 70.51
+        "dice": 0.9743315508021392,
+        "iou": 0.9499493535124828,
+        "hd95_mm": 0.5877735704959879,
+        "hcErr": 0.2847015380859403,
+        "predHC": 73.41529846191406,
+        "targetHC": 73.7
       },
       "predEllipse": {
-        "cx": 251.38050842285156,
-        "cy": 150.12225341796875,
-        "rx": 74.4207534790039,
-        "ry": 61.726619720458984,
-        "rot": 2.4412468006617694
+        "cx": 178.3330535888672,
+        "cy": 168.8411102294922,
+        "rx": 77.63557434082031,
+        "ry": 65.71485137939453,
+        "rot": 1.3078200881100412
       },
-      "contourHC": 71.93766784667969,
-      "confidence": 0.9661834836006165,
-      "spacingXMm": 0.1551616936922073,
-      "spacingYMm": 0.1571012139320373,
+      "contourHC": 77.52923583984375,
+      "confidence": 0.9776045083999634,
+      "spacingXMm": 0.1616175025701522,
+      "spacingYMm": 0.1636377125978469,
       "resolution": {
         "w": 384,
         "h": 256
       },
-      "notes": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs."
+      "notes": "Clear geometry comparison case: cleanup dramatically reduces contour error, and ellipse fitting then lands much closer to target than the cleaned contour."
     },
     {
       "id": "793_HC",

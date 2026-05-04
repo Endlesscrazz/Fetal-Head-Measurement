@@ -56,13 +56,17 @@ export function MediaStage({
         visible={showEllipse}
         width={sample.resolution.w}
       />
+      <div className={`stage__crosshair ${stage.id === "input" ? "is-strong" : ""}`}>
+        <span className="stage__crosshair-v" />
+        <span className="stage__crosshair-h" />
+      </div>
 
       <div className="stage__top-left">
         <div className="status-pill stage__chip">
           <span style={{ color: "var(--cyan)", fontWeight: 600 }}>
             {String(stageIdx + 1).padStart(2, "0")}
           </span>
-          <span>{stage.title}</span>
+          <span>{stage.title.toUpperCase()}</span>
         </div>
       </div>
 

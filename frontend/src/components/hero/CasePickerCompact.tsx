@@ -12,9 +12,12 @@ export function CasePickerCompact({
 }) {
   return (
     <div className="case-picker">
-      <div className="mono case-picker__label">Active case · click to switch</div>
+      <div className="case-picker__label-row">
+        <div className="mono case-picker__label">Active case</div>
+        <div className="mono case-picker__hint">Click to switch</div>
+      </div>
       <div className="case-picker__grid">
-        {samples.map((sample) => {
+        {samples.map((sample, index) => {
           const active = sample.id === activeId;
           const assets = getSampleAssets(sample);
           const dotClass =
@@ -33,6 +36,7 @@ export function CasePickerCompact({
               type="button"
             >
               <img alt="" src={assets.ultrasound} />
+              <span className="mono case-picker__index">{String(index + 1).padStart(2, "0")}</span>
               <span className={dotClass} />
             </button>
           );

@@ -567,8 +567,11 @@ Status: done
 Status note:
 Completed locally on 2026-05-04. The app now uses the redesigned hero-owned
 player, `SubNav`, stable `MediaStage`, reserved-slot geometry controls,
-`MetricsSection`, and `MethodSection`. The public Vercel site will show this UI
-after the next frontend deployment.
+`MetricsSection`, and `MethodSection`. A same-day polish pass tightened the hero
+shell and transport styling toward the approved screenshots and swapped the
+geometry teaching case from `025_HC` to `089_HC` so the public contour-vs-ellipse
+story is clearer. The public Vercel site will show this UI after the next
+frontend deployment.
 
 Roadmap phase:
 `V2.P3` / `V2.P5`

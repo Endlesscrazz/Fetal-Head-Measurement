@@ -11,6 +11,35 @@ Each entry should include:
 - alternatives considered,
 - impact on future work.
 
+## 2026-05-04 - Use `089_HC` as the public geometry teaching case
+
+Decision:
+Replace `025_HC` with `089_HC` in the curated public saved-output bundle and
+all v2 planning references for the contour-vs-ellipse teaching slot.
+
+Rationale:
+`025_HC` created the wrong teaching signal for the public static demo: on that
+sample the cleaned contour was actually closer to target than the ellipse fit,
+which made the geometry panel feel self-contradictory even though the
+dataset-level story still favored ellipse regularization overall. `089_HC`
+keeps the same educational role while making the local story clearer: cleanup
+dramatically improves the contour, and ellipse fitting then wins decisively on
+the final HC measurement.
+
+Alternatives considered:
+Keeping `025_HC` and relying on explanatory copy alone; using a more dramatic
+failure-like geometry case such as `163_HC`; removing the per-sample geometry
+comparison entirely.
+
+Impact on future work:
+- `docs/v2_demo/curated-samples.json` and the exported runtime manifests now
+  treat `089_HC` as the geometry/comparison case.
+- Static and future live sample pickers should return the sample list
+  `296_HC`, `217_HC`, `663_HC`, `089_HC`, `793_HC`, `032_HC`.
+- Geometry copy can still mention that single-sample wins for the contour may
+  exist in principle, but the default public teaching case should no longer
+  undermine the ellipse-regularization story.
+
 ## 2026-05-04 - Frontend redesign v2 is now the implemented static UI path
 
 Decision:

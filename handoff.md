@@ -2054,3 +2054,81 @@ Next exact task:
   `scripts/validate_demo_manifest.py`, export at least five curated samples from
   `attention_unet_local_baseline` internal-test outputs, and validate
   `outputs/demo_samples/manifest.json`.
+
+## Previous Session
+
+Date: 2026-05-04
+
+Task id:
+V2.S6.1 follow-up - hero polish and geometry sample swap
+
+Branch:
+`v2-demo`
+
+Goal:
+Tighten the redesigned static UI toward the approved screenshots and replace the
+public geometry teaching case with a sample where ellipse fitting clearly beats
+the cleaned contour.
+
+Files changed:
+
+- `handoff.md`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/curated-samples.json`
+- `docs/v2_demo/curated-samples.md`
+- `docs/v2_demo/frontend-design-handoff.md`
+- `docs/v2_demo/frontend-design-handoff-v2.md`
+- `docs/v2_demo/live-inference-plan.md`
+- `frontend/src/App.tsx`
+- `frontend/src/components/hero/CasePickerCompact.tsx`
+- `frontend/src/components/hero/HeroPlayer.tsx`
+- `frontend/src/components/hero/StageCaption.tsx`
+- `frontend/src/components/nav/SubNav.tsx`
+- `frontend/src/components/stage/MediaStage.tsx`
+- `frontend/src/styles.css`
+- `frontend/public/samples/manifest.json`
+- `frontend/public/samples/089_HC/`
+- removed `frontend/public/samples/025_HC/`
+
+Commands run:
+
+- `sed -n ... frontend/src/components/... frontend/src/styles.css docs/v2_demo/...`
+- `rg -n "025_HC|089_HC" docs/v2_demo frontend/public/samples/manifest.json outputs/demo_samples/manifest.json frontend/src`
+- `python3 - <<'PY' ...` to compare contour-vs-ellipse candidates from
+  `postprocess_ablation_per_sample.csv` and validate `089_HC`
+- `.venv/bin/python scripts/export_demo_artifacts.py --run-id attention_unet_local_baseline --split test`
+- `cp -R outputs/demo_samples/. frontend/public/samples/`
+- `rm -rf outputs/demo_samples/025_HC frontend/public/samples/025_HC`
+- `cd frontend && npm run build`
+- `git diff --check`
+
+Verification result:
+
+- Frontend production build passed after the hero/player polish.
+- Curated manifests now resolve to:
+  `296_HC`, `217_HC`, `663_HC`, `089_HC`, `793_HC`, `032_HC`.
+- `089_HC` now serves as the geometry teaching case with:
+  cleaned contour HC `77.53 mm`, ellipse HC `73.42 mm`, target HC `73.70 mm`.
+- `git diff --check` passed.
+
+Decisions made:
+
+- Use `089_HC` instead of `025_HC` for the public contour-vs-ellipse teaching
+  slot.
+- Keep the redesigned `HeroPlayer` shell and transport rail, but polish them
+  further toward the approved screenshot style before moving to live inference.
+- Remove the stale `025_HC` runtime artifact directory so the committed public
+  bundle has a single authoritative geometry sample.
+
+Open issues:
+
+- The redesigned/polished frontend has not been pushed or redeployed yet.
+- We still need a browser-level sanity check on Vercel after deployment.
+- Local-only files `.claude/`, `context-bridge-log.md`, and
+  `context-bridge-state.db` remain uncommitted.
+
+Next exact task:
+
+- Push this polish pass, deploy the updated static frontend to Vercel, and
+  verify the production UI before starting `V2.S7.2 - FastAPI Demo Server`.

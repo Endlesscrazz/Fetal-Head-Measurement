@@ -108,7 +108,7 @@ set in `docs/v2_demo/curated-samples.json`:
 - `296_HC` — strong headline success
 - `217_HC` — second strong success
 - `663_HC` — typical/median-like error
-- `025_HC` — cleanup and ellipse teaching case
+- `089_HC` — cleanup and ellipse teaching case
 - `793_HC` — high-error case
 - `032_HC` — failure case
 
