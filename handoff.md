@@ -36,6 +36,9 @@ Newest entry stays at the top.
   `/samples/manifest.json` on every host, the public curated HC18-derived bundle
   is approved for static deployment, and `frontend/public/demo-samples/`
   remains as a committed fallback preview bundle.
+- Path A has also been pushed and externally verified: the production domain now
+  serves `/samples/manifest.json` and real sample assets such as
+  `/samples/296_HC/ultrasound.png` and `/samples/296_HC/prob.png`.
 - `docs/v2_demo/public-deployment-checklist.md` now captures the exact shared
   deployment state for the real curated static bundle plus the fallback preview
   path.
@@ -97,14 +100,24 @@ Commands run:
 - `rg -n "placeholder|demo-samples|public preview|preview bundle|local real|samples/|artifact policy|Vercel" README.md docs/v2_demo/*.md project-tasks.md handoff.md`
 - `npm run build` (in `frontend/`)
 - `git diff --check`
+- `git add ... frontend/public/samples`
+- `git commit -m "Publish curated static demo artifacts"`
+- `git push origin v2-demo`
+- `curl -I https://fetal-head-measurement.vercel.app/`
+- `curl -I https://fetal-head-measurement.vercel.app/samples/manifest.json`
+- `curl -I https://fetal-head-measurement.vercel.app/samples/296_HC/ultrasound.png`
+- `curl -I https://fetal-head-measurement.vercel.app/samples/296_HC/prob.png`
 
 Verification result:
 
 - Frontend production build passed.
 - The loader now prefers `/samples/manifest.json` on every host and still
   falls back to `/demo-samples/manifest.json` if the curated bundle is absent.
-- The real curated bundle under `frontend/public/samples/` is now visible to
-  git after the ignore-rule change.
+- The real curated bundle under `frontend/public/samples/` is committed and
+  pushed to `origin/v2-demo`.
+- `curl -I` returned `HTTP/2 200` for the production homepage,
+  `/samples/manifest.json`, `/samples/296_HC/ultrasound.png`, and
+  `/samples/296_HC/prob.png`.
 - `git diff --check` passed.
 
 Decisions made:
@@ -117,16 +130,13 @@ Decisions made:
 
 Open issues:
 
-- The real curated sample files under `frontend/public/samples/` are now
-  untracked and need to be committed/pushed before Vercel can serve them.
-- Live inference planning is ready to resume at `V2.S7.2 - FastAPI Demo Server`
-  after the Path A branch state is committed.
+- `docs/v2_demo/live-inference-plan.md` still has user-authored local changes
+  outside this Path A commit.
+- Live inference planning is ready to resume at `V2.S7.2 - FastAPI Demo Server`.
 
 Next exact task:
 
-- Commit/push the Path A branch state including `frontend/public/samples/`, then
-  let Vercel redeploy and verify the live site is serving the real curated
-  bundle before starting `V2.S7.2`.
+- Start `V2.S7.2 - FastAPI Demo Server` for curated live inference.
 
 ## Previous Session
 
