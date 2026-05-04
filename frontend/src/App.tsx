@@ -12,7 +12,7 @@ import { PipelineStepper } from "./components/pipeline/PipelineStepper";
 import { StageDetail } from "./components/pipeline/StageDetail";
 import { SafetyChip } from "./components/shared/SafetyChip";
 import { ThresholdViewer } from "./components/threshold/ThresholdViewer";
-import { loadManifest } from "./data/samples";
+import { loadManifest, preferredManifestPath } from "./data/samples";
 import type { Manifest, Sample } from "./types/sample";
 
 function formatMm(value: number): string {
@@ -75,12 +75,7 @@ function App() {
   const [tourStep, setTourStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const loadingManifestPath =
-    typeof window !== "undefined" &&
-    window.location.hostname !== "localhost" &&
-    window.location.hostname !== "127.0.0.1"
-      ? "/demo-samples/manifest.json"
-      : "/samples/manifest.json";
+  const loadingManifestPath = preferredManifestPath();
 
   useEffect(() => {
     let cancelled = false;
@@ -236,8 +231,10 @@ function App() {
             </Section>
 
             <footer className="footer-strip">
-              <span className="mono">HC18 dataset / {manifest.created_from_run_id} / saved-output mode</span>
-              <span className="mono">Built for explanation, not diagnosis.</span>
+              <span className="mono">
+                HC18 challenge dataset (CC BY 4.0) / {manifest.created_from_run_id} / saved-output mode
+              </span>
+              <span className="mono">Curated educational subset. Built for explanation, not diagnosis.</span>
             </footer>
           </>
         )}

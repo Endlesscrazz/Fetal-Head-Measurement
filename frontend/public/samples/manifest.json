@@ -1,0 +1,197 @@
+{
+  "schema_version": 2,
+  "created_from_run_id": "attention_unet_local_baseline",
+  "created_from_split": "test",
+  "curated_samples_path": "docs/v2_demo/curated-samples.json",
+  "source_metrics_path": "outputs/runs/attention_unet_local_baseline/evaluation/test/per_sample_metrics.csv",
+  "source_predictions_path": "outputs/runs/attention_unet_local_baseline/predictions/test/predictions.csv",
+  "safety_text": "Educational demo only. Not for clinical use.",
+  "samples": [
+    {
+      "id": "296_HC",
+      "label": "Strong prediction: near-perfect HC",
+      "cat": "strong",
+      "split": "test",
+      "summary": "Excellent overlap and near-perfect HC measurement; best success-path example.",
+      "metrics": {
+        "dice": 0.9907324710258376,
+        "iou": 0.9816353301268036,
+        "hd95_mm": 0.6993787315844401,
+        "hcErr": 0.0348803710937488,
+        "predHC": 191.43511962890625,
+        "targetHC": 191.47
+      },
+      "predEllipse": {
+        "cx": 198.0213623046875,
+        "cy": 129.62034606933594,
+        "rx": 133.67803955078125,
+        "ry": 112.08692169189452,
+        "rot": 1.5274231531754845
+      },
+      "contourHC": 203.08990478515625,
+      "confidence": 0.9844833016395569,
+      "spacingXMm": 0.2457268387079239,
+      "spacingYMm": 0.2487984299659729,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Excellent overlap and near-perfect HC measurement; best success-path example."
+    },
+    {
+      "id": "217_HC",
+      "label": "Strong prediction: consistent geometry",
+      "cat": "strong",
+      "split": "test",
+      "summary": "Second strong example with high Dice and very low HC error on a different HC size.",
+      "metrics": {
+        "dice": 0.986906146358272,
+        "iou": 0.9741511252196589,
+        "hd95_mm": 0.8172972914725749,
+        "hcErr": 0.1335632324218636,
+        "predHC": 171.93356323242188,
+        "targetHC": 171.8
+      },
+      "predEllipse": {
+        "cx": 182.08705139160156,
+        "cy": 109.73289489746094,
+        "rx": 121.08071899414062,
+        "ry": 90.31950378417967,
+        "rot": 1.587656000707861
+      },
+      "contourHC": 181.60504150390625,
+      "confidence": 0.9851384162902832,
+      "spacingXMm": 0.2555745244026184,
+      "spacingYMm": 0.2587691843509674,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Second strong example with high Dice and very low HC error on a different HC size."
+    },
+    {
+      "id": "663_HC",
+      "label": "Typical case: median-like error",
+      "cat": "typical",
+      "split": "test",
+      "summary": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough.",
+      "metrics": {
+        "dice": 0.9814534186777644,
+        "iou": 0.9635830705689036,
+        "hd95_mm": 1.4168856619845531,
+        "hcErr": 2.3286926269531136,
+        "predHC": 226.12869262695312,
+        "targetHC": 223.8
+      },
+      "predEllipse": {
+        "cx": 190.57223510742188,
+        "cy": 135.25877380371094,
+        "rx": 96.82994079589844,
+        "ry": 71.98431396484375,
+        "rot": 1.5097653298838232
+      },
+      "contourHC": 239.78794860839844,
+      "confidence": 0.9840353727340698,
+      "spacingXMm": 0.4208754301071167,
+      "spacingYMm": 0.4261363744735718,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough."
+    },
+    {
+      "id": "025_HC",
+      "label": "Cleanup and ellipse teaching case",
+      "cat": "typical",
+      "split": "test",
+      "summary": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs.",
+      "metrics": {
+        "dice": 0.9438002073075926,
+        "iou": 0.8935843964671246,
+        "hd95_mm": 1.256810188293457,
+        "hcErr": 3.593671569824224,
+        "predHC": 66.91632843017578,
+        "targetHC": 70.51
+      },
+      "predEllipse": {
+        "cx": 251.38050842285156,
+        "cy": 150.12225341796875,
+        "rx": 74.4207534790039,
+        "ry": 61.726619720458984,
+        "rot": 2.4412468006617694
+      },
+      "contourHC": 71.93766784667969,
+      "confidence": 0.9661834836006165,
+      "spacingXMm": 0.1551616936922073,
+      "spacingYMm": 0.1571012139320373,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs."
+    },
+    {
+      "id": "793_HC",
+      "label": "High-error large-head case",
+      "cat": "failure",
+      "split": "test",
+      "summary": "Largest absolute HC error in the selected run and high HD95; useful for honest model limitation discussion.",
+      "metrics": {
+        "dice": 0.9296861246595628,
+        "iou": 0.8686120087462993,
+        "hd95_mm": 19.181332090186007,
+        "hcErr": 19.920810546874975,
+        "predHC": 308.669189453125,
+        "targetHC": 328.59
+      },
+      "predEllipse": {
+        "cx": 191.74411010742188,
+        "cy": 129.6610565185547,
+        "rx": 135.68310546875,
+        "ry": 107.75365447998048,
+        "rot": 1.831166529195055
+      },
+      "contourHC": 348.4615173339844,
+      "confidence": 0.9791929125785828,
+      "spacingXMm": 0.3994110822677612,
+      "spacingYMm": 0.4044037163257599,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Largest absolute HC error in the selected run and high HD95; useful for honest model limitation discussion."
+    },
+    {
+      "id": "032_HC",
+      "label": "Failure case: low Dice small HC",
+      "cat": "failure",
+      "split": "test",
+      "summary": "Low segmentation quality and large HC overestimate; useful for showing where the pipeline can break down.",
+      "metrics": {
+        "dice": 0.8316138731919747,
+        "iou": 0.7117756677611146,
+        "hd95_mm": 4.50787409657835,
+        "hcErr": 11.843073730468744,
+        "predHC": 77.21307373046875,
+        "targetHC": 65.37
+      },
+      "predEllipse": {
+        "cx": 202.11680603027344,
+        "cy": 144.11553955078125,
+        "rx": 65.77470397949219,
+        "ry": 53.55390548706055,
+        "rot": 0.06662954825009759
+      },
+      "contourHC": 83.28443908691406,
+      "confidence": 0.9638887643814087,
+      "spacingXMm": 0.2043426483869552,
+      "spacingYMm": 0.2068969309329986,
+      "resolution": {
+        "w": 384,
+        "h": 256
+      },
+      "notes": "Low segmentation quality and large HC overestimate; useful for showing where the pipeline can break down."
+    }
+  ]
+}

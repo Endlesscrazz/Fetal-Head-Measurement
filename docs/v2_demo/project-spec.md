@@ -15,8 +15,9 @@ ultrasound image -> target mask -> CNN prediction -> mask cleanup -> ellipse fit
 The first milestone is a static saved-output single-page app ported from the
 Claude Design handoff at
 `/Users/shreyas/Downloads/design_handoff_fetal_hc_explorer/`. That milestone is
-now deployed publicly. The next milestone adds curated live checkpoint
-inference through a separate backend without rewriting the visual frontend.
+now deployed publicly with the curated real HC18-derived saved-output bundle.
+The next milestone adds curated live checkpoint inference through a separate
+backend without rewriting the visual frontend.
 
 ## 2. Audience
 
@@ -81,8 +82,9 @@ The v2 MVP is successful when:
 - Port the design tokens and interactions from
   `docs/v2_demo/frontend-design-handoff.md`.
 - Export curated samples to `outputs/demo_samples/`, then copy them to
-  `frontend/public/samples/` for local frontend development. The stable runtime
-  input is `frontend/public/samples/manifest.json`.
+  `frontend/public/samples/`. `outputs/demo_samples/` remains the generated
+  source of truth; `frontend/public/samples/` is the public/runtime mirror.
+  The stable runtime input is `frontend/public/samples/manifest.json`.
 - Export artifact filenames expected by the design:
   `ultrasound.png`, `target.png`, `pred.png`, and `prob.png`.
 - Compute contour HC during artifact export and store it in the React manifest
@@ -95,6 +97,8 @@ The v2 MVP is successful when:
 - Keep v1 pipeline code stable unless a demo task reveals a real bug.
 - Document frontend dependencies in `frontend/package.json`. Python demo
   dependencies are only needed for artifact export and validation.
+- Keep `frontend/public/demo-samples/` as a committed fallback bundle even after
+  approving the real public static demo.
 
 ## 7. Future extensions
 

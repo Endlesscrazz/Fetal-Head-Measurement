@@ -3,14 +3,8 @@ import type { Manifest, Sample } from "../types/sample";
 const DEFAULT_MANIFEST_PATH = "/samples/manifest.json";
 const PUBLIC_PREVIEW_MANIFEST_PATH = "/demo-samples/manifest.json";
 
-function preferredManifestPath(): string {
-  if (typeof window === "undefined") {
-    return DEFAULT_MANIFEST_PATH;
-  }
-
-  const { hostname } = window.location;
-  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
-  return isLocalHost ? DEFAULT_MANIFEST_PATH : PUBLIC_PREVIEW_MANIFEST_PATH;
+export function preferredManifestPath(): string {
+  return DEFAULT_MANIFEST_PATH;
 }
 
 export async function loadManifest(path = preferredManifestPath()): Promise<Manifest> {

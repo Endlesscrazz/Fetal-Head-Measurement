@@ -1,0 +1,64 @@
+{
+  "sample_id": "032_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "failure",
+  "source_category": "failure",
+  "label": "Failure case: low Dice small HC",
+  "summary": "Low segmentation quality and large HC overestimate; useful for showing where the pipeline can break down.",
+  "tags": [
+    "failure",
+    "low_dice",
+    "small_hc"
+  ],
+  "reason": "Low segmentation quality and large HC overestimate; useful for showing where the pipeline can break down.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.2043426483869552,
+  "spacing_y_mm": 0.2068969309329986,
+  "spacingXMm": 0.2043426483869552,
+  "spacingYMm": 0.2068969309329986,
+  "hc_pred_mm": 77.21307373046875,
+  "hc_gt_mm": 65.37,
+  "metrics": {
+    "dice": 0.8316138731919747,
+    "iou": 0.7117756677611146,
+    "hd95_mm": 4.50787409657835,
+    "hcErr": 11.843073730468744,
+    "predHC": 77.21307373046875,
+    "targetHC": 65.37
+  },
+  "dice": 0.8316138731919747,
+  "iou": 0.7117756677611146,
+  "hd95_mm": 4.50787409657835,
+  "hcErr": 11.843073730468744,
+  "predHC": 77.21307373046875,
+  "targetHC": 65.37,
+  "signed_hc_error_mm": 11.843073730468744,
+  "ellipse_params": {
+    "center_x": 202.11680603027344,
+    "center_y": 144.11553955078125,
+    "semi_axis_a": 65.77470397949219,
+    "semi_axis_b": 53.55390548706055,
+    "angle_deg": 3.817591905593872
+  },
+  "predEllipse": {
+    "cx": 202.11680603027344,
+    "cy": 144.11553955078125,
+    "rx": 65.77470397949219,
+    "ry": 53.55390548706055,
+    "rot": 0.06662954825009759
+  },
+  "contourHC": 83.28443908691406,
+  "confidence": 0.9638887643814087,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Low segmentation quality and large HC overestimate; useful for showing where the pipeline can break down."
+}

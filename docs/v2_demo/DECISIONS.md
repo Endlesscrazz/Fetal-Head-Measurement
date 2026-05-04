@@ -11,6 +11,35 @@ Each entry should include:
 - alternatives considered,
 - impact on future work.
 
+## 2026-05-03 - Public static deployment now serves the curated real HC18-derived bundle
+
+Decision:
+Approve Path A for the static public portfolio site. The production Vercel app
+should prefer `frontend/public/samples/manifest.json` and serve the curated
+real HC18-derived saved-output bundle publicly, while keeping
+`frontend/public/demo-samples/` as a committed fallback preview bundle.
+
+Rationale:
+The HC18 licensing evidence is favorable for a tiny attributed educational
+subset, and the static portfolio experience is meaningfully stronger when the
+live site shows the real exported pipeline artifacts rather than placeholders.
+This change preserves the saved-output-first architecture and does not require
+publishing raw HC18 files or checkpoints.
+
+Alternatives considered:
+Keeping the public site on placeholder previews; jumping directly to live
+inference before strengthening the static public artifact; publishing the raw
+dataset or checkpoint.
+
+Impact on future work:
+- `frontend/public/samples/` is now an intentional public/runtime mirror rather
+  than a local-only ignored directory.
+- `outputs/demo_samples/` remains the generated source of truth.
+- The app should try `/samples/manifest.json` first on all hosts and fall back
+  to `/demo-samples/manifest.json` only when the curated real bundle is absent.
+- README and deployment docs must include attribution and explain the curated
+  derivative-bundle policy clearly.
+
 ## 2026-05-03 - Live inference core returns Sample-compatible data plus in-memory assets
 
 Decision:

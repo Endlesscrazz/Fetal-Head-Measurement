@@ -1,0 +1,63 @@
+{
+  "sample_id": "217_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "strong",
+  "source_category": "strong",
+  "label": "Strong prediction: consistent geometry",
+  "summary": "Second strong example with high Dice and very low HC error on a different HC size.",
+  "tags": [
+    "strong",
+    "low_error"
+  ],
+  "reason": "Second strong example with high Dice and very low HC error on a different HC size.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.2555745244026184,
+  "spacing_y_mm": 0.2587691843509674,
+  "spacingXMm": 0.2555745244026184,
+  "spacingYMm": 0.2587691843509674,
+  "hc_pred_mm": 171.93356323242188,
+  "hc_gt_mm": 171.8,
+  "metrics": {
+    "dice": 0.986906146358272,
+    "iou": 0.9741511252196589,
+    "hd95_mm": 0.8172972914725749,
+    "hcErr": 0.1335632324218636,
+    "predHC": 171.93356323242188,
+    "targetHC": 171.8
+  },
+  "dice": 0.986906146358272,
+  "iou": 0.9741511252196589,
+  "hd95_mm": 0.8172972914725749,
+  "hcErr": 0.1335632324218636,
+  "predHC": 171.93356323242188,
+  "targetHC": 171.8,
+  "signed_hc_error_mm": 0.1335632324218636,
+  "ellipse_params": {
+    "center_x": 182.08705139160156,
+    "center_y": 109.73289489746094,
+    "semi_axis_a": 121.08071899414062,
+    "semi_axis_b": 90.31950378417967,
+    "angle_deg": 90.96598815917967
+  },
+  "predEllipse": {
+    "cx": 182.08705139160156,
+    "cy": 109.73289489746094,
+    "rx": 121.08071899414062,
+    "ry": 90.31950378417967,
+    "rot": 1.587656000707861
+  },
+  "contourHC": 181.60504150390625,
+  "confidence": 0.9851384162902832,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Second strong example with high Dice and very low HC error on a different HC size."
+}

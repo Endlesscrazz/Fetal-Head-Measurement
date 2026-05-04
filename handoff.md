@@ -22,8 +22,9 @@ Newest entry stays at the top.
 - Existing v1 prediction artifacts already include per-sample raw masks,
   cleaned masks, overlays, prediction CSVs, and evaluation CSVs under
   `outputs/runs/<run_id>/predictions/` and `outputs/runs/<run_id>/evaluation/`.
-- The local React scaffold now lives under `frontend/`, with the generated
-  sample bundle copied to ignored `frontend/public/samples/` for development.
+- The React app now lives under `frontend/`, with `outputs/demo_samples/` as the
+  generated source bundle and `frontend/public/samples/` as the committed public
+  runtime mirror for the curated Path A deployment.
 - V2.S5 is implemented: the React app now has the full saved-output explorer
   with geometry comparison, selected-case metrics, real run cards/sparklines,
   model ablation, and post-processing ablation sections.
@@ -31,21 +32,228 @@ Newest entry stays at the top.
   milestone: the public production URL is live at
   `https://fetal-head-measurement.vercel.app/`, and the root README now leads
   with the v2 portfolio demo rather than the archived course framing.
-- Production preview cleanup is partially complete: the frontend now prefers the
-  public preview manifest on non-local hosts and requests Canvas 2D contexts
-  with `willReadFrequently` to avoid noisy deployment-console warnings after the
-  next Vercel redeploy.
+- Path A is now implemented locally: the frontend prefers
+  `/samples/manifest.json` on every host, the public curated HC18-derived bundle
+  is approved for static deployment, and `frontend/public/demo-samples/`
+  remains as a committed fallback preview bundle.
 - `docs/v2_demo/public-deployment-checklist.md` now captures the exact shared
-  steps and what the user must do in Vercel/GitHub Pages to unblock the first
-  public deployment URL.
+  deployment state for the real curated static bundle plus the fallback preview
+  path.
 - Live inference planning now lives at
   `docs/v2_demo/live-inference-plan.md`; Claude Code review has been integrated
   into the roadmap/task docs before V2.S7 implementation.
 - V2.S7.1 is implemented: `src/inference/live.py` provides the reusable
   curated-sample live inference core, with in-memory assets and frontend
   `Sample`-compatible output. FastAPI and React live mode remain next.
+- `docs/v2_demo/production-and-visualization-roadmap.md` has been revised to
+  reflect stronger HC18 licensing evidence from Zenodo/HC18 sources: public
+  curated artifacts now look feasible with attribution, while checkpoint
+  publication remains a separate decision.
+- After a second cross-review of the updated roadmap, architecture, and
+  session plan, the roadmap now also records remaining cross-document blind
+  spots: live API contract drift risk, hosted curated-bundle requirements,
+  Path A source-of-truth rules, placeholder fallback retention, and the
+  mismatch between the documented `V2.S7.1` attention-hook scope and the
+  current `src/inference/live.py` implementation.
 
 ## Latest Session
+
+Date: 2026-05-03
+
+Task id:
+V2 Path A public static deployment
+
+Branch:
+`v2-demo`
+
+Goal:
+Implement Path A so the public static site uses the real curated HC18-derived
+saved-output bundle instead of placeholder-first routing, and update the repo
+docs so they all tell the same story before live inference work begins.
+
+Files changed:
+
+- `.gitignore`
+- `README.md`
+- `frontend/src/data/samples.ts`
+- `frontend/src/App.tsx`
+- `docs/v2_demo/DECISIONS.md`
+- `docs/v2_demo/architecture.md`
+- `docs/v2_demo/project-spec.md`
+- `docs/v2_demo/project-tasks.md`
+- `docs/v2_demo/public-deployment-checklist.md`
+- `docs/v2_demo/roadmap.md`
+- root `project-tasks.md`
+- `handoff.md`
+
+Commands run:
+
+- `git status --short --branch`
+- `sed -n '1,240p' .gitignore`
+- `sed -n '1,220p' frontend/src/data/samples.ts`
+- `find frontend/public -maxdepth 3 -type f | sort`
+- `find outputs/demo_samples -maxdepth 3 -type f | sort | sed -n '1,120p'`
+- `sed -n '1,280p' frontend/src/App.tsx`
+- `rg -n "placeholder|demo-samples|public preview|preview bundle|local real|samples/|artifact policy|Vercel" README.md docs/v2_demo/*.md project-tasks.md handoff.md`
+- `npm run build` (in `frontend/`)
+- `git diff --check`
+
+Verification result:
+
+- Frontend production build passed.
+- The loader now prefers `/samples/manifest.json` on every host and still
+  falls back to `/demo-samples/manifest.json` if the curated bundle is absent.
+- The real curated bundle under `frontend/public/samples/` is now visible to
+  git after the ignore-rule change.
+- `git diff --check` passed.
+
+Decisions made:
+
+- Approve Path A for the static public site: publish the curated derivative
+  bundle, but keep raw HC18 files and checkpoints private.
+- Keep `frontend/public/demo-samples/` as a committed fallback preview bundle.
+- Treat `outputs/demo_samples/` as the generated source of truth and
+  `frontend/public/samples/` as the public/runtime mirror.
+
+Open issues:
+
+- The real curated sample files under `frontend/public/samples/` are now
+  untracked and need to be committed/pushed before Vercel can serve them.
+- Live inference planning is ready to resume at `V2.S7.2 - FastAPI Demo Server`
+  after the Path A branch state is committed.
+
+Next exact task:
+
+- Commit/push the Path A branch state including `frontend/public/samples/`, then
+  let Vercel redeploy and verify the live site is serving the real curated
+  bundle before starting `V2.S7.2`.
+
+## Previous Session
+
+Date: 2026-05-03
+
+Task id:
+V2 roadmap cross-document blind-spot review
+
+Branch:
+`v2-demo`
+
+Goal:
+Review the user-updated production roadmap against the updated architecture and
+session-task docs, identify remaining blind spots, and record those findings
+back into the roadmap for another Claude Code review.
+
+Files changed:
+
+- `docs/v2_demo/production-and-visualization-roadmap.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n '1,260p' docs/v2_demo/production-and-visualization-roadmap.md`
+- `sed -n '1,260p' docs/v2_demo/architecture.md`
+- `sed -n '1,320p' docs/v2_demo/project-tasks.md`
+- `rg -n "samples.ts|preferredManifestPath|demo-samples|thresholdCurve|public artifacts|Colab|ngrok|S7\\.2|S7\\.3|S7\\.4|public checkpoint|assetOverrides|Vercel" docs/v2_demo/architecture.md docs/v2_demo/project-tasks.md docs/v2_demo/production-and-visualization-roadmap.md`
+- `sed -n '260,520p' docs/v2_demo/architecture.md`
+- `sed -n '558,760p' docs/v2_demo/project-tasks.md`
+- `sed -n '620,920p' docs/v2_demo/production-and-visualization-roadmap.md`
+- `sed -n '1,240p' frontend/src/data/samples.ts`
+- `sed -n '1,260p' src/models/attention_unet.py`
+- `sed -n '1,520p' src/inference/live.py`
+- `git diff --check`
+
+Verification result:
+
+- Confirmed the roadmap's `preferredManifestPath()` discussion matches the
+  actual `frontend/src/data/samples.ts` code.
+- Confirmed `AttentionGate.attention` can be hooked without changing model
+  weights, but also confirmed `src/inference/live.py` does not currently export
+  attention maps despite the updated task plan implying that work is done.
+- `git diff --check` passed.
+
+Decisions made:
+
+- Keep the new findings in the roadmap rather than silently editing
+  `architecture.md` or `project-tasks.md` mid-review.
+- Treat the live API contract, hosted curated-bundle contract, and Path A
+  source-of-truth rule as explicit planning gaps to resolve before more
+  implementation.
+
+Open issues:
+
+- `docs/v2_demo/architecture.md` and `docs/v2_demo/project-tasks.md` still
+  contain user-authored edits that should be reviewed alongside the updated
+  roadmap before we change implementation scope.
+- The `V2.S7.1` done state in `project-tasks.md` is currently broader than the
+  code that actually exists.
+
+Next exact task:
+
+- User reviews the updated
+  `docs/v2_demo/production-and-visualization-roadmap.md` with Claude Code, then
+  decides whether to refine the planning docs further or start the next
+  approved implementation task.
+
+## Previous Session
+
+Date: 2026-05-03
+
+Task id:
+V2 roadmap licensing/policy clarification
+
+Branch:
+`v2-demo`
+
+Goal:
+Update the production/visualization roadmap so the user can re-review it with
+Claude Code after the HC18 licensing/source check.
+
+Files changed:
+
+- `docs/v2_demo/production-and-visualization-roadmap.md`
+- `handoff.md`
+
+Commands run:
+
+- `sed -n '1,220p' AGENTS.md`
+- `sed -n '1,260p' project-tasks.md`
+- `sed -n '1,260p' handoff.md`
+- `sed -n '1,260p' docs/v2_demo/DECISIONS.md`
+- `rg --files docs/v2_demo`
+- `sed -n '1,320p' docs/v2_demo/project-tasks.md`
+- `sed -n '1,320p' docs/v2_demo/project-spec.md`
+- `sed -n '1,760p' docs/v2_demo/production-and-visualization-roadmap.md`
+- `git diff --check`
+
+Verification result:
+
+- `production-and-visualization-roadmap.md` now separates artifact-publication
+  policy from checkpoint-publication policy.
+- The roadmap now reflects the stronger CC BY 4.0 evidence from the HC18 Zenodo
+  record and Zenodo reuse guidance.
+- `git diff --check` passed.
+
+Decisions made:
+
+- Do not record a repo-wide policy flip yet; this session only updates the plan
+  and evidence framing.
+- Treat public curated artifacts as likely feasible with attribution, while
+  keeping public checkpoint publication as a separate decision gate.
+
+Open issues:
+
+- The user still needs to decide whether to approve Path A and publish the real
+  curated artifact bundle on the public site.
+- If Path A is approved, follow-up docs will need explicit attribution and scope
+  notes.
+
+Next exact task:
+
+- User reviews `docs/v2_demo/production-and-visualization-roadmap.md` with
+  Claude Code, then decides whether to approve Path A or continue with local-only
+  real artifacts.
+
+## Previous Session
 
 Date: 2026-05-03
 

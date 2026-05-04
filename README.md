@@ -28,23 +28,30 @@ understand the full pipeline, not just the final metric table.
 - per-case Dice, IoU, HD95, and HC error
 - experiment summaries from the underlying v1 training runs
 
-## Public Preview vs Local Real Mode
+## Public Static Demo vs Local Regeneration
 
-The public Vercel deployment uses a safe placeholder preview bundle, not real
-HC18-derived sample images.
+The public Vercel deployment now serves a curated real HC18-derived saved-output
+bundle for six educational cases.
 
 Public deployment data source:
 
-- `frontend/public/demo-samples/`
+- `frontend/public/samples/`
 - `frontend/public/experiments/summary.json`
 
-Local real-artifact mode uses the generated saved-output bundle:
+Committed fallback bundle:
 
-- `frontend/public/samples/`
-- populated locally by `./start_demo.sh`
+- `frontend/public/demo-samples/`
 
-This split keeps the public site easy to review while avoiding committed
-medical-image demo artifacts.
+The app now prefers `/samples/manifest.json` on every host and falls back to
+`/demo-samples/manifest.json` only if the real curated bundle is absent.
+
+Local regeneration mode still uses the exporter path:
+
+- `outputs/demo_samples/` is the generated source of truth
+- `./start_demo.sh` refreshes `frontend/public/samples/` from that source
+
+This gives the live website real pipeline artifacts while keeping raw HC18
+files and checkpoints out of the public repo.
 
 ## Run Locally
 
@@ -65,7 +72,7 @@ Real saved-output mode:
 `start_demo.sh` will:
 
 1. export curated demo artifacts if they are missing
-2. copy them into ignored `frontend/public/samples/`
+2. copy them into `frontend/public/samples/`
 3. start the Vite app on `http://localhost:5173`
 
 Real local mode requires:
@@ -101,7 +108,8 @@ Completed:
 
 - static saved-output React demo
 - public Vercel production deployment
-- local real-artifact export path
+- public curated HC18-derived saved-output bundle
+- local real-artifact export/regeneration path
 - live-inference core extraction for the next phase
 
 Next:
@@ -122,6 +130,15 @@ Next:
 
 - do not commit raw HC18 data
 - do not commit local checkpoints unless explicitly approved
-- `frontend/public/samples/` stays local and ignored
-- public hosting should continue to use the placeholder preview unless artifact
-  policy changes intentionally
+- curated derived demo artifacts under `frontend/public/samples/` are approved
+  for the public educational portfolio demo
+- keep `outputs/demo_samples/` as the generated source bundle and
+  `frontend/public/samples/` as the publish mirror
+- keep `frontend/public/demo-samples/` as a fallback preview bundle for hosts or
+  clones where the real curated bundle is absent
+
+## Attribution
+
+- HC18 challenge: <https://hc18.grand-challenge.org/>
+- dataset record: <https://zenodo.org/records/1327317>
+- paper: <https://doi.org/10.1371/journal.pone.0200412>

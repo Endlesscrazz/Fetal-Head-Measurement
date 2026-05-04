@@ -1,0 +1,64 @@
+{
+  "sample_id": "296_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "strong",
+  "source_category": "strong",
+  "label": "Strong prediction: near-perfect HC",
+  "summary": "Excellent overlap and near-perfect HC measurement; best success-path example.",
+  "tags": [
+    "strong",
+    "low_error",
+    "headline"
+  ],
+  "reason": "Excellent overlap and near-perfect HC measurement; best success-path example.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.2457268387079239,
+  "spacing_y_mm": 0.2487984299659729,
+  "spacingXMm": 0.2457268387079239,
+  "spacingYMm": 0.2487984299659729,
+  "hc_pred_mm": 191.43511962890625,
+  "hc_gt_mm": 191.47,
+  "metrics": {
+    "dice": 0.9907324710258376,
+    "iou": 0.9816353301268036,
+    "hd95_mm": 0.6993787315844401,
+    "hcErr": 0.0348803710937488,
+    "predHC": 191.43511962890625,
+    "targetHC": 191.47
+  },
+  "dice": 0.9907324710258376,
+  "iou": 0.9816353301268036,
+  "hd95_mm": 0.6993787315844401,
+  "hcErr": 0.0348803710937488,
+  "predHC": 191.43511962890625,
+  "targetHC": 191.47,
+  "signed_hc_error_mm": -0.0348803710937488,
+  "ellipse_params": {
+    "center_x": 198.0213623046875,
+    "center_y": 129.62034606933594,
+    "semi_axis_a": 133.67803955078125,
+    "semi_axis_b": 112.08692169189452,
+    "angle_deg": 87.51490020751953
+  },
+  "predEllipse": {
+    "cx": 198.0213623046875,
+    "cy": 129.62034606933594,
+    "rx": 133.67803955078125,
+    "ry": 112.08692169189452,
+    "rot": 1.5274231531754845
+  },
+  "contourHC": 203.08990478515625,
+  "confidence": 0.9844833016395569,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Excellent overlap and near-perfect HC measurement; best success-path example."
+}

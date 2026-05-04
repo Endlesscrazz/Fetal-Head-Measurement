@@ -1,0 +1,64 @@
+{
+  "sample_id": "793_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "failure",
+  "source_category": "failure",
+  "label": "High-error large-head case",
+  "summary": "Largest absolute HC error in the selected run and high HD95; useful for honest model limitation discussion.",
+  "tags": [
+    "high_error",
+    "large_hc",
+    "error_analysis"
+  ],
+  "reason": "Largest absolute HC error in the selected run and high HD95; useful for honest model limitation discussion.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.3994110822677612,
+  "spacing_y_mm": 0.4044037163257599,
+  "spacingXMm": 0.3994110822677612,
+  "spacingYMm": 0.4044037163257599,
+  "hc_pred_mm": 308.669189453125,
+  "hc_gt_mm": 328.59,
+  "metrics": {
+    "dice": 0.9296861246595628,
+    "iou": 0.8686120087462993,
+    "hd95_mm": 19.181332090186007,
+    "hcErr": 19.920810546874975,
+    "predHC": 308.669189453125,
+    "targetHC": 328.59
+  },
+  "dice": 0.9296861246595628,
+  "iou": 0.8686120087462993,
+  "hd95_mm": 19.181332090186007,
+  "hcErr": 19.920810546874975,
+  "predHC": 308.669189453125,
+  "targetHC": 328.59,
+  "signed_hc_error_mm": -19.920810546874975,
+  "ellipse_params": {
+    "center_x": 191.74411010742188,
+    "center_y": 129.6610565185547,
+    "semi_axis_a": 135.68310546875,
+    "semi_axis_b": 107.75365447998048,
+    "angle_deg": 104.9181137084961
+  },
+  "predEllipse": {
+    "cx": 191.74411010742188,
+    "cy": 129.6610565185547,
+    "rx": 135.68310546875,
+    "ry": 107.75365447998048,
+    "rot": 1.831166529195055
+  },
+  "contourHC": 348.4615173339844,
+  "confidence": 0.9791929125785828,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Largest absolute HC error in the selected run and high HD95; useful for honest model limitation discussion."
+}

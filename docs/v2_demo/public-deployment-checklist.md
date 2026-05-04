@@ -4,7 +4,7 @@ Date: 2026-05-03
 
 Purpose:
 This is the shared runbook for getting the v2 React demo to a public URL
-without publishing the real HC18 sample bundle.
+and keeping the public deployment state documented.
 
 Current public production URL:
 `https://fetal-head-measurement.vercel.app/`
@@ -14,19 +14,20 @@ The project now has a public production domain. Preview/deployment URLs may
 still be protected, but they are no longer the main portfolio link.
 
 Recommended path:
-Use Vercel for the static frontend. The current app already includes a safe
-public fallback preview under `frontend/public/demo-samples/`, so we can deploy
-the UI now without uploading the real medical-image artifacts.
+Use Vercel for the static frontend. The current public production deployment now
+serves the curated real HC18-derived saved-output bundle from
+`frontend/public/samples/`, while retaining `frontend/public/demo-samples/` as a
+fallback preview bundle.
 
 ## 1. What Is Already Ready In The Repo
 
 - `frontend/` builds successfully with `npm run build`
 - `vercel.json` exists at the repo root
-- `README.md` documents the public-preview mode and local real-artifact mode
+- `README.md` documents the public static real-artifact mode and local
+  regeneration flow
 - the app falls back to `/demo-samples/manifest.json` when
   `/samples/manifest.json` is absent
-- `frontend/public/samples/` is ignored, so the real HC18-derived bundle stays
-  local
+- `frontend/public/samples/` contains the committed curated public bundle
 
 ## 2. What I Need From You
 
@@ -39,22 +40,20 @@ These are the only things that require your account or approval:
 4. The final deployed URL after Vercel creates it, if you complete the import
    flow in the browser
 
-## 3. Recommended Deployment Mode
+## 3. Current Deployment Mode
 
-Use this first:
+Current production mode:
 
 - branch: `v2-demo`
 - host: Vercel
-- public content: placeholder preview only
-- real HC18 sample bundle: local only
+- public content: curated real HC18-derived saved-output bundle
+- fallback content: committed preview bundle under `frontend/public/demo-samples/`
 
-Why this is the safest path:
+Why this is the current recommended static setup:
 
-- no medical-image bundle is committed
-- no checkpoint is published
-- the portfolio UI becomes reviewable immediately
-- we can later decide whether `main` or `v2-demo` should become the production
-  branch
+- the live website shows the real end-to-end saved-output walkthrough
+- raw HC18 data and checkpoints are still not published
+- the preview bundle remains available if `samples/` is absent on another host
 
 ## 4. Shared Step-By-Step Checklist
 
@@ -67,8 +66,9 @@ Status:
 Ready now
 
 Outcome:
-`origin/v2-demo` contains the latest React demo, public preview assets, live
-inference core work, and deployment docs.
+`origin/v2-demo` contains the latest React demo, the curated public artifact
+bundle, the fallback preview bundle, live inference core work, and deployment
+docs.
 
 ### Step 2 - Import the repo into Vercel
 
@@ -102,13 +102,13 @@ Project settings:
 
 Environment variables:
 
-- none required for the static public-preview deployment
+- none required for the static public curated deployment
 
 Branch recommendation:
 
 - first deploy `v2-demo`
 
-### Step 4 - Verify the first public deploy
+### Step 4 - Verify the public deploy
 
 Owner:
 Shared
@@ -119,8 +119,9 @@ Production domain is live
 What to check:
 
 1. The homepage loads
-2. The sample gallery renders from the placeholder preview manifest
-3. No request is made for local-only `frontend/public/samples/` assets
+2. The sample gallery renders from the real curated `samples/manifest.json`
+3. `ultrasound.png`, `target.png`, `pred.png`, and `prob.png` load from
+   `/samples/<id>/...`
 4. The safety disclaimer is visible
 
 What I can do after you send the URL:
@@ -206,8 +207,8 @@ I will:
 2. verify the deployed preview matches the intended public-safe behavior
 3. note any remaining deployment polish work
 
-## 8. Current Blocking Item
+## 8. Current State
 
 Current status:
-Static public deployment is complete. Remaining work is optional presentation
-polish and any custom-domain decision.
+Static public deployment is complete and now uses the curated real artifact
+bundle. Remaining work is optional presentation polish and then live inference.

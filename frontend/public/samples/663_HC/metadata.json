@@ -1,0 +1,63 @@
+{
+  "sample_id": "663_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "typical",
+  "source_category": "typical",
+  "label": "Typical case: median-like error",
+  "summary": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough.",
+  "tags": [
+    "typical",
+    "median_error"
+  ],
+  "reason": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.4208754301071167,
+  "spacing_y_mm": 0.4261363744735718,
+  "spacingXMm": 0.4208754301071167,
+  "spacingYMm": 0.4261363744735718,
+  "hc_pred_mm": 226.12869262695312,
+  "hc_gt_mm": 223.8,
+  "metrics": {
+    "dice": 0.9814534186777644,
+    "iou": 0.9635830705689036,
+    "hd95_mm": 1.4168856619845531,
+    "hcErr": 2.3286926269531136,
+    "predHC": 226.12869262695312,
+    "targetHC": 223.8
+  },
+  "dice": 0.9814534186777644,
+  "iou": 0.9635830705689036,
+  "hd95_mm": 1.4168856619845531,
+  "hcErr": 2.3286926269531136,
+  "predHC": 226.12869262695312,
+  "targetHC": 223.8,
+  "signed_hc_error_mm": 2.3286926269531136,
+  "ellipse_params": {
+    "center_x": 190.57223510742188,
+    "center_y": 135.25877380371094,
+    "semi_axis_a": 96.82994079589844,
+    "semi_axis_b": 71.98431396484375,
+    "angle_deg": 86.50318145751953
+  },
+  "predEllipse": {
+    "cx": 190.57223510742188,
+    "cy": 135.25877380371094,
+    "rx": 96.82994079589844,
+    "ry": 71.98431396484375,
+    "rot": 1.5097653298838232
+  },
+  "contourHC": 239.78794860839844,
+  "confidence": 0.9840353727340698,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Absolute HC error is effectively at the test-set median, making it useful for a non-cherry-picked walkthrough."
+}

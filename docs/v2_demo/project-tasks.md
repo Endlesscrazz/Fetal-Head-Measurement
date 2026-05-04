@@ -286,8 +286,7 @@ Expected files:
 - `frontend/src/App.tsx` (shell only — no components yet)
 - `frontend/src/main.tsx`
 - `frontend/public/samples/` (copy of `outputs/demo_samples/` contents)
-- `.gitignore` additions: `frontend/node_modules/`, `frontend/dist/`,
-  `frontend/public/samples/`
+- `.gitignore` additions: `frontend/node_modules/`, `frontend/dist/`
 - root `handoff.md`
 
 Allowed implementation files:
@@ -308,7 +307,6 @@ Subtasks:
 - Port `METRIC_COPY` object from `data.js` into `frontend/src/data/metric-copy.ts`.
 - Implement `frontend/src/data/samples.ts` — fetch `/samples/manifest.json` at
   runtime (or import at build time via `?url` and `fetch`).
-- Add `frontend/public/samples/` to `.gitignore`.
 - Copy `outputs/demo_samples/` contents into `frontend/public/samples/` and confirm
   the manifest loads in the browser.
 - Render a plain `<pre>{JSON.stringify(samples[0], null, 2)}</pre>` in `App.tsx`
@@ -327,7 +325,7 @@ Done criteria:
 - dev server runs and the design background is visible,
 - `Sample` type compiles with no errors,
 - manifest loads into typed objects in the browser,
-- `frontend/public/samples/` is gitignored.
+- `frontend/public/samples/` contains the curated runtime bundle.
 
 ## V2.S4 - React Pipeline Explorer (Core UI)
 
@@ -481,10 +479,11 @@ Done criteria:
 Status: done
 
 Status note:
-README, `start_demo.sh`, Vercel configuration, and public-safe placeholder
-preview assets are implemented. The public production URL is live at
-`https://fetal-head-measurement.vercel.app/`, and the root README now presents
-the repository as a v2 portfolio project rather than a course submission.
+README, `start_demo.sh`, Vercel configuration, and the public curated artifact
+deployment are implemented. The public production URL is live at
+`https://fetal-head-measurement.vercel.app/`, the app now prefers
+`/samples/manifest.json` on every host, and the root README presents the
+repository as a v2 portfolio project rather than a course submission.
 
 Roadmap phase:
 `V2.P5`
@@ -521,9 +520,10 @@ Subtasks:
   - Vercel: connect repo, set build command `cd frontend && npm run build`,
     output dir `frontend/dist`. Add `vercel.json` at repo root if needed.
   - GitHub Pages: use `gh-pages` action or `peaceiris/actions-gh-pages`.
-  - The deployment must NOT include `frontend/public/samples/` (medical images).
-    Ship the app with placeholder sample paths; add a README note that local
-    artifact export is required to see real data.
+  - Path A is now approved for the public static site: commit the curated
+    derivative bundle under `frontend/public/samples/`, keep raw HC18 data and
+    checkpoints private, and retain `frontend/public/demo-samples/` as a
+    fallback preview bundle.
 - Write the `README.md` v2 demo section:
   - One-line description of what the demo shows.
   - Live URL (once deployed).
@@ -538,22 +538,24 @@ Subtasks:
   cp -r outputs/demo_samples/* frontend/public/samples/
   cd frontend && npm install && npm run dev
   ```
-- Confirm `frontend/public/samples/` is in `.gitignore`.
+- Confirm `frontend/public/samples/` is intentionally committed for the public
+  curated bundle and remains a mirror of `outputs/demo_samples/`.
 - Record the public URL in `handoff.md` and `DECISIONS.md`.
 
 Verification:
 
 - `bash start_demo.sh` runs from a clean shell after export artifacts exist.
-- Public URL loads the app with placeholder images.
+- Public URL loads the app with the real curated artifact bundle.
 - README renders correctly on GitHub.
-- `git status` confirms no medical image artifacts are staged.
+- `git status` confirms no raw HC18 files or checkpoints are staged.
 
 Done criteria:
 
 - public URL is live and loads the app,
+- public URL serves the real curated saved-output bundle,
 - README explains the demo and gives the live URL,
 - `start_demo.sh` works for local reviewers who have HC18 data,
-- no medical images are committed or deployed.
+- no raw HC18 files or checkpoints are committed or deployed.
 
 ## V2.S7 - Optional Curated Live Inference Mode
 
@@ -634,6 +636,14 @@ Subtasks:
   hosted curated-bundle source.
 - Keep `scripts/export_demo_artifacts.py` behavior stable after refactor.
 
+Scope note: attention gate hook registration was added to this subtask list after
+V2.S7.1 was already marked done and `src/inference/live.py` was implemented. The
+hook is NOT part of the completed V2.S7.1 work. It belongs in V2.S7.2 — the
+FastAPI server layer is the right place to register hooks and encode attention
+maps into the API response. The `run_live_inference` signature should expose an
+`include_attention: bool = False` parameter; the hook registration and PNG encoding
+belong in the server, not in the reusable core.
+
 Verification:
 
 - `.venv/bin/python -m pytest tests/test_live_inference_contract.py`
@@ -661,6 +671,15 @@ Subtasks:
 - Validate `sample_id` and threshold with consistent error codes.
 - Add CORS support for Vite dev/preview and future deployed frontend origins.
 - Cache deterministic curated-sample results by `(sample_id, threshold)`.
+- Register forward hooks on `model.decoder4.gate.attention` (and equivalent gates
+  for other decoder levels) to capture attention coefficient maps ([B, 1, H, W],
+  sigmoid 0–1) during inference. Encode each map as a grayscale PNG and include
+  it in the `/live/infer` response under `assets.attention` (key = decoder gate
+  name, value = URL or data URL). No model changes required — hook the existing
+  `attention` sub-module. See `docs/v2_demo/production-and-visualization-roadmap.md`
+  Section 6.3.
+- Include `step_times_ms` in the `/live/infer` response (keys: `preprocess`,
+  `inference`, `threshold`, `cleanup`, `ellipse`, `measurement`).
 
 Verification:
 
@@ -673,6 +692,7 @@ Done criteria:
 
 - backend loads checkpoint once,
 - `POST /live/infer` works for at least one curated sample,
+- response includes `step_times_ms` and `assets.attention` maps,
 - saved-output frontend still works when the backend is not running.
 
 ### V2.S7.3 - React Live Mode
@@ -793,6 +813,94 @@ Done criteria:
 - generated CSV is structurally valid,
 - no official test labels are required,
 - challenge export remains optional and separate from v2 MVP.
+
+## V2.S9 - Optional Visualization Improvements
+
+Status: todo
+
+Roadmap phase:
+`V2.P7` (post live-inference)
+
+Target window:
+Post-V2.S7
+
+Estimated effort:
+6-10 hours
+
+Goal:
+Add research-inspired interactive visualizations that strengthen the educational
+and portfolio impact of the demo beyond the core pipeline walkthrough.
+
+Outcome:
+The demo has at least two new interactive elements from the visualization
+improvements shortlist, each backed by pre-computed data from the export script.
+
+Planning source:
+`docs/v2_demo/production-and-visualization-roadmap.md` Section 3
+
+Scope locks:
+
+- MC Dropout is BLOCKED — `dropout: 0.0` in current checkpoint. Do not implement
+  uncertainty estimation without retraining.
+- Fetal growth chart is BLOCKED — HC18 has no gestational age column.
+- All improvements must be additive. Saved-output static mode must remain fully
+  functional with no backend.
+
+Expected files:
+
+- `scripts/export_demo_artifacts.py` (updated to pre-compute `thresholdCurve`)
+- `frontend/src/components/threshold/ThresholdViewer.tsx` (Play button)
+- `frontend/src/components/geometry/ContourEllipse.tsx` (HC ruler overlay)
+- `frontend/src/types/sample.ts` (verify `thresholdCurve?` field is present)
+- root `handoff.md`
+
+Subtasks:
+
+1. Pre-compute threshold-Dice curve in export script:
+   - For each curated sample, compute Dice at thresholds `[0.10, 0.15, ..., 0.90]`
+     by thresholding `prob.png` against `target.png` at each step.
+   - Store the result as the `thresholdCurve` field in `manifest.json`.
+     (The field is already defined in the TypeScript `Sample` interface and
+     architecture.md Section 5 — just not yet computed by the exporter.)
+   - Do not compute this curve in the browser — pixel-level iteration across
+     17 thresholds belongs at export time.
+
+2. Threshold sweep Play button animation:
+   - Add a Play/Stop button to `ThresholdViewer` that animates the threshold
+     from 0.1 to 0.9 at approximately 8 fps, showing the canvas mask and
+     histogram updating together.
+   - Overlay a marker on the histogram strip at `sample.thresholdCurve.optimalThreshold`.
+   - Keep the existing manual slider fully functional alongside the animation.
+
+3. HC ruler overlay on ContourEllipse:
+   - After ellipse fit, draw a diameter line across the major axis scaled to HC in mm.
+   - Label it "Pred HC: X mm / True HC: Y mm" directly on the canvas.
+   - Show only when both `predHC` and `targetHC` are present in `sample.metrics`.
+
+4. Probability callout on canvas hover (optional):
+   - In `ThresholdViewer`, show a tooltip near the cursor with the probability
+     value at that pixel, read from the canvas pixel data of `prob.png`.
+   - Keep interactions lightweight — no server calls required.
+
+5. Attention gate overlay (depends on V2.S7 attention maps):
+   - If attention map assets are present (from V2.S7.2), add a toggle to overlay
+     them on the ultrasound in the pipeline stepper.
+   - Match the existing overlay style (CSS mix-blend-mode or canvas composite).
+   - Skip gracefully if the `attention` field is absent from the sample assets.
+
+Verification:
+
+- `.venv/bin/python scripts/export_demo_artifacts.py --run-id attention_unet_local_baseline --split test`
+- `rg -n "thresholdCurve" frontend/public/samples/manifest.json` — field present for each sample.
+- `cd frontend && npm run build` — no TypeScript errors.
+- ThresholdViewer Play button animates in the browser.
+- Ruler overlay renders on ContourEllipse canvas for a strong sample.
+
+Done criteria:
+
+- export script pre-computes `thresholdCurve` for all curated samples,
+- at least two visualization improvements from the list above are live in the deployed app,
+- saved-output static mode remains fully functional with no backend.
 
 ## MVP Exit Checklist
 

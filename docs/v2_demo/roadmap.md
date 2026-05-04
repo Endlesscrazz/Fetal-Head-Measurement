@@ -249,9 +249,11 @@ Status: done
 
 Status note:
 The public production domain is live at
-`https://fetal-head-measurement.vercel.app/`, and the root README is now
-rewritten around the v2 portfolio demo. Screenshots/GIFs remain optional future
-presentation assets, not blockers.
+`https://fetal-head-measurement.vercel.app/`, the root README is now
+rewritten around the v2 portfolio demo, and the static site now serves the
+curated real HC18-derived saved-output bundle rather than only the placeholder
+preview. Screenshots/GIFs remain optional future presentation assets, not
+blockers.
 
 Estimated effort:
 3-4 hours

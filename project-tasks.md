@@ -325,8 +325,8 @@ Done criteria:
 Status: done
 
 Status note:
-README polish, `start_demo.sh`, Vercel config, and public-safe preview assets
-are in place, and the public production URL is live at
+README polish, `start_demo.sh`, Vercel config, and the public curated artifact
+deployment are in place, and the public production URL is live at
 `https://fetal-head-measurement.vercel.app/`. Screenshots/GIFs remain optional
 follow-up presentation assets.
 

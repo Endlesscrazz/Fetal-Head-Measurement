@@ -1,0 +1,64 @@
+{
+  "sample_id": "025_HC",
+  "run_id": "attention_unet_local_baseline",
+  "split": "test",
+  "cat": "typical",
+  "source_category": "typical",
+  "label": "Cleanup and ellipse teaching case",
+  "summary": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs.",
+  "tags": [
+    "cleanup",
+    "ellipse",
+    "contour_comparison"
+  ],
+  "reason": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs.",
+  "threshold": 0.5,
+  "spacing_x_mm": 0.1551616936922073,
+  "spacing_y_mm": 0.1571012139320373,
+  "spacingXMm": 0.1551616936922073,
+  "spacingYMm": 0.1571012139320373,
+  "hc_pred_mm": 66.91632843017578,
+  "hc_gt_mm": 70.51,
+  "metrics": {
+    "dice": 0.9438002073075926,
+    "iou": 0.8935843964671246,
+    "hd95_mm": 1.256810188293457,
+    "hcErr": 3.593671569824224,
+    "predHC": 66.91632843017578,
+    "targetHC": 70.51
+  },
+  "dice": 0.9438002073075926,
+  "iou": 0.8935843964671246,
+  "hd95_mm": 1.256810188293457,
+  "hcErr": 3.593671569824224,
+  "predHC": 66.91632843017578,
+  "targetHC": 70.51,
+  "signed_hc_error_mm": -3.593671569824224,
+  "ellipse_params": {
+    "center_x": 251.38050842285156,
+    "center_y": 150.12225341796875,
+    "semi_axis_a": 74.4207534790039,
+    "semi_axis_b": 61.726619720458984,
+    "angle_deg": 139.87313842773438
+  },
+  "predEllipse": {
+    "cx": 251.38050842285156,
+    "cy": 150.12225341796875,
+    "rx": 74.4207534790039,
+    "ry": 61.726619720458984,
+    "rot": 2.4412468006617694
+  },
+  "contourHC": 71.93766784667969,
+  "confidence": 0.9661834836006165,
+  "resolution": {
+    "w": 384,
+    "h": 256
+  },
+  "artifacts": {
+    "ultrasound": "ultrasound.png",
+    "target": "target.png",
+    "pred": "pred.png",
+    "prob": "prob.png"
+  },
+  "notes": "Shows why post-processing and geometry choices matter: raw contour error is high, cleaned contour improves, and ellipse HC differs."
+}
